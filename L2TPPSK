@@ -1,0 +1,12 @@
+1. apt install strongswan xl2tpd
+2. Replace IP address with your local IP (private, behind NAT IP is okay as well)
+    left=x.x.x.x
+    Всесто иксов айпи
+3. Поменять ens3 на название интерфейса
+
+Сервер 109.234.37.22
+Логин admin
+Пароль e9ctmjD4MWeW
+PSK L{rXVPbTDSnr
+
+x

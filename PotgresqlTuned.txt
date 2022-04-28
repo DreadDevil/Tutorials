@@ -1,0 +1,71 @@
+# postgres config
+dynamic_shared_memory_type = posix
+
+logging_collector = on
+log_timezone = 'Europe/Moscow'
+datestyle = 'iso, dmy'
+timezone = 'Europe/Moscow'
+lc_messages = 'ru_RU.UTF-8'
+lc_monetary = 'ru_RU.UTF-8'
+lc_numeric = 'ru_RU.UTF-8'
+lc_time = 'ru_RU.UTF-8'
+default_text_search_config = 'pg_catalog.russian'
+max_locks_per_transaction = 2000
+
+listen_addresses = '*'
+max_connections = 500
+#shared_buffers = 193171MB # 25% of RAM
+shared_buffers = 188GB # 25% of RAM
+#temp_buffers = 128MB
+temp_buffers = 10GB
+#work_mem = 256MB
+work_mem = 512MB
+#maintenance_work_mem = 256MB
+maintenance_work_mem = 4GB
+max_files_per_process = 10000
+max_parallel_workers_per_gather = 0
+max_parallel_maintenance_workers = 6 # Количество CPU/4, минимум 2,
+максимум 6
+commit_delay = 1000
+#max_wal_size = 4GB
+max_wal_size = 2GB
+#min_wal_size = 2GB
+min_wal_size = 1GB
+checkpoint_timeout = 15min
+#effective_cache_size = 579514MB # 75% of RAM
+effective_cache_size = 566GB # 75% of RAM
+from_collapse_limit = 8
+join_collapse_limit = 8
+autovacuum_max_workers = 32 # Количество CPU/2, минимум 2
+vacuum_cost_limit = 3200 # 100* autovacuum_max_workers
+autovacuum_naptime = 20s
+autovacuum_vacuum_scale_factor = 0.01
+autovacuum_analyze_scale_factor = 0.005
+#max_locks_per_transaction = 256
+escape_string_warning = off
+standard_conforming_strings = off
+#shared_preload_libraries = 'online_analyze, plantuner'
+#online_analyze.threshold = 50
+#online_analyze.scale_factor = 0.1
+#online_analyze.enable = on
+#online_analyze.verbose = off
+#online_analyze.min_interval = 10000
+#online_analyze.table_type = 'temporary'
+#plantuner.fix_empty_table = on
+
+# bezrukova
+huge_pages = try
+seq_page_cost = 1.0
+random_page_cost = 1.0
+checkpoint_completion_target = 0.9
+wal_buffers = 16MB
+default_statistics_target = 100
+
+effective_io_concurrency = 200
+max_worker_processes = 48
+max_parallel_workers_per_gather = 24
+max_parallel_workers = 48
+synchronous_commit = on
+wal_buffers = 16MB
+min_wal_size = 100MB
+autovacuum_max_workers = 6

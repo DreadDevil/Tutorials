@@ -1,0 +1,98 @@
+Debian 11
+
+uname -a
+Linux xxxxxx.kvmvps 5.10.0-10-amd64 #1 SMP Debian 5.10.84-1 (2021-12-08) x86_64
+
+uname -r
+5.10.0-10-amd64
+
+Скачать
+
+далее по пунктам запуск от root
+
+tar -xzf haspemu.tar.gz
+
+apt-get update
+apt-get install libc6-i386
+apt-get install linux-headers-5.10.0-10-amd64 linux-headers-5.10.0-10-common
+
+dpkg -i usb-vhci-hcd-dkms_1.15.1_amd64.deb
+dpkg -i libusb-vhci_0.8-2_amd64.deb
+dpkg -i usbhasp_0.1-2_amd64.deb
+dpkg -i haspd_8.23-eter2debian_amd64.deb
+
+cp hasplm.conf /etc/hasplm/hasplm.conf
+chmod 644 /etc/hasplm/hasplm.conf
+cp hasplm /usr/bin/hasplm
+chmod 755 /usr/bin/hasplm
+cp hasplm.service /lib/systemd/system/hasplm.service
+chmod 644 /lib/systemd/system/hasplm.service
+cp usbhaspd.conf /etc/usbhaspd/usbhaspd.conf
+chmod 644 /etc/usbhaspd/usbhaspd.conf
+mkdir /etc/usbhaspd/key
+
+systemctl enable hasplm.service
+systemctl daemon-reload
+
+reboot
+
+systemctl start xxx.service
+systemctl restart xxx.service
+
+systemctl status hasplm.service
+systemctl status haspd.service
+systemctl status usbhaspd.service
+
+Дампы ключей ищите на форуме.
+положить в /etc/usbhaspd/key и reboot
+
+Ссылка https://mega.nz/file/2UpSiITI#Nyu4rs...zNq4AAZXptWuSA
+
+На всякий случай команды в помощь
+
+Мониторинг запросов по 475 порту и сетевому интерфейсу.
+ifconfig
+
+zt3qvjhgx2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 2800
+inet 192.168.22.1 netmask 255.255.255.0 broadcast 192.168.22.255
+inet6 fe80::46:37ff:fe8e:8e prefixlen 64 scopeid 0x20<link>
+ether 02:46:37:8e:00:8e txqueuelen 1000 (Ethernet)
+RX packets 433 bytes 55514 (54.2 KiB)
+RX errors 0 dropped 0 overruns 0 frame 0
+TX packets 468 bytes 36776 (35.9 KiB)
+TX errors 0 dropped 0 overruns 0 carrier 0 collisions 0
+
+tcpdump -n -i zt3qvjhgx2 port 475
+
+iftop -i zt3qvjhgx2 -o 2
+
+Позволит посмотреть наличие ключей в системе
+
+lsusb | grep Aladdin
+usbkeytest --list
+
+Да и самое главное 1С работает с HASP только по UDP.
+
+отличия от reg-файлов
+все DWORD-параметры записаны без "0х" в начале
+все HEX-параметры содержат те же массивы, но к каждому элементу надо приклеить все тот же "0х" в начало
+
+структура ключа:
+Код:
+{
+  "HASP Key": {
+    "Name": "Key name",
+    "Created": "01/01/2001",
+    "Password": "00000000",
+    "Type": "00000000",
+    "Memory": "00000000",
+    "SN": "00000000",
+    "SecTable": "0x00,0x00,.........,0x00",
+    "NetMemory": "0x00,0x00,.........,0x00",
+    "Option": "0x00,0x00,.........,0x00",
+    "Data": "0x00,0x00,.........,0x00"
+  }
+}
+
+https://yadi.sk/d/aItw-Q3qNdd0Ew
+Пароль 123

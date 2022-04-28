@@ -1,0 +1,18 @@
+apt-get install apache2
+a2enmod dav
+a2enmod dav_fs
+mkdir /home/webdav
+chown -R www-data. /home/webdav
+htpasswd -c /etc/apache2/webdav.password webdav
+chown root:www-data /etc/apache2/webdav.password
+chmod 640 /etc/apache2/webdav.password
+
+       <Location /webdav>
+           Options Indexes
+           DAV On
+           AuthType Basic
+           AuthName "webdav"
+           AuthUserFile /etc/apache2/webdav.password
+           Require valid-user
+        </Location>
+
