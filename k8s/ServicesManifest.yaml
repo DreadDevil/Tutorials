@@ -1,0 +1,45 @@
+apiVersion : apps/v1
+kind: Deployment:
+metadata:
+  name: myweb-deployment
+  app: my-k8-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: kgb
+  template:
+    metadata:
+      labels:
+        project: kgb #Service wikk look for this label
+    spec:
+      containers:
+        - name: kgb-web
+        image: apache:latest
+        ports:
+          - containerPort: 80
+        - name: kgb-web
+        image: tomcat:latest
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+type: LoadBalancer
+metadata:
+  name: my-single-pod-Service
+  labels:
+    env: prod
+    owner: ZVM
+spec:
+  selector:
+    project: kgb #selecting PODs with this labels
+  ports:
+    - name: app-listener
+    protocol: TCP
+    port: 80 #Port on Load Balancer
+    targetport: 80 #Port on POD
+    - name: app-listener2
+    protocol: TCP
+    port: 8080
+    targetport: 8080

@@ -7,7 +7,7 @@ metadata:
     env : prod
     owner: VMZ
   spec:
-    replicas: 3
+#    replicas: 3
     selector:
       matchlabels:
         project: kgb
