@@ -1,0 +1,10 @@
+apiVersion 1
+kind: Pod
+metadata:
+  name: my-web
+spec:
+  containers:
+    - name: container-apache
+     image httpd:latest
+     ports
+       - containerPort: 80
