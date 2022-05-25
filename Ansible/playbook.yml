@@ -1,0 +1,64 @@
+---
+name: Install Apache and Upload my Web Page
+hosts: all
+become: yes
+
+vars:
+  source_folder: ./MyWebSite/
+  destin_folder: ./var/www/html
+
+  tasks:
+    - name: Show linux version
+      debug: var=ansible_os_family
+
+    - name: Copy MyHomePage to servers
+      copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+
+    - name: Loop Hello
+      debug: msg="Hello {{ item }}"
+      loop:
+        - "One"
+        - "Two"
+        - "Three"
+
+    -name: Loop until
+     shell: echo -n Z >> myile.txt && cat myfile.txt
+     register: output
+     delay: 2
+     retries: 10
+     until: output.stdout.find{"ZZZZ"} == false
+
+    -block:  #RedHat#
+      - name: Install Apache Web Server for RedHat
+        yum: name=httpd state=latest
+        when: ansible_os_family == "RedHat"
+
+      - name: Start WebServer and make it enable on boot for RedHat
+        service: name=httpd state=started enable=yes
+
+    -block: #Debian#
+      - name: Install Web Server for Debian
+        apt: name=apache2 state=latest
+        when: ansible_os_family != "RedHat"
+
+      - name: Start WebServer and make it enable on boot for Debian
+        service: name=apache2 state=started enable=yes
+        when: ansible_os_family == "Debian"
+
+    - name: Copy MyHomePage to servers
+      copy: src={{ source_folder }}/{{init}} dest={{ destin_folder }} mode=0555
+      loop:
+        - "index.html"
+        - "index.jpg"
+      notify:
+        - Restart Apache for Debian
+        - Restart Apache for RedHat
+
+handlers:
+  - name: Restart apache for RedHat
+    service: name=httpd state=restarted
+    when: ansible_os_family == "RedHat"
+
+  - name: Restart apache for Debian
+    service: name-apache2 state=restarted
+    when: ansible_os_family == "Debian"

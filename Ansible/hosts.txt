@@ -1,0 +1,2 @@
+linux1 ansible_host=10.10.10.10
+linux2 ansible_host=10.10.10.11
