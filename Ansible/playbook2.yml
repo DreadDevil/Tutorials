@@ -1,0 +1,32 @@
+---
+name: Install Apache and Upload my Web Page
+hosts: all
+become: yes
+
+vars:
+  source_folder: ./MyWebSite/
+  destin_folder: ./var/www/html
+
+  tasks:
+    - name: Show linux version
+      debug: var=ansible_os_family
+
+    - name: Copy MyHomePage to servers
+      copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+
+    - name: Loop Hello
+      debug: msg="Hello {{ item }}"
+      loop:
+        - "One"
+        - "Two"
+        - "Three"
+
+    - name: Loop until
+      shell: echo -n Z >> myile.txt && cat myfile.txt
+      register: output
+      delay: 2
+      retries: 10
+      until: output.stdout.find{"ZZZZ"} == false
+
+     - name: Generate INDEX.HTML
+       template: src={{ source_folder }}/index.j2 dest={{ destin_file }} mode=0555

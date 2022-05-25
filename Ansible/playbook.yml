@@ -46,7 +46,9 @@ vars:
         when: ansible_os_family == "Debian"
 
     - name: Copy MyHomePage to servers
-      copy: src={{ source_folder }}/{{init}} dest={{ destin_folder }} mode=0555
+      copy: src={{ source_folder }}/{{item}} dest={{ destin_folder }} mode=0555
+#     copy: src={{item}} dest={{ destin_folder }} mode=0555
+#     with_fileglob: "{{ source_folder  }}/*.*"
       loop:
         - "index.html"
         - "index.jpg"
