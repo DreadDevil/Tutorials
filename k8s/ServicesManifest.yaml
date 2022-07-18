@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        project: kgb #Service wikk look for this label
+        project: kgb #Service will look for this label
     spec:
       containers:
         - name: kgb-web

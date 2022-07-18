@@ -4,4 +4,4 @@
   become: yes
   tasks:
     - name: Install zabbix agent
-      apt: name=zabbix-agent state=absent
+      apt: name=zabbix-agent state=latest
