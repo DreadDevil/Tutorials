@@ -1,0 +1,1 @@
+SELECT mean("highH") AS "Нижняя граница", mean("lowH") AS "Верхняя граница", mean("valueH") AS "Относительная влажность" FROM "netping"."autogen"."HT1" WHERE time > now() - 1d GROUP BY time(30m) FILL(null)

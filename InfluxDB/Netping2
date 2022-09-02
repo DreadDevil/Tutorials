@@ -1,0 +1,47 @@
+ip="192.168.58.72"
+community="SWITCH"
+tempN=1
+
+currentTemp=$(snmpget -v1 -c ${community} -Ov -Oq ${ip} .1.3.6.1.4.1.25728.8800.1.1.2.${tempN}) # текущая температура
+status=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.3.${tempN}) #статус датчика
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.6.${tempN}) #памятка
+botTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.4.${tempN}) #Нижняя граница
+topTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.5.${tempN}) #Верхняя граница
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "temp1 value=${currentTemp},low=${botTemp},high=${topTemp}"
+
+ip="192.168.58.72"
+community="SWITCH"
+
+
+currentTemp=$(snmpget -v1 -c ${community} -Ov -Oq ${ip} .1.3.6.1.4.1.25728.8800.1.1.2.1) # текущая температура
+status=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.3.1) #статус датчика
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.6.1) #памятка
+botTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.4.1) #Нижняя граница
+topTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.5.1) #Верхняя граница
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "temp1 value=${currentTemp},low=${botTemp},high=${topTemp}"
+
+currentTemp=$(snmpget -v1 -c ${community} -Ov -Oq ${ip} .1.3.6.1.4.1.25728.8800.1.1.2.2) # текущая температура
+status=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.3.2) #статус датчика
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.6.2) #памятка
+botTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.4.2) #Нижняя граница
+topTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.5.2) #Верхняя граница
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "temp2 value=${currentTemp},low=${botTemp},high=${topTemp}"
+
+currentTemp=$(snmpget -v1 -c ${community} -Ov -Oq ${ip} .1.3.6.1.4.1.25728.8800.1.1.2.3) # текущая температура
+status=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.3.3) #статус датчика
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.6.3) #памятка
+botTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.4.3) #Нижняя граница
+topTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.5.3) #Верхняя граница
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "temp3 value=${currentTemp},low=${botTemp},high=${topTemp}"
+
+currentTemp=$(snmpget -v1 -c ${community} -Ov -Oq ${ip} .1.3.6.1.4.1.25728.8800.1.1.2.4) # текущая температура
+status=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.3.4) #статус датчика
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.6.4) #памятка
+botTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.4.4}) #Нижняя граница
+topTemp=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8800.1.1.5.4) #Верхняя граница
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "temp4 value=${currentTemp},low=${botTemp},high=${topTemp}"

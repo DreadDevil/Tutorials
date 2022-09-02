@@ -1,0 +1,63 @@
+#VyOS-1
+#
+set interfaces ethernet eth1 address '1.1.1.1/24'
+set interfaces loopback lo address '172.16.16.1/24'
+set interfaces loopback lo address '192.168.1.1/24'
+
+set interfaces tunnel tun0 address '2.2.2.1/30'
+set interfaces tunnel tun0 encapsulation 'gre'
+set interfaces tunnel tun0 local-ip '172.16.16.1'
+set interfaces tunnel tun0 remote-ip '172.16.20.1'
+
+set protocols ospf area 0 network '2.2.2.0/30'
+set protocols ospf area 0 network '192.168.1.0/24'
+set protocols ospf passive-interface 'lo'
+
+set vpn ipsec esp-group ESP-One lifetime '600'
+set vpn ipsec esp-group ESP-One proposal 10 encryption 'aes256'
+set vpn ipsec esp-group ESP-One proposal 10 hash 'sha512'
+set vpn ipsec ike-group IKE-One lifetime '600'
+set vpn ipsec ike-group IKE-One proposal 10 encryption 'aes256'
+set vpn ipsec ike-group IKE-One proposal 10 hash 'sha512'
+set vpn ipsec ipsec-interfaces interface 'eth1'
+
+set vpn ipsec site-to-site peer 1.1.1.2 authentication mode 'pre-shared-secret'
+set vpn ipsec site-to-site peer 1.1.1.2 authentication pre-shared-secret 'Password1'
+set vpn ipsec site-to-site peer 1.1.1.2 default-esp-group 'ESP-One'
+set vpn ipsec site-to-site peer 1.1.1.2 ike-group 'IKE-One'
+set vpn ipsec site-to-site peer 1.1.1.2 local-address '1.1.1.1'
+set vpn ipsec site-to-site peer 1.1.1.2 tunnel 10 local prefix '172.16.16.0/24'
+set vpn ipsec site-to-site peer 1.1.1.2 tunnel 10 remote prefix '172.16.20.0/24'
+
+
+#VyOS-2
+#
+set interfaces ethernet eth1 address '1.1.1.2/24'
+set interfaces loopback lo address '172.16.20.1/24'
+set interfaces loopback lo address '192.168.2.1/24'
+
+set interfaces tunnel tun0 address '2.2.2.2/30'
+set interfaces tunnel tun0 encapsulation 'gre'
+set interfaces tunnel tun0 ip 'ospf'
+set interfaces tunnel tun0 local-ip '172.16.20.1'
+set interfaces tunnel tun0 remote-ip '172.16.16.1'
+
+set protocols ospf area 0 network '2.2.2.0/30'
+set protocols ospf area 0 network '192.168.2.0/24'
+set protocols ospf passive-interface 'lo'
+
+set vpn ipsec esp-group ESP-One lifetime '600'
+set vpn ipsec esp-group ESP-One proposal 10 encryption 'aes256'
+set vpn ipsec esp-group ESP-One proposal 10 hash 'sha512'
+set vpn ipsec ike-group IKE-One lifetime '600'
+set vpn ipsec ike-group IKE-One proposal 10 encryption 'aes256'
+set vpn ipsec ike-group IKE-One proposal 10 hash 'sha512'
+set vpn ipsec ipsec-interfaces interface 'eth1'
+
+set vpn ipsec site-to-site peer 1.1.1.1 authentication mode 'pre-shared-secret'
+set vpn ipsec site-to-site peer 1.1.1.1 authentication pre-shared-secret 'Password1'
+set vpn ipsec site-to-site peer 1.1.1.1 default-esp-group 'ESP-One'
+set vpn ipsec site-to-site peer 1.1.1.1 ike-group 'IKE-One'
+set vpn ipsec site-to-site peer 1.1.1.1 local-address '1.1.1.2'
+set vpn ipsec site-to-site peer 1.1.1.1 tunnel 10 local prefix '172.16.20.0/24'
+set vpn ipsec site-to-site peer 1.1.1.1 tunnel 10 remote prefix '172.16.16.0/24'

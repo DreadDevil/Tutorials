@@ -1,0 +1,8 @@
+ip="192.168.58.72"
+community="SWITCH"
+ioN=2
+
+state=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8900.1.1.2.$ioN) # состояние первой ио линии
+memo=$(snmpget -v1 -c $community -Ov -Oq $ip .1.3.6.1.4.1.25728.8900.1.1.6.$ioN) #памятка линии
+
+curl -s -i -XPOST "http://localhost:8086/write?db=netping" --data-binary "io${ioN} value=${state}"
