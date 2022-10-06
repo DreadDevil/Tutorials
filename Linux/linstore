@@ -1,0 +1,60 @@
+https://pub.nethence.com/storage/drbd-linstor
+
+apt install pve-headers-5.15 pve-kernel-5.15
+
+Plugin & Repo
+# wget -O- https://packages.linbit.com/package-signing-pubkey.asc | apt-key add -
+# PVERS=7 && echo "deb http://packages.linbit.com/proxmox/ proxmox-$PVERS drbd-9" > \
+        /etc/apt/sources.list.d/linbit.list
+# apt update && apt install linstor-proxmox
+
+
+Linstore
+apt install pve-headers
+apt install -y drbd-dkms drbd-utils lvm2
+apt install linstor-controller linstor-satellite  linstor-client
+apt install linstor-satellite  linstor-client
+
+systemctl enable --now linstor-controller
+
+linstor node list
+
+systemctl enable --now  linstor-satellite
+
+systemctl edit linstor-satellite.service
+
+[Service]
+Type=notify
+TimeoutStartSec=infinity
+
+/etc/pve/storage.cfg
+
+drbd: drbdstorage
+   content images,rootdir
+   controller 10.11.12.13
+   resourcegroup defaultpool
+
+drbd: fastdrbd
+   content images,rootdir
+   controller 10.11.12.13
+   resourcegroup ssd
+ 
+linstor node create pve1 192.168.103.251
+linstor node create pve2 127.0.0.12
+linstor node create pve3 127.0.0.13
+ 
+   
+apt install zfsutils-linux
+
+zpool create tank1 mirror sda sdb
+zpool create tank1 /dev/sda3 /dev/sdb /dev/sdc
+zpool create tank2 /dev/sda3 /dev/sdb /dev/sdc
+zpool list
+zfs list
+
+ linstor storage-pool create zfs pve1 vdiskpool tank1
+ linstor storage-pool create zfs pve2 vdiskpool tank2
+ linstor storage-pool list
+ 
+ apt install pve-headers-5.15 pve-kernel-5.15 pve-headers-5.15.30-1-pve pve-kernel-5.15.30-1-pve
+
