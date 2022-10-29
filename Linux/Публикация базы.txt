@@ -1,0 +1,101 @@
+Публикация базы zup_production
+
+
+Перейти в папку 1с
+cd /1c
+смотрим на содерживмое
+ls
+
+Копируем папку похожей базы 
+cp -R zup_corp_test erp_dump20220509_razdolie
+Заходим в папку
+cd zup_production/
+Редактируем сам файл
+nano default.vrd
+
+PS Если база тестовая - пишем порт 1841
+
+В файле меняем все что есть с именем базы на нужную нам
+сохраняем
+CTRL + O
+Выйти 
+CTRL + X
+
+Изменить группу
+
+chgrp -R grp1cv8 .
+
+Правим конфигурацию веб-сервера
+cd /etc/httpd/conf.d
+
+ nano 1c-prod.conf
+
+<Location "/erp_dump20220509_razdolie">
+  AllowOverride All
+  Options None
+  Require all granted
+  SetHandler 1c-application
+  ManagedApplicationDescriptor "/1c/erp_dump20220509_razdolie/default.vrd"
+</Location>
+
+
+
+Поместить блок Location в файл 1c-prod.conf или 1c-stage.conf
+
+Обновляем конфигурацию веб-сервера без перезапуска
+sudo service httpd reload
+
+Проверяем
+
+
+
+
+cd /1cубликация базы zup_corp_test2
+
+
+Перейти в папку 1с
+cd /1c
+смотрим на содерживмое
+ls
+
+Копируем папку похожей базы 
+cp -R zup_corp_test zup_corp_test2
+Заходим в папку
+cd zup_production/
+Редактируем сам файл
+nano default.vrd
+
+PS Если база тестовая - пишем порт 1841
+
+В файле меняем все что есть с именем базы на нужную нам
+сохраняем
+CTRL + O
+Выйти 
+CTRL + X
+
+Изменить группу
+
+chgrp -R grp1cv8 .
+
+Правим конфигурацию веб-сервера
+cd /etc/httpd/conf.d
+
+ nano 1c-prod.conf
+
+<Location "/zup_corp_test2">
+  AllowOverride All
+  Options None
+  Require all granted
+  SetHandler 1c-application
+  ManagedApplicationDescriptor "/1c/zup_corp_test2/default.vrd"
+</Location>
+
+
+
+Поместить блок Location в файл 1c-prod.conf или 1c-stage.conf
+
+Обновляем конфигурацию веб-сервера без перезапуска
+sudo service httpd reload
+
+Проверяем
+

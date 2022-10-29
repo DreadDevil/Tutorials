@@ -14,3 +14,20 @@ iface br0 inet static
     bridge_stp off
     # If STP is off, set to 0. If STP is on, set to 2 (or greater).
     bridge_fd 0
+    
+Proxmox
+    auto lo
+iface lo inet loopback
+
+iface ens18f0 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+        address 192.168.103.252/24
+        gateway 192.168.103.1
+        bridge-ports ens18f0
+        bridge-stp off
+        bridge-fd 0
+
+iface ens18f1 inet manual
+

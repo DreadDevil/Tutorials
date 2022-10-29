@@ -1,3 +1,91 @@
+3. VyOS Configuration
+
+3.1 Interfaces and Static Route Configuration
+
+vyos@vyos:~$ configure
+vyos@vyos# set interfaces ethernet eth0 address 2.2.2.10/24
+vyos@vyos# set interfaces ethernet eth1 address 192.168.2.1/24
+
+Again we have to configure static route pointing to the subnet 1.1.10/24.
+
+vyos@vyos# set protocols static route 1.1.1.0/24 next-hop 2.2.2.2
+
+3.2 IPSec Tunnel Configuration
+
+Enable IPSec on interface eth0.
+
+vyos@vyos# set vpn ipsec ipsec-interfaces interface eth0
+
+Configure an IKE Group - Phase 1
+
+Set the encryption, the hash algorithm, DH group and lifetime for phase 1.
+
+vyos@vyos# set vpn ipsec ike-group cisco proposal 1
+vyos@vyos# set vpn ipsec ike-group cisco proposal 1 encryption aes256
+vyos@vyos# set vpn ipsec ike-group cisco proposal 1 hash md5
+vyos@vyos# set vpn ipsec ike-group cisco proposal 1 dh-group 14
+
+vyos@vyos# set vpn ipsec ike-group cisco lifetime 86400
+
+Configure an ESP Group - Phase 2
+
+Set the encryption, the hash algorithm and lifetime for phase 2.
+
+vyos@vyos# set vpn ipsec esp-group cisco proposal 1
+vyos@vyos# set vpn ipsec esp-group cisco proposal 1 encryption aes128
+vyos@vyos# set vpn ipsec esp-group cisco proposal 1 hash md5
+
+vyos@vyos# set vpn ipsec esp-group cisco pfs enable
+vyos@vyos# set vpn ipsec esp-group cisco lifetime 86400
+vyos@vyos# set vpn ipsec esp-group cisco mode tunnel
+
+Configure tunnel peer and pre-shared key.
+
+vyos@vyos# set vpn ipsec site-to-site peer 1.1.1.10 authentication pre-shared-secret test123
+
+Configure ike-group used for the tunnel.
+
+vyos@vyos# set vpn ipsec site-to-site peer 1.1.1.10 ike-group cisco
+
+Configure esp-group used for the tunnel.
+
+vyos@vyos# set vpn ipsec site-to-site peer 1.1.1.10 tunnel 0 esp-group cisco
+
+Configure local address used for connection.
+
+vyos@vyos# set vpn ipsec site-to-site peer 1.1.1.10 local-address 2.2.2.10
+
+Configure protocol encapsulated inside IPSec.
+
+vyos@vyos# set vpn ipsec site-to-site peer 1.1.1.10 tunnel 0 protocol gre
+
+3.3 GRE Tunnel Configuration
+
+Create a new route policy that changes TCP MSS to 1360 bytes.
+
+vyos@vyos# set policy route change-mss rule 1 set tcp-mss 1360
+vyos@vyos# set policy route change-mss rule 1 protocol tcp
+vyos@vyos# set policy route change-mss rule 1 tcp flags SYN
+
+Configure GRE tunnel.
+
+vyos@vyos# set interfaces tunnel tun0 encapsulation gre
+vyos@vyos# set interfaces tunnel tun0 address 172.16.0.2/24
+vyos@vyos# set interfaces tunnel tun0 description "Tunnel to R1"
+vyos@vyos# set interfaces tunnel tun0 mtu 1400
+vyos@vyos# set interfaces tunnel tun0 policy route change-mss
+vyos@vyos# set interfaces tunnel tun0 local-ip 2.2.2.10
+vyos@vyos# set interfaces tunnel tun0 remote-ip 1.1.1.10
+vyos@vyos# set interfaces tunnel tun0 multicast enable
+
+3.4 OSPF Configuration
+
+vyos@vyos# set interfaces tunnel tun0 ip ospf network broadcast
+vyos@vyos# set protocols ospf area 0.0.0.0 network 172.16.0.0/24
+vyos@vyos# set protocols ospf area 0.0.0.0 network 192.168.2.0/24
+vyos@vyos# commit
+vyos@vyos# save
+
 #VyOS-1
 #
 set interfaces ethernet eth1 address '1.1.1.1/24'

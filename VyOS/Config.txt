@@ -1,0 +1,6 @@
+config
+set interfaces ethernet eth0 address dhcp
+set service ssh port 22
+commit
+save
+exit

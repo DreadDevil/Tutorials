@@ -1,0 +1,150 @@
+Добавление репозиториев
+
+В файл
+etc/apt/sources.list
+добавляем бесплатный репозиторий proxmox
+deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+
+Добавляем репозиторий Linstor
+wget -O- https://packages.linbit.com/package-signing-pubkey.asc | apt-key add -
+PVERS=7 && echo "deb http://packages.linbit.com/proxmox/ proxmox-$PVERS drbd-9" > \
+        /etc/apt/sources.list.d/linbit.list
+
+Установка необходимого
+apt install -y pve-headers pve-kernel-5.15
+apt install -y drbd-dkms drbd-utils lvm2
+На контроллеер
+apt install -y linstor-controller linstor-satellite  linstor-client
+На остальные
+apt install -y linstor-satellite  linstor-client
+apt install linstor-proxmox
+apt install -y mdadm
+apt install -y drbd-reactor
+
+На контроллере
+systemctl enable --now linstor-controller
+На остальных нодах
+systemctl enable --now  linstor-satellite
+
+Создаем ноду контроллер
+	linstor node create --node-type Combined pve1 192.168.103.251
+Создаем остальные ноды
+linstor node create --node-type satellite pve2 192.168.103.250
+linstor node list
+linstor node describe
+linstor node modify pve3 --node-type combined
+
+Делаем софт RAID 1
+mdadm --create --verbose /dev/md0 -l 1 -n 2 /dev/sd{c,d}
+
+#ZFS
+#zpool create pool1 mirror sdc sdd
+#zpool list
+#zfs list
+#zpool status
+
+Создаем разделы
+LVM
+pvcreate /dev/md0
+vgcreate vgdata /dev/md0
+#vgremove
+#pvdisplay
+#vgdisplay
+#lvdisplay
+#lvs
+
+Если на диске были старые разделы
+parted /dev/sdc
+mktable msdos
+
+Создаем раздел linstor на ранее созданном разделе
+linstor storage-pool create lvm pve1 vdiskpool vgdata
+linstor storage-pool create zfs pve1 vdiskpool2 rpool
+linstor storage-pool list
+ 
+linstor resource-group create zfs_group --storage-pool vdiskpool2 --place-count 2
+linstor volume-group create zfs_group
+ 
+ 
+Создаем ресурс и вольюм группу на созданном разделе
+linstor resource-group create hdd_group --storage-pool vdiskpool --place-count 2
+linstor volume-group create hdd_group
+#linstor resource-group spawn-resources hdd_group hdd_res 20G
+linstor resource list
+ 
+Настройка плагина для Proxmox
+
+systemctl edit linstor-satellite.service
+
+Добавляем туда
+[Service]
+Type=notify
+TimeoutStartSec=infinity
+
+В файл
+/etc/pve/storage.cfg
+
+Добавляем
+drbd: hdd_group
+   content images,rootdir
+   controller 192.168.103.251
+   resourcegroup hdd_group
+
+HA Cluster с 3 контроллерами
+linstor resource-definition create linstor_db
+linstor resource-definition drbd-options --on-no-quorum=io-error linstor_db
+linstor resource-definition drbd-options --auto-promote=no linstor_db
+linstor volume-definition create linstor_db 200M
+linstor resource create linstor_db -s vdiskpool --auto-place 4
+
+systemctl disable --now linstor-controller на всех нодах
+
+chattr +i /var/lib/linstor на всех нодах
+
+cat << EOF > /etc/systemd/system/var-lib-linstor.mount
+[Unit]
+Description=Filesystem for the LINSTOR controller
+
+[Mount]
+# you can use the minor like /dev/drbdX or the udev symlink
+What=/dev/drbd/by-res/linstor_db/0
+Where=/var/lib/linstor
+EOF
+
+mv /var/lib/linstor{,.orig}
+mkdir /var/lib/linstor
+chattr +i /var/lib/linstor  # only if on LINSTOR >= 1.14.0
+drbdadm primary linstor_db
+mkfs.ext4 /dev/drbd/by-res/linstor_db/0
+systemctl start var-lib-linstor.mount
+cp -r /var/lib/linstor.orig/* /var/lib/linstor
+systemctl start linstor-controller
+
+Скопировать на все ноды
+/etc/systemd/system/var-lib-linstor.mount
+
+/etc/drbd-reactor.d/linstor_db.toml
+
+[[promoter]]
+id = "linstor_db"
+[promoter.resources.linstor_db]
+start = ["var-lib-linstor.mount", "linstor-controller.service"]
+
+systemctl restart drbd-reactor
+# systemctl enable drbd-reactor
+
+systemctl edit linstor-satellite
+[Service]
+Environment=LS_KEEP_RES=linstor_db
+
+systemctl restart linstor-satellite
+
+drbd-reactorctl status linstor_db
+
+linstor node interface create pve1 data 10.1.102.10
+linstor node interface create pve2 data 10.1.102.20
+linstor node interface create pve3 data 10.1.102.30
+linstor node interface create pve4 data 10.1.102.30
+
+linstor node set-property pve1 PrefNic data
+linstor storage-pool set-property pve3 drbdpool PrefNic data

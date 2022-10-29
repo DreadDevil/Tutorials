@@ -1,0 +1,67 @@
+Обновляем дерево пакетов
+
+# apt update
+
+Устанавливаем требуемые пакеты
+
+# apt install ifenslave
+
+Правим /etc/network/interfaces
+
+auto enp2s0
+iface enp2s0 inet manual
+bond-master bond0
+
+auto enp2s1
+iface enp2s1 inet manual
+bond-master bond0
+
+auto bond0
+iface bond0 inet static
+address 10.10.10.1/24
+gateway 10.10.10.254
+dns-nameservers 10.10.10.10 10.10.10.11
+bond-slaves enp2s0 enp2s1
+bond-mode 802.3ad
+bond-lacp-rate slow
+
+Proxmox config
+
+auto lo
+iface lo inet loopback
+
+auto ens18f0
+iface ens18f0 inet manual
+bond-master bond0
+
+auto ens18f1
+iface ens18f1 inet manual
+bond-master bond0
+
+auto bond0
+iface bond0 inet manual
+bond-slaves ens18f0 ens18f1
+bond-mode 802.3ad
+bond-lacp-rate slow
+
+auto vmbr0
+iface vmbr0 inet static
+        address 192.168.103.252/24
+                gateway 192.168.103.1
+        bridge-ports bond0
+        bridge-stp off
+        bridge-fd 0
+
+
+
+auto bond0
+iface bond0 inet manual
+bond-slaves ens18f0 ens18f1
+bond-mode 4
+bond-miimon 100
+bond-downdelay 200
+bond-updelay 200
+bond-lacp-rate 1
+bond-xmit-hash-policy layer2+3
+
+
