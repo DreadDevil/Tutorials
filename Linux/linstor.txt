@@ -1,7 +1,7 @@
 Добавление репозиториев
 
 В файл
-etc/apt/sources.list
+/etc/apt/sources.list
 добавляем бесплатный репозиторий proxmox
 deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
 
@@ -12,14 +12,16 @@ PVERS=7 && echo "deb http://packages.linbit.com/proxmox/ proxmox-$PVERS drbd-9" 
 
 Установка необходимого
 apt install -y pve-headers pve-kernel-5.15
-apt install -y drbd-dkms drbd-utils lvm2
+apt install -y  lvm2
 На контроллеер
 apt install -y linstor-controller linstor-satellite  linstor-client
 На остальные
 apt install -y linstor-satellite  linstor-client
-apt install linstor-proxmox
+apt install -y linstor-proxmox
 apt install -y mdadm
 apt install -y drbd-reactor
+apt install -y drbd-dkms drbd-utils
+
 
 На контроллере
 systemctl enable --now linstor-controller
@@ -37,13 +39,15 @@ linstor node modify pve3 --node-type combined
 Делаем софт RAID 1
 mdadm --create --verbose /dev/md0 -l 1 -n 2 /dev/sd{c,d}
 
+mdadm --stop /dev/md127
+
 #ZFS
 #zpool create pool1 mirror sdc sdd
 #zpool list
 #zfs list
 #zpool status
 
-Создаем разделы
+Создаем разделыt
 LVM
 pvcreate /dev/md0
 vgcreate vgdata /dev/md0
@@ -70,6 +74,7 @@ linstor volume-group create zfs_group
 linstor resource-group create hdd_group --storage-pool vdiskpool --place-count 2
 linstor volume-group create hdd_group
 #linstor resource-group spawn-resources hdd_group hdd_res 20G
+#linstor resource-group modify hdd_group --place-count 3
 linstor resource list
  
 Настройка плагина для Proxmox
@@ -87,14 +92,14 @@ TimeoutStartSec=infinity
 Добавляем
 drbd: hdd_group
    content images,rootdir
-   controller 192.168.103.251
+   controller 10.1.101.10
    resourcegroup hdd_group
 
 HA Cluster с 3 контроллерами
 linstor resource-definition create linstor_db
 linstor resource-definition drbd-options --on-no-quorum=io-error linstor_db
 linstor resource-definition drbd-options --auto-promote=no linstor_db
-linstor volume-definition create linstor_db 200M
+linstor volume-definition create linstor_db 500M
 linstor resource create linstor_db -s vdiskpool --auto-place 4
 
 systemctl disable --now linstor-controller на всех нодах

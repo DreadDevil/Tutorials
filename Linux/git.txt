@@ -1,1 +1,8 @@
+git status
 checkout -b
+git push origin new-feature
+git log
+git log -oneline
+git reset
+git reflog
+git revert
