@@ -153,3 +153,10 @@ linstor node interface create pve4 data 10.1.102.30
 
 linstor node set-property pve1 PrefNic data
 linstor storage-pool set-property pve3 drbdpool PrefNic data
+
+linstor resource create pve1 vdiskpool --drbd-diskless
+linstor resource toggle-disk pve1 vm-101-disk-1 --storage-pool vdiskpool --migrate-from pve2
+linstor resource toggle-disk pve1 vm-101-disk-1 --diskless
+
+
+

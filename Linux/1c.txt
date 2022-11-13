@@ -1,0 +1,9 @@
+service srv1cv83 stop
+service srv1cv83_2 stop
+chmod +x setup-full-8.3.22.1672-x86_64.run
+./setup-full-8.3.22.1672-x86_64.run
+nano /etc/httpd/conf.modules.d/01-1c.conf
+nano /etc/init.d/srv1cv83
+nano /etc/init.d/srv1cv83_2 
+service srv1cv83 start
+service srv1cv83_2 start
