@@ -64,6 +64,7 @@ mktable msdos
 Создаем раздел linstor на ранее созданном разделе
 linstor storage-pool create lvm pve1 vdiskpool vgdata
 linstor storage-pool create zfs pve1 vdiskpool2 rpool
+
 linstor storage-pool list
  
 linstor resource-group create zfs_group --storage-pool vdiskpool2 --place-count 2
@@ -154,9 +155,13 @@ linstor node interface create pve4 data 10.1.102.30
 linstor node set-property pve1 PrefNic data
 linstor storage-pool set-property pve3 drbdpool PrefNic data
 
+linstor resource delete pve1 vm-101-disk-1
 linstor resource create pve1 vdiskpool --drbd-diskless
 linstor resource toggle-disk pve1 vm-101-disk-1 --storage-pool vdiskpool --migrate-from pve2
 linstor resource toggle-disk pve1 vm-101-disk-1 --diskless
 
+drbdmon
+drbdadm status
 
+drbdsetup status linstor_db --verbose --statistics
 
