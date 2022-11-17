@@ -1,9 +1,30 @@
 service srv1cv83 stop
 service srv1cv83_2 stop
-chmod +x setup-full-8.3.22.1672-x86_64.run
-./setup-full-8.3.22.1672-x86_64.run
+chmod +x setup-full-8.3.22.1704-x86_64.run
+./setup-full-8.3.22.1704-x86_64.run
 nano /etc/httpd/conf.modules.d/01-1c.conf
 nano /etc/init.d/srv1cv83
 nano /etc/init.d/srv1cv83_2 
 service srv1cv83 start
 service srv1cv83_2 start
+service httpd stop
+service httpd start
+
+
+
+Максим Сизов, [14.11.2022 20:47]
+автоскрипт ™️
+
+Максим Сизов, [14.11.2022 20:47]
+sudo systemctl stop srv1cv8-8.3.22.1672@default
+sudo systemctl stop ras-8.3.22.1672
+sudo systemctl disable srv1cv8-8.3.22.1672@
+sudo systemctl disable ras-8.3.22.1672
+
+
+sudo systemctl link /opt/1cv8/x86_64/8.3.22.1704/srv1cv8-8.3.22.1704@.service
+sudo systemctl link /opt/1cv8/x86_64/8.3.22.1704/ras-8.3.22.1704.service
+sudo systemctl enable srv1cv8-8.3.22.1704@
+sudo systemctl enable ras-8.3.22.1704
+sudo systemctl start srv1cv8-8.3.22.1704@default
+sudo systemctl start ras-8.3.22.1704

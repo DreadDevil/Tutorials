@@ -1,0 +1,218 @@
+- ### Линейная запись (результаты в МБ/с): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4M -iodepth=32 -rw=write -runtime=60 -filename=/dev/md127
+
+Jobs: 1 (f=1): [W(1)][0.5%][w=168MiB/s][w=42 IOPS][eta 03h:09m:29s]
+test: (groupid=0, jobs=1): err= 0: pid=2043461: Wed Nov 16 16:39:56 2022
+  write: IOPS=42, BW=171MiB/s (180MB/s)(10.1GiB/60207msec); 0 zone resets
+    slat (usec): min=136, max=221338, avg=23349.58, stdev=42704.86
+    clat (msec): min=21, max=843, avg=719.12, stdev=55.67
+     lat (msec): min=215, max=897, avg=742.47, stdev=36.43
+    clat percentiles (msec):
+     |  1.00th=[  600],  5.00th=[  617], 10.00th=[  634], 20.00th=[  684],
+     | 30.00th=[  726], 40.00th=[  735], 50.00th=[  743], 60.00th=[  743],
+     | 70.00th=[  751], 80.00th=[  751], 90.00th=[  760], 95.00th=[  760],
+     | 99.00th=[  802], 99.50th=[  802], 99.90th=[  844], 99.95th=[  844],
+     | 99.99th=[  844]
+   bw (  KiB/s): min=98304, max=229376, per=99.93%, avg=175198.66, stdev=19289.03, samples=119
+   iops        : min=   24, max=   56, avg=42.77, stdev= 4.71, samples=119
+  lat (msec)   : 50=0.04%, 250=0.16%, 500=0.47%, 750=85.18%, 1000=14.16%
+  cpu          : usr=1.45%, sys=0.76%, ctx=979, majf=4, minf=14
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.2%, 8=0.3%, 16=0.6%, 32=98.8%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,2577,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+  WRITE: bw=171MiB/s (180MB/s), 171MiB/s-171MiB/s (180MB/s-180MB/s), io=10.1GiB (10.8GB), run=60207-60207msec
+
+Disk stats (read/write):
+    md127: ios=16/13108, merge=0/0, ticks=4/902880, in_queue=902884, util=93.35%, aggrios=30/13272, aggrmerge=0/0, aggrticks=26/658439, aggrin_queue=669792, aggrutil=99.43%
+  sdd: ios=1/13272, merge=0/0, ticks=10/633848, in_queue=644780, util=96.63%
+  sdc: ios=60/13272, merge=0/0, ticks=42/683031, in_queue=694805, util=99.43%
+
+
+
+- ### Линейное чтение (результаты в МБ/с): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4M -iodepth=32 -rw=read -runtime=60 -filename=/dev/md127
+
+Jobs: 1 (f=1): [R(1)][100.0%][r=212MiB/s][r=53 IOPS][eta 00m:00s]
+test: (groupid=0, jobs=1): err= 0: pid=2046134: Wed Nov 16 16:43:48 2022
+  read: IOPS=46, BW=185MiB/s (194MB/s)(10.9GiB/60336msec)
+    slat (usec): min=73, max=50403, avg=21553.00, stdev=18377.79
+    clat (msec): min=312, max=959, avg=670.38, stdev=29.76
+     lat (msec): min=357, max=1002, avg=691.93, stdev=27.79
+    clat percentiles (msec):
+     |  1.00th=[  617],  5.00th=[  634], 10.00th=[  642], 20.00th=[  642],
+     | 30.00th=[  667], 40.00th=[  676], 50.00th=[  676], 60.00th=[  684],
+     | 70.00th=[  684], 80.00th=[  693], 90.00th=[  693], 95.00th=[  693],
+     | 99.00th=[  693], 99.50th=[  701], 99.90th=[  877], 99.95th=[  919],
+     | 99.99th=[  961]
+   bw (  KiB/s): min=24576, max=237568, per=99.44%, avg=187938.13, stdev=37417.01, samples=120
+   iops        : min=    6, max=   58, avg=45.88, stdev= 9.14, samples=120
+  lat (msec)   : 500=0.47%, 750=99.35%, 1000=0.18%
+  cpu          : usr=0.02%, sys=0.79%, ctx=1779, majf=0, minf=32779
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.3%, 16=0.6%, 32=98.9%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=2784,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+   READ: bw=185MiB/s (194MB/s), 185MiB/s-185MiB/s (194MB/s-194MB/s), io=10.9GiB (11.7GB), run=60336-60336msec
+
+Disk stats (read/write):
+    md127: ios=14877/0, merge=0/0, ticks=3875600/0, in_queue=3875600, util=99.92%, aggrios=7047/0, aggrmerge=391/0, aggrticks=1823066/0, aggrin_queue=1823066, aggrutil=99.84%
+  sdd: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%
+  sdc: ios=14094/0, merge=783/0, ticks=3646132/0, in_queue=3646132, util=99.84%
+
+
+
+- ### Запись в 1 поток (T1Q1) (результаты в iops или миллисекундах задержки): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=1 -fsync=1 -rw=randwrite -runtime=60 -filename=/dev/md127
+
+Jobs: 1 (f=1): [w(1)][100.0%][w=120KiB/s][w=30 IOPS][eta 00m:00s]
+test: (groupid=0, jobs=1): err= 0: pid=2049745: Wed Nov 16 16:49:00 2022
+  write: IOPS=32, BW=129KiB/s (132kB/s)(7736KiB/60015msec); 0 zone resets
+    slat (usec): min=23, max=118224, avg=15064.60, stdev=5363.25
+    clat (usec): min=202, max=1276, avg=281.94, stdev=35.16
+     lat (usec): min=237, max=119502, avg=15347.73, stdev=5374.36
+    clat percentiles (usec):
+     |  1.00th=[  233],  5.00th=[  245], 10.00th=[  251], 20.00th=[  260],
+     | 30.00th=[  273], 40.00th=[  277], 50.00th=[  281], 60.00th=[  289],
+     | 70.00th=[  297], 80.00th=[  302], 90.00th=[  310], 95.00th=[  314],
+     | 99.00th=[  326], 99.50th=[  334], 99.90th=[  955], 99.95th=[ 1270],
+     | 99.99th=[ 1270]
+   bw (  KiB/s): min=  103, max=  160, per=100.00%, avg=129.00, stdev=10.57, samples=119
+   iops        : min=   25, max=   40, avg=32.24, stdev= 2.66, samples=119
+  lat (usec)   : 250=9.36%, 500=90.54%, 1000=0.05%
+  lat (msec)   : 2=0.05%
+  fsync/fdatasync/sync_file_range:
+    sync (nsec): min=241, max=1017, avg=657.56, stdev=183.45
+    sync percentiles (nsec):
+     |  1.00th=[  338],  5.00th=[  414], 10.00th=[  422], 20.00th=[  482],
+     | 30.00th=[  516], 40.00th=[  524], 50.00th=[  692], 60.00th=[  780],
+     | 70.00th=[  812], 80.00th=[  844], 90.00th=[  892], 95.00th=[  900],
+     | 99.00th=[  916], 99.50th=[  916], 99.90th=[  940], 99.95th=[ 1020],
+     | 99.99th=[ 1020]
+  cpu          : usr=0.08%, sys=0.29%, ctx=11254, majf=1, minf=10
+  IO depths    : 1=199.9%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,1934,0,1933 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=129KiB/s (132kB/s), 129KiB/s-129KiB/s (132kB/s-132kB/s), io=7736KiB (7922kB), run=60015-60015msec
+
+Disk stats (read/write):
+    md127: ios=218/1930, merge=0/0, ticks=360/29456, in_queue=29816, util=62.29%, aggrios=125/5727, aggrmerge=1/0, aggrticks=263/54989, aggrin_queue=109286, aggrutil=99.00%
+  sdd: ios=75/5727, merge=0/0, ticks=254/54892, in_queue=109064, util=97.53%
+  sdc: ios=175/5727, merge=2/0, ticks=272/55087, in_queue=109508, util=99.00%
+
+
+
+- ### Чтение в 1 поток (T1Q1) (результаты в iops или миллисекундах задержки): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=1 -rw=randread -runtime=60 -filename=/dev/md127
+
+Starting 1 process
+Jobs: 1 (f=1): [w(1)][100.0%][w=120KiB/s][w=30 IOPS][eta 00m:00s]
+test: (groupid=0, jobs=1): err= 0: pid=2051942: Wed Nov 16 16:52:08 2022
+  write: IOPS=32, BW=131KiB/s (134kB/s)(7844KiB/60013msec); 0 zone resets
+    slat (usec): min=8, max=149644, avg=30587.82, stdev=10268.22
+    clat (usec): min=288, max=4261.1k, avg=3757190.27, stdev=574507.90
+     lat (msec): min=25, max=4299, avg=3787.78, stdev=574.64
+    clat percentiles (msec):
+     |  1.00th=[  535],  5.00th=[ 3004], 10.00th=[ 3708], 20.00th=[ 3775],
+     | 30.00th=[ 3809], 40.00th=[ 3842], 50.00th=[ 3842], 60.00th=[ 3876],
+     | 70.00th=[ 3943], 80.00th=[ 3977], 90.00th=[ 4044], 95.00th=[ 4077],
+     | 99.00th=[ 4144], 99.50th=[ 4178], 99.90th=[ 4245], 99.95th=[ 4245],
+     | 99.99th=[ 4245]
+   bw (  KiB/s): min=   88, max=  152, per=100.00%, avg=131.03, stdev=10.18, samples=111
+   iops        : min=   22, max=   38, avg=32.76, stdev= 2.54, samples=111
+  lat (usec)   : 500=0.05%
+  lat (msec)   : 50=0.05%, 100=0.05%, 250=0.20%, 500=0.51%, 750=0.51%
+  lat (msec)   : 1000=0.41%, 2000=1.58%, >=2000=96.63%
+  cpu          : usr=0.04%, sys=0.19%, ctx=5648, majf=0, minf=11
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.2%, 8=0.4%, 16=0.8%, 32=1.6%, >=64=96.8%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=99.9%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwts: total=0,1961,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+  WRITE: bw=131KiB/s (134kB/s), 131KiB/s-131KiB/s (134kB/s-134kB/s), io=7844KiB (8032kB), run=60013-60013msec
+
+Disk stats (read/write):
+    md127: ios=215/1958, merge=0/0, ticks=248/60400, in_queue=60648, util=13.64%, aggrios=125/3844, aggrmerge=1/0, aggrticks=232/55896, aggrin_queue=111000, aggrutil=98.57%
+  sdd: ios=105/3844, merge=2/0, ticks=223/55622, in_queue=110439, util=98.57%
+  sdc: ios=146/3844, merge=0/0, ticks=242/56170, in_queue=111562, util=98.53%
+
+
+- ### Параллельная запись (numjobs=4 использовать, когда 1 ядро CPU не может насытить диск) (результаты только в iops): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=128  -rw=randwrite -runtime=60 -filename=/dev/md127
+
+Starting 1 process
+Jobs: 1 (f=0): [f(1)][100.0%][w=632KiB/s][w=158 IOPS][eta 00m:00s]
+test: (groupid=0, jobs=1): err= 0: pid=2054442: Wed Nov 16 16:55:52 2022
+  write: IOPS=33, BW=133KiB/s (136kB/s)(7980KiB/60008msec); 0 zone resets
+    slat (usec): min=15, max=149963, avg=30062.49, stdev=9925.56
+    clat (usec): min=304, max=4116.1k, avg=3690155.99, stdev=550223.64
+     lat (msec): min=39, max=4149, avg=3720.22, stdev=550.26
+    clat percentiles (msec):
+     |  1.00th=[  609],  5.00th=[ 3004], 10.00th=[ 3675], 20.00th=[ 3708],
+     | 30.00th=[ 3742], 40.00th=[ 3775], 50.00th=[ 3775], 60.00th=[ 3809],
+     | 70.00th=[ 3842], 80.00th=[ 3876], 90.00th=[ 3943], 95.00th=[ 4010],
+     | 99.00th=[ 4077], 99.50th=[ 4111], 99.90th=[ 4111], 99.95th=[ 4111],
+     | 99.99th=[ 4111]
+   bw (  KiB/s): min=   16, max=  160, per=99.26%, avg=132.36, stdev=14.88, samples=112
+   iops        : min=    4, max=   40, avg=33.09, stdev= 3.72, samples=112
+  lat (usec)   : 500=0.05%
+  lat (msec)   : 50=0.10%, 100=0.05%, 250=0.15%, 500=0.50%, 750=0.35%
+  lat (msec)   : 1000=0.40%, 2000=1.80%, >=2000=96.59%
+  cpu          : usr=0.05%, sys=0.19%, ctx=5747, majf=0, minf=12
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.2%, 8=0.4%, 16=0.8%, 32=1.6%, >=64=96.8%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=99.9%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwts: total=0,1995,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+  WRITE: bw=133KiB/s (136kB/s), 133KiB/s-133KiB/s (136kB/s-136kB/s), io=7980KiB (8172kB), run=60008-60008msec
+
+Disk stats (read/write):
+    md127: ios=216/1991, merge=0/0, ticks=436/60200, in_queue=60636, util=13.82%, aggrios=126/3910, aggrmerge=1/0, aggrticks=309/56464, aggrin_queue=112219, aggrutil=97.84%
+  sdd: ios=108/3910, merge=0/0, ticks=298/56264, in_queue=111807, util=97.84%
+  sdc: ios=144/3910, merge=2/0, ticks=321/56665, in_queue=112632, util=97.34%
+
+
+- ### Параллельное чтение (numjobs - аналогично) (результаты только в iops): fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=128  -rw=randread -runtime=60 -filename=/dev/md127
+
+Starting 1 process
+Jobs: 1 (f=1): [r(1)][100.0%][r=1325KiB/s][r=331 IOPS][eta 00m:00s]
+test: (groupid=0, jobs=1): err= 0: pid=2057253: Wed Nov 16 16:59:59 2022
+  read: IOPS=339, BW=1360KiB/s (1392kB/s)(80.2MiB/60407msec)
+    slat (usec): min=2, max=74158, avg=2897.04, stdev=11308.16
+    clat (msec): min=35, max=2204, avg=373.25, stdev=255.36
+     lat (msec): min=35, max=2204, avg=376.15, stdev=255.72
+    clat percentiles (msec):
+     |  1.00th=[   77],  5.00th=[  102], 10.00th=[  136], 20.00th=[  182],
+     | 30.00th=[  224], 40.00th=[  264], 50.00th=[  309], 60.00th=[  359],
+     | 70.00th=[  426], 80.00th=[  527], 90.00th=[  684], 95.00th=[  860],
+     | 99.00th=[ 1351], 99.50th=[ 1569], 99.90th=[ 1854], 99.95th=[ 1989],
+     | 99.99th=[ 2123]
+   bw (  KiB/s): min= 1040, max= 1752, per=100.00%, avg=1360.33, stdev=137.44, samples=120
+   iops        : min=  260, max=  438, avg=340.08, stdev=34.36, samples=120
+  lat (msec)   : 50=0.58%, 100=4.28%, 250=31.88%, 500=41.21%, 750=14.39%
+  lat (msec)   : 1000=4.60%, 2000=3.01%, >=2000=0.05%
+  cpu          : usr=0.11%, sys=0.21%, ctx=1570, majf=0, minf=140
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.2%, >=64=99.7%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwts: total=20532,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=128
+
+Run status group 0 (all jobs):
+   READ: bw=1360KiB/s (1392kB/s), 1360KiB/s-1360KiB/s (1392kB/s-1392kB/s), io=80.2MiB (84.1MB), run=60407-60407msec
+
+Disk stats (read/write):
+    md127: ios=20532/0, merge=0/0, ticks=6652360/0, in_queue=6652360, util=99.86%, aggrios=10266/0, aggrmerge=0/0, aggrticks=3298881/0, aggrin_queue=3298881, aggrutil=99.06%
+  sdd: ios=10392/0, merge=0/0, ticks=3222225/0, in_queue=3222225, util=98.98%
+  sdc: ios=10140/0, merge=0/0, ticks=3375537/0, in_queue=3375537, util=99.06%
+
+

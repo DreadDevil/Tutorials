@@ -1,0 +1,18 @@
+ns-cert-type server
+на
+tls-cipher "DEFAULT:@SECLEVEL=0"
+remote-cert-tls server
+
+/etc/NetworkManager/system-connections/(имя впна)
+tls-cipher=DEFAULT:@SECLEVEL=0 
+nmcli connection reload
+
+Второй вариант – редактирование от имени root файла /etc/gdm3/custom.conf. Внесите в этот файл следующие изменения:
+
+[daemon]
+
+# Enabling automatic login
+
+AutomaticLoginEnable=true
+
+AutomaticLogin=$USERNAME

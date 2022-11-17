@@ -1,0 +1,12 @@
+- ### Линейная запись (результаты в МБ/с):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4M -iodepth=32 -rw=write -runtime=60 -filename=/dev/sdX
+- ### Линейное чтение (результаты в МБ/с):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4M -iodepth=32 -rw=read -runtime=60 -filename=/dev/sdX
+- ### Запись в 1 поток (T1Q1) (результаты в iops или миллисекундах задержки):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=1 -fsync=1 -rw=randwrite -runtime=60 -filename=/dev/sdX
+- ### Чтение в 1 поток (T1Q1) (результаты в iops или миллисекундах задержки):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=1 -rw=randread -runtime=60 -filename=/dev/sdX
+- ### Параллельная запись (numjobs=4 использовать, когда 1 ядро CPU не может насытить диск) (результаты только в iops):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=128 [-numjobs=4 -group_reporting] -rw=randwrite -runtime=60 -filename=/dev/sdX
+- ### Параллельное чтение (numjobs - аналогично) (результаты только в iops):
+ fio -ioengine=libaio -direct=1 -invalidate=1 -name=test -bs=4k -iodepth=128 [-numjobs=4 -group_reporting] -rw=randread -runtime=60 -filename=/dev/sdX
