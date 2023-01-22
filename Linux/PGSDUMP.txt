@@ -1,3 +1,22 @@
+scp autodp_uk_buh_production_202212290307.dmp.gz root@192.168.101.12:/database/Backup
+scp ftu_zup_production-20230121.0320.dump.gz root@192.168.101.12:/database/tmp
+
+scp root@192.168.101.12:/database/backup/ftu_zup_production-20230113.0320.dump.gz /tmp
+
+
+
+pgprod
+
+su - postgres
+
+zcat users.dump.gz | psql users
+zcat autodp_ot_production_202207260307.dmp.gz | -d ot_dump_20220726 -U postgres
+
+zcat /path/to/file.sql.gz | mysql -u 'root' -p your_databased
+postgres -U pg1c
+
+service postgrespro-std-12-2 status
+
 20220726 dump ot
 
 cd dl
@@ -5,11 +24,15 @@ cd dl
 wget http://srs16/01/autodp_ot_production_202207260307.dmp.gz
 
 /opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
-CREATE DATABASE ot_dump_20220726 OWNER pg1c;
+CREATE DATABASE e_test_20230109 OWNER pgprod;
 Ctl + D
+psql -U postgres
+
+
+
 zcat autodp_ot_production_202207260307.dmp.gz | /opt/pgpro/std-12/bin/psql -d ot_dump_20220726 -U pg1c -h isrs1c02 -p 5433 -W
 
-
+zcat autodp_ot_production_202207260307.dmp.gz | -d ot_dump_20220726 -U postgres
 
 http://srs16/01/autodp_ot_production_202207260307.dmp.gz
 
@@ -19,7 +42,7 @@ http://srs16/01/autodp_ot_production_202207260307.dmp.gz
 20220726 dump pcm
 
 cd dl
-/usr/local/bin/list-archive.sh pcm
+ pcm
 wget http://srs16/01/autodp_pcm_production_202207260307.dmp.gz
 
 /opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
@@ -53,22 +76,22 @@ cd dl
 wget http://srs16/01/autodp_erp_production_202209050307.dmp.gz
 
 /opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
-CREATE DATABASE erp_dump_2021050100 OWNER pg1c;
+CREATE DATABASE autodp_erp_production_202212290307 OWNER pg1c;
 Ctl + D
-zcat autodp_erp_production_202105010307.dmp.gz | /opt/pgpro/std-12/bin/psql -d erp_dump_2021050100 -U pg1c -h isrs1c02 -p 5433 -W
+zcat autodp_erp_production_202212290307.dmp.gz | /opt/pgpro/std-12/bin/psql -d autodp_erp_production_202212290307 -U pg1c -h isrs1c02 -p 5433 -W
 
 
 
 dump erp 20220905 razdolie
 
 cd dl
-/usr/local/bin/list-archive.sh erp
+
 wget http://srs16/01/autodp_erp_production_202209050307.dmp.gz
 
 /opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
-CREATE DATABASE erp_dump20220509_razdolie OWNER pg1c;
+CREATE DATABASE erp_test_moi_20221229 OWNER pg1c;
 Ctl + D
-zcat autodp_erp_production_202209050307.dmp.gz | /opt/pgpro/std-12/bin/psql -d erp_dump20220509_razdolie -U pg1c -h isrs1c02 -p 5433 -W
+zcat autodp_erp_production_202301090307.dmp.gz | /opt/pgpro/std-12/bin/psql -d erp_test_20230109 -U pg1c -h isrs1c02 -p 5433 -W
  
 
 

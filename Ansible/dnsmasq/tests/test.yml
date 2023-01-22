@@ -1,0 +1,5 @@
+---
+- hosts: 158.160.49.8
+  remote_user: root
+  roles:
+    - dnsmasq

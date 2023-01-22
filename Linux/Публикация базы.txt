@@ -1,3 +1,7 @@
+
+
+
+
 Публикация базы zup_production
 
 
@@ -7,7 +11,7 @@ cd /1c
 ls
 
 Копируем папку похожей базы 
-cp -R zup_corp_test erp_dump20220509_razdolie
+cp -R zup_corp_test uh_test_razdolie_sirius
 Заходим в папку
 cd zup_production/
 Редактируем сам файл

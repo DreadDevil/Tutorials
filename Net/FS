@@ -1,3 +1,29 @@
+show mac-address-table address 20cf.30bd.d1fe
+
+
+ip default-network 192.168.103.0
+!
+Gateway of last resort is 194.12.59.1 to network 0.0.0.0
+S*    0.0.0.0/0 [1/0] via 194.12.59.1
+C     192.168.103.0/24 is directly connected, VLAN 103
+C     192.168.103.111/32 is local host. 
+C     194.12.59.0/24 is directly connected, VLAN 100
+C     194.12.59.5/32 is local host. 
+
+
+
+
+ip route 0.0.0.0 0.0.0.0 192.168.103.1
+ip route 0.0.0.0 0.0.0.0 194.12.59.1
+ip route 192.168.103.0 255.255.255.0 VLAN 103
+ip route 192.168.103.0 255.255.255.0 VLAN 103 192.168.103.1
+ip route 194.12.59.0 255.255.255.0 VLAN 100 194.12.59.1
+
+
+show ip route
+ip default-network 192.168.103.1
+
+
 fsw0#show running-config
 hostname fsw0
 !
@@ -35,7 +61,8 @@ show services
 show running or show interfaces (gigabitEthernet 0/1)
 show vlan brief
 enable service ssh-server
-hostname switch-floor-1
+host
+ switch-floor-1
 interface vlan 1
 	ip address 192.168.1.1 255.255.255.0
 no shutdown
@@ -85,9 +112,16 @@ speed auto
 
 copy running-config startup-config
 
-no
+no switchport trunk native vlan 20
+no username root
+username mynewuser password MyNewUserPassword
 
+Источник: https://intellect.icu/cisco-dobavlyaem-ili-udalyaem-polzovatelej-11393
 interface vlan 1
+
+switchport trunk native vlan 1
+
+show ip interfaces
 
 # configure terminal
 A(config)# interface GigabitEthernet 0/1

@@ -1,0 +1,12 @@
+---
+- name: mysql
+  hosts: test
+  become: yes
+  tasks:
+    - name: Install mysql
+      apt: name=mariadb-server state=latest
+    - name: start service
+      service:
+        name: mariadb
+        state: started
+        enabled: yes

@@ -1,0 +1,18 @@
+/etc/sysconfig/iptables
+
+service iptables reload
+
+Test
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 1840 -j ACCEPT
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 1841 -j ACCEPT
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 1860:1891 -j ACCEPT
+
+Prod
+-A INPUT -s 10.8.94.240/32 -p tcp -m tcp --dport 1540 -j ACCEPT
+-A INPUT -s 10.8.94.240/32 -p tcp -m tcp --dport 1541 -j ACCEPT
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 1560:1591 -j ACCEPT
+
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 9099 -j ACCEPT
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 10060 -j ACCEPT
+-A INPUT -s 10.21.50.38/32 -p tcp -m tcp --dport 1550 -j ACCEPT
+

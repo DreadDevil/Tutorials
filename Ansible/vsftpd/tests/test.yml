@@ -1,0 +1,5 @@
+---
+- hosts: 84.201.131.50
+  remote_user: root
+  roles:
+    - vsftpd

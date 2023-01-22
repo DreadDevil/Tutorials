@@ -1,0 +1,7 @@
+1. Перенос VM на ZFS
+2. sytemctl stop drbd-reactor
+3. apt remove drbd-reactor
+4. apt remove linstor-controller
+5  apt remove linstor-satellite
+2. rm /etc/systemd/system/var-lib-linstor.mount
+3  rm /etc/drbd-reactor.d/linstor_db.toml

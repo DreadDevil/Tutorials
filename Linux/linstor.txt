@@ -1,122 +1,155 @@
-Добавление репозиториев
 
+Оьключить все контроллерв и сателайты при перекстановке
+
+#### Добавление репозиториев
+```
 В файл
 /etc/apt/sources.list
 добавляем бесплатный репозиторий proxmox
-deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
-
-Добавляем репозиторий Linstor
+	deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+```
+```
+#### Добавляем репозиторий Linstor
 wget -O- https://packages.linbit.com/package-signing-pubkey.asc | apt-key add -
 PVERS=7 && echo "deb http://packages.linbit.com/proxmox/ proxmox-$PVERS drbd-9" > \
         /etc/apt/sources.list.d/linbit.list
+```
 
-Установка необходимого
+#### Установка необходимого
+```
 apt install -y pve-headers pve-kernel-5.15
-apt install -y  lvm2
-На контроллеер
-apt install -y linstor-controller linstor-satellite  linstor-client
-На остальные
-apt install -y linstor-satellite  linstor-client
-apt install -y linstor-proxmox
-apt install -y mdadm
-apt install -y drbd-reactor
-apt install -y drbd-dkms drbd-utils
 
+#### На контроллееры
+apt install -y linstor-controller linstor-satellite linstor-client mdadm lvm2 drbd-dkms drbd-utils  drbd-reactor linstor-proxmox
 
-На контроллере
+reboot all
+
+##### На контроллере
+```
 systemctl enable --now linstor-controller
 На остальных нодах
+```
 systemctl enable --now  linstor-satellite
+```
 
-Создаем ноду контроллер
-	linstor node create --node-type Combined pve1 192.168.103.251
-Создаем остальные ноды
+#### Создаем ноды контроллеров либо сателайтов
+```
+linstor node create --node-type Combined node1 10.1.102.10
+либо
 linstor node create --node-type satellite pve2 192.168.103.250
+##### Команды на ноды
 linstor node list
 linstor node describe
 linstor node modify pve3 --node-type combined
+```
 
-Делаем софт RAID 1
+#### Делаем софт RAID 1
+```
 mdadm --create --verbose /dev/md0 -l 1 -n 2 /dev/sd{c,d}
+mdadm --create --verbose /dev/md0 -l 1 -n 2 /dev/nvme0n1 /dev/nvme1n1
+mdadm --stop /dev/md127 если не работает 
 
-mdadm --stop /dev/md127
+```
 
-#ZFS
-#zpool create pool1 mirror sdc sdd
-#zpool list
-#zfs list
-#zpool status
 
-Создаем разделыt
-LVM
+
+#### Создаем LVM
+```
 pvcreate /dev/md0
 vgcreate vgdata /dev/md0
+```
+##### Комманды LVM
+```
 #vgremove
 #pvdisplay
 #vgdisplay
 #lvdisplay
 #lvs
+```
 
-Если на диске были старые разделы
+#### Если на диске были старые разделы
+```
+A
 parted /dev/sdc
 mktable msdos
+```
 
-Создаем раздел linstor на ранее созданном разделе
-linstor storage-pool create lvm pve1 vdiskpool vgdata
-linstor storage-pool create zfs pve1 vdiskpool2 rpool
+#### Создаем пул linstor на ранее созданной волюм группе
+```
+linstor storage-pool create lvm node1 vdiskpool vgdata
+linstor storage-pool create zfs node1 vdiskpool2 rpool
+```
 
+###### Команда для просмотра пулов
+```
 linstor storage-pool list
- 
-linstor resource-group create zfs_group --storage-pool vdiskpool2 --place-count 2
-linstor volume-group create zfs_group
- 
- 
-Создаем ресурс и вольюм группу на созданном разделе
-linstor resource-group create hdd_group --storage-pool vdiskpool --place-count 2
-linstor volume-group create hdd_group
+```
+
+#### Создаем zfs linstor ресурс группу
+```
+linstor resource-group create drbd-zfs --storage-pool vdiskpool2 --place-count 3
+linstor volume-group create drbd-zfs
+```
+
+#### Создаем lvm linstor ресурс группу
+```
+linstor resource-group create drbd-lvm --storage-pool vdiskpool --place-count 3
+linstor volume-group create drbd-lvm
+```
+###### Команды ресурсов
+```
 #linstor resource-group spawn-resources hdd_group hdd_res 20G
-#linstor resource-group modify hdd_group --place-count 3
-linstor resource list
- 
-Настройка плагина для Proxmox
+#linstor resource-group modify drbd-lvm --place-count 3
+#linstor resource list
+```
 
+#### Настройка плагина для Proxmox
+```
 systemctl edit linstor-satellite.service
+```
 
-Добавляем туда
+#### Добавляем туда
+```
 [Service]
 Type=notify
 TimeoutStartSec=infinity
+Environment=LS_KEEP_RES=linstor_db
+```
 
-В файл
+#### В файл на 1 ноду кластера
 /etc/pve/storage.cfg
 
-Добавляем
-drbd: hdd_group
-   content images,rootdir
-   controller 10.1.101.10
-   resourcegroup hdd_group
+#### Добавляем
+```
+drbd: drbd-lvm
+  content images,rootdir
+  controller 10.1.102.10,10.1.102.20,10.1.102.30,10.1.102.40
+	   resourcegroup drbd-lvm
+```
 
-HA Cluster с 3 контроллерами
+### HA Cluster с 3 контроллерами
+```
 linstor resource-definition create linstor_db
 linstor resource-definition drbd-options --on-no-quorum=io-error linstor_db
 linstor resource-definition drbd-options --auto-promote=no linstor_db
 linstor volume-definition create linstor_db 500M
-linstor resource create linstor_db -s vdiskpool --auto-place 4
+linstor resource create linstor_db -s vdiskpool --auto-place 3
 
 systemctl disable --now linstor-controller на всех нодах
+```
 
-chattr +i /var/lib/linstor на всех нодах
-
+#### На всех нодах
+```
 cat << EOF > /etc/systemd/system/var-lib-linstor.mount
 [Unit]
 Description=Filesystem for the LINSTOR controller
-
 [Mount]
-# you can use the minor like /dev/drbdX or the udev symlink
+#you can use the minor like /dev/drbdX or the udev symlink
 What=/dev/drbd/by-res/linstor_db/0
 Where=/var/lib/linstor
 EOF
-
+```
+```
 mv /var/lib/linstor{,.orig}
 mkdir /var/lib/linstor
 chattr +i /var/lib/linstor  # only if on LINSTOR >= 1.14.0
@@ -125,43 +158,163 @@ mkfs.ext4 /dev/drbd/by-res/linstor_db/0
 systemctl start var-lib-linstor.mount
 cp -r /var/lib/linstor.orig/* /var/lib/linstor
 systemctl start linstor-controller
-
-Скопировать на все ноды
+chattr +i /var/lib/linstor на всех нодах
+```
+#### Скопировать на все ноды
+```
 /etc/systemd/system/var-lib-linstor.mount
+```
 
-/etc/drbd-reactor.d/linstor_db.toml
+#### На всех нодах
+```
+nano /etc/drbd-reactor.d/linstor_db.toml
 
 [[promoter]]
 id = "linstor_db"
 [promoter.resources.linstor_db]
 start = ["var-lib-linstor.mount", "linstor-controller.service"]
-
+```
+```
 systemctl restart drbd-reactor
-# systemctl enable drbd-reactor
+systemctl enable drbd-reactor
+```
 
+#### На всех
+```
 systemctl edit linstor-satellite
 [Service]
+Type=notify
+TimeoutStartSec=infinity
 Environment=LS_KEEP_RES=linstor_db
-
 systemctl restart linstor-satellite
 
-drbd-reactorctl status linstor_db
+chattr +i /var/lib/linstor на всех нодах
+```
+#### Команды
+```
+drbd-reactorctl status linstor_db - найти на какой ноде контроллер
 
-linstor node interface create pve1 data 10.1.102.10
-linstor node interface create pve2 data 10.1.102.20
-linstor node interface create pve3 data 10.1.102.30
-linstor node interface create pve4 data 10.1.102.30
+#linstor resource delete pve1 vm-101-disk-1
+#linstor resource create node5 vdiskpool --drbd-diskless
+#linstor resource toggle-disk pve1 vm-101-disk-1 --storage-pool vdiskpool --migrate-from pve2
+#linstor resource toggle-disk pve1 vm-101-disk-1 --diskless
 
-linstor node set-property pve1 PrefNic data
-linstor storage-pool set-property pve3 drbdpool PrefNic data
+#drbdmon
+#drbdadm status
 
-linstor resource delete pve1 vm-101-disk-1
-linstor resource create pve1 vdiskpool --drbd-diskless
-linstor resource toggle-disk pve1 vm-101-disk-1 --storage-pool vdiskpool --migrate-from pve2
-linstor resource toggle-disk pve1 vm-101-disk-1 --diskless
+#drbdsetup status linstor_db --verbose --statistics
 
-drbdmon
-drbdadm status
+#ZFS
+#zpool create pool1 mirror sdc sdd
+#zpool list
+#zfs list
+#zpool status
+nano /etc/zfs/zed.d/zed.r
+```
+#### Удалять при разборке кластера
+/var/lib/pve-cluster/config.db
+Введение
+Иногда возникают проблемы с кластером PROXMOX, чаще всего это происходит из-за непонимания того как этот кластер вообще работает. В случае когда чистые сервера объединяются в новый кластер как правило проблем никаких не возникает, но ситуации бывают разные.
 
-drbdsetup status linstor_db --verbose --statistics
+Наверное все кто работал с данной системой виртуализации натыкались на разные "грабли". Я рекомендую перед тем как что-то сделать на сервере PROXMOX создать резервные копии файлов виртуальных машин, а так же файл storage.cfg - это значительно облегчит Вам жизни. Сделать это можно например так:
 
+mkdir /root/pve-backup && cp -r /etc/pve/{storage.cfg,nodes}
+Copy
+Этого вполне достаточно, что-бы сэкономить время.
+
+Но это уже скорее всего лирика, кластер уже лежит раз Вы читаете эту статью. Не будем терять времени и приступим к восстановлению.
+
+Резервная копия конфигурации ноды
+Заходим на сервер по SSH, смотреть на pvecm status особого смысла нет т.к. все у нас лежит. На всякий случай делаем бэкап того, что мы имеем:
+
+mkdir /root/pve-backup && cp -r /etc/pve/{storage.cfg,nodes}
+Copy
+Бывает, что /etc/pve не доступен из-за падения служб или их зависанием. Настоятельно рекомендую добиться того, чтобы скопировать текущие файлы кластера перезапустив кластер systemctl restart pve-cluster.service. После перезапуска пытаемся сделать резервную копию. Если не получилось идем на другой сервер который в этом кластере и пытаемся сделать тоже самое т.к. если кластер работал то конфигурация машин и хранилища будут всех нод.
+
+Обнуляем ноду PROXMOX
+Смотрим текущий статус кластера:
+
+pvecm status
+Copy
+Все машины которые кроме этой ноды - удаляем:
+
+pvecm delnode [Имя ноды или IP адрес]
+Copy
+Останавливаем все сервисы:
+
+systemctl stop pvestatd.service
+systemctl stop pvedaemon.service
+systemctl stop pve-cluster.service
+systemctl stop corosync
+Copy
+Заходим базу данных кластера:
+
+sqlite3 /var/lib/pve-cluster/config.db
+Copy
+Удаляем конфигурацию:
+
+SQLite version 3.27.2 2019-02-25 16:06:06
+Enter ".help" for usage hints.
+sqlite> delete from tree where name = 'corosync.conf';
+sqlite> .quit
+Copy
+Сносим остальные файлы конфигурации:
+
+pmxcfs -l
+rm /etc/pve/corosync.conf
+rm /etc/corosync/*
+rm /var/lib/corosync/*
+rm -rf /etc/pve/nodes/*
+Copy
+Перезагружаем ноду т.к. поднять остановленные сервисы у Вас врятли получится без перезагрузки.
+
+Восстановление конфигурации хранилища
+После перезагрузки копируем из резервной копии файл storage.cfg:
+
+cp -r /root/pve-backup/storage.cfg /etc/pve/
+Copy
+Открываем файл при помощи консольного редактора:
+
+nano -w /etc/pve/storage.cfg
+Copy
+Если эта нода не являлась мастером, тогда удаляем все хранилища которые не содержать nodes [название ноды], после чего на каждом хранилище удаляем эту строку.
+
+Если нода являлась мастером, тогда удаляем все хранилища которы содержать nodes [название ноды].
+
+Копируем файлы файлы виртуальных машин, если Вы не собираетесь добавлять ноду в кластер:
+
+cp -r /root/pve-backup/nodes/[название ноды]/qemu-server/* /etc/pve/qemu-server/
+cp -r /root/pve-backup/nodes/[название ноды]/lxc/* /etc/pve/lxc/
+cp -r /root/pve-backup/nodes/[название ноды]/openvz/* /etc/pve/openvz/
+Copy
+Если вы собрались добавить ноду в кластер, тогда добавляем и в случае успешного добавления копируем виртуальные машины:
+
+cp -r /root/pve-backup/nodes/[название ноды]/qemu-server/* /etc/pve/nodes/[название ноды]/qemu-server/
+cp -r /root/pve-backup/nodes/[название ноды]/lxc/* /etc/pve/nodes/[название ноды]/lxc/
+cp -r /root/pve-backup/nodes/[название ноды]/openvz/* /etc/pve/nodes/[название ноды]/openvz/
+Copy
+Открываем WEB-интерфейс, проверям наличие хранилища и виртуальных машин.
+
+Заключение
+Перед добавлением ноды в кластер всегда создавайте резервные копии конфигураций кластера, сами данные на хранилищах никуда не денутся, а вот создавать заного виртуалки и подключать к ним уже созданные диски может занять значительное время.
+
+Если вы строите кластер из разных точек доступности (такое возможно), проверяйте сперва сеть между нодами на наличие multicast иначе corosync упадет не успев подняться.
+
+
+
+Для начала определим что такое split-brain. Каждая реплика может быть как connected так и disconnected по отношению к другой. Если реплика самопроизвольно переходит в StandAlone. Значит что она отказывается принимать состояние и синхронизироваться с другой. Это классический split-brain.
+
+Решение split-brain для двух реплик производится точно так же, как и в случае с несколькими репликами.
+
+Для начала определим с какой реплики мы хотим синхронизироваться. Для этого смотрим в
+
+drbdadm status <res>
+Если нужная нам реплика находится в состоянии StandAlone или Outdated/Inconsistent её нужно сначала перевести в UpToDate, для этого заходим на ноду с этой репликой и выполняем:
+
+drbdadm primary --force <res>
+drbdadm secondary <res>
+А для того чтобы заставить остальные реплики забыть о своём состоянии и синхронизировать данные с UpToDate-реплик, логинимся на ноду с ними и выполняем:
+
+drbdadm disconnect <res>
+drbdadm connect <res> --discard-my-data
+Стоит признать что в последних версиях LINSTOR включена по умолчанию функция auto-tiebreaker, которая при создании ресурса в двух репликах автоматически добавляет третью diskless-реплику, которая является своего рода арбитром для поддержания кворума. Таким образом решать split-brain в наши дни приходится всё реже.

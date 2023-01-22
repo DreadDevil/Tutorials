@@ -1,0 +1,9 @@
+Гиперконвергентаная инфраструктура на остнове клстера proxmox и хранилища linstor с репликацией
+
+1csrv.pve1.sis - 1й сервер 1с
+1cpgs.pve1.sis - сервер баз данный pgssql
+webdav1.pve1.sis -файловый сервер webdav и samba
+1csrv2.pve1.sis -2й сервер 1с
+win1.pve1.sis - windows сервер администрирования 1с
+1ctrm1.pve1.sis - терминальный сервер для разработчика
+grafana.pve.sis -сервер мониторинга grafana + prometheus

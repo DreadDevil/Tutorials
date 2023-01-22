@@ -1,6 +1,6 @@
 ---
 - name: zabbix
-  hosts: all
+  hosts: test
   become: yes
   tasks:
     - name: Install zabbix agent

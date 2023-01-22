@@ -1,0 +1,1 @@
+usr1cv8 ALL = NOPASSWD: /bin/systemctl restart srv1cv8.service, /bin/systemctl restart srv1cv8.service, /bin/systemctl restart srv1cv8.service, /bin/systemctl status srv1cv8.service

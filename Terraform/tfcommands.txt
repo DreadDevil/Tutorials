@@ -1,0 +1,21 @@
+main.tf
+nano ~/.terraformrc
+terraform init
+yc compute image list --folder-id standard-images
+terraform validate
+terraform fmt
+terraform plan
+terraform apply
+terraform destroy
+https://oauth.yandex.com/authorize?response_type=token&client_id=1a6990aa636648e9b2ef855fa7bec2fb
+
+Error: Output refers to sensitive values
+│ 
+│ on main.tf line 23:
+│ 23: output "token_value" {
+│ 
+│ To reduce the risk of accidentally exporting sensitive data that was intended to be only internal, Terraform requires that any root module output containing sensitive data be explicitly
+│ marked as sensitive, to confirm your intent.
+│
+│ If you do intend to export this data, annotate the output value as sensitive by adding the following argument:
+│ sensitive = true

@@ -1,3 +1,8 @@
+isrs1c01 прод слон
+isrs1c02 тест слон
+sis-srs1c03 апликейшн прод и тест
+
+
 service srv1cv83 stop
 service srv1cv83_2 stop
 chmod +x setup-full-8.3.22.1704-x86_64.run
@@ -10,6 +15,9 @@ service srv1cv83_2 start
 service httpd stop
 service httpd start
 
+service postgrespro-std-12 status
+service postgrespro-std-12-2 status
+systemctl list-units | grep postgres
 
 
 Максим Сизов, [14.11.2022 20:47]
@@ -28,3 +36,8 @@ sudo systemctl enable srv1cv8-8.3.22.1704@
 sudo systemctl enable ras-8.3.22.1704
 sudo systemctl start srv1cv8-8.3.22.1704@default
 sudo systemctl start ras-8.3.22.1704
+
+http://cluster1c/grant_production/hs/so/high_schools
+
+obmen 
+8246
