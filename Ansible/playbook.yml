@@ -8,27 +8,7 @@ vars:
   destin_folder: ./var/www/html
 
   tasks:
-    - name: Show linux version
-      debug: var=ansible_os_family
-
-    - name: Copy MyHomePage to servers
-      copy: src={{ source_file }} dest={{ destin_file }} mode=0555
-
-    - name: Loop Hello
-      debug: msg="Hello {{ item }}"
-      loop:
-        - "One"
-        - "Two"
-        - "Three"
-
-    -name: Loop until
-     shell: echo -n Z >> myile.txt && cat myfile.txt
-     register: output
-     delay: 2
-     retries: 10
-     until: output.stdout.find{"ZZZZ"} == false
-
-    -block:  #RedHat#
+    - block:  #RedHat#
       - name: Install Apache Web Server for RedHat
         yum: name=httpd state=latest
         when: ansible_os_family == "RedHat"
@@ -36,7 +16,7 @@ vars:
       - name: Start WebServer and make it enable on boot for RedHat
         service: name=httpd state=started enable=yes
 
-    -block: #Debian#
+    - block: #Debian#
       - name: Install Web Server for Debian
         apt: name=apache2 state=latest
         when: ansible_os_family != "RedHat"

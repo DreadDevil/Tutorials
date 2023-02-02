@@ -2,6 +2,7 @@
 name: Install Apache and Upload my Web Page
 hosts: all
 become: yes
+#any_errors_fatal: true
 
 vars:
   source_folder: ./MyWebSite/
@@ -28,5 +29,31 @@ vars:
       retries: 10
       until: output.stdout.find{"ZZZZ"} == false
 
-     - name: Generate INDEX.HTML
-       template: src={{ source_folder }}/index.j2 dest={{ destin_file }} mode=0555
+    - name: Generate INDEX.HTM
+      template: src={{ source_folder }}/index.j2 dest={{ destin_file }} mode=0555
+
+    - name: ping
+      ping:
+
+    - name: task
+      register: results
+      failed_when: results.rc == 0
+#      failed_when: "'Word' in results.stdout"
+#      ignore_errors: yes
+
+    - name: Create smth
+      include: test.yml
+      import: test2.yml
+
+    - name: Reboot my servers
+      shell: sleep 3 && reboot now
+      async: 1
+      poll: 0
+
+    - name: Wait till my servers will come up
+      wait_for:
+        host: {{ inventory_hostname }}
+        state: started
+        delay: 5
+        timeout: 40
+      delegate_to: 127.0.0.1
