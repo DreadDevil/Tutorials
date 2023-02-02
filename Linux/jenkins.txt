@@ -1,0 +1,29 @@
+https://routerus.com/how-to-install-jenkins-on-debian-10/
+пакет OpenJDK 11 с помощью следующих команд:
+
+ 
+sudo apt update
+ 
+sudo apt install default-jdk
+Java LTS версии 8 недоступна в официальных репозиториях Debian Buster. Если вы хотите запустить Jenkins с Java 8, ознакомьтесь с этим руководством по установке.
+
+Используйте wget для загрузки и импорта ключей GPG репозитория Jenkins:
+
+ 
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+Команда должна вернуть OK , что означает, что ключ был успешно импортирован, и пакеты из этого репозитория будут считаться доверенными.
+
+Выполните следующую команду, чтобы добавить репозиторий Jenkins в вашу систему:
+
+ 
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+Обновите список пакетов apt и установите последнюю версию Jenkins:
+
+ 
+sudo apt update
+ 
+sudo apt install jenkins
+Включите и запустите службу Jenkins, выполнив:
+
+ 
+sudo systemctl enable --now jenkins

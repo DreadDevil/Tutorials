@@ -1,0 +1,6 @@
+---
+- hosts: 84.201.131.50
+  gather_facts: no
+  become: yes
+  roles:
+   - vsftpd

@@ -1,6 +1,12 @@
-name: Install Apache and Upload my Web Page
-hosts: all
-become: yes
+---
+- name: Install Apache and Upload my Web Page
+  hosts: all
+  become: yes
 
+<<<<<<< HEAD
 roles:
   - { role: deploy_apache_web, when: ansible_system == "Linux" }
+=======
+  roles:
+    - { role: deploy_apache_web, when: ansible_system == "Linux" }
+>>>>>>> 28686ca3b8efafe9d72acf610ab07acfda25f36a

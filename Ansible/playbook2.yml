@@ -1,10 +1,17 @@
 ---
+<<<<<<< HEAD
 name: Install Apache and Upload my Web Page
 hosts: all
 become: yes
 #any_errors_fatal: true
+=======
+- name: Install Apache and Upload my Web Page
+  hosts: all
+  become: yes
+  #any_errors_fatal: true
+>>>>>>> 28686ca3b8efafe9d72acf610ab07acfda25f36a
 
-vars:
+  vars:
   source_folder: ./MyWebSite/
   destin_folder: ./var/www/html
 

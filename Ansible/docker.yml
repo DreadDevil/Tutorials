@@ -1,0 +1,12 @@
+---
+- name: docker
+  hosts: test
+  become: yes
+  tasks:
+    - name: Install docker
+      apt: name=docker state=latest
+    - name: start service
+      service:
+        name: docker
+        state: started
+        enabled: yes

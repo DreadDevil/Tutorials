@@ -1,0 +1,6 @@
+---
+- hosts: 158.160.49.8
+  gather_facts: no
+  become: yes
+  roles:
+   - dnsmasq

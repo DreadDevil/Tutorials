@@ -1,0 +1,7 @@
+---
+- name: zabbix
+  hosts: test
+  become: yes
+  tasks:
+    - name: Install zabbix agent
+      apt: name=zabbix-agent state=latest

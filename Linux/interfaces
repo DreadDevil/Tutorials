@@ -1,0 +1,39 @@
+auto lo
+iface lo inet loopback
+
+auto ens18f0
+iface ens18f0 inet manual
+        bond-master bond0
+
+auto ens18f1
+iface ens18f1 inet manual
+        bond-master bond0
+
+auto bond0
+iface bond0 inet manual
+        bond-slaves ens18f0 ens18f1
+        bond-miimon 100
+        bond-mode 802.3ad
+        bond-xmit-hash-policy layer2+3
+        mtu 9000
+        bond-downdelay 200
+       bond-updelay 200
+        bond-lacp-rate 1
+
+auto vmbr0
+iface vmbr0 inet static
+        address 192.168.103.251/24
+        gateway 192.168.103.1
+        bridge-ports bond0
+        bridge-stp off
+        bridge-fd 0
+
+auto bond0.101
+iface bond0.101 inet static
+ address 10.1.101.30
+ netmask 255.255.255.0
+
+auto bond0.102
+iface bond0.102 inet static
+ address 10.1.102.30
+ netmask 255.255.255.0

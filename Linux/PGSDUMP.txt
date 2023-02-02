@@ -1,0 +1,107 @@
+scp autodp_uk_buh_production_202212290307.dmp.gz root@192.168.101.12:/database/Backup
+scp ftu_zup_production-20230121.0320.dump.gz root@192.168.101.12:/database/tmp
+
+scp root@192.168.101.12:/database/backup/ftu_zup_production-20230113.0320.dump.gz /tmp
+
+
+
+pgprod
+
+su - postgres
+
+zcat users.dump.gz | psql users
+zcat autodp_ot_production_202207260307.dmp.gz | -d ot_dump_20220726 -U postgres
+
+zcat /path/to/file.sql.gz | mysql -u 'root' -p your_databased
+postgres -U pg1c
+
+service postgrespro-std-12-2 status
+
+20220726 dump ot
+
+cd dl
+/usr/local/bin/list-archive.sh ot
+wget http://srs16/01/autodp_ot_production_202207260307.dmp.gz
+
+/opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
+CREATE DATABASE e_test_20230109 OWNER pgprod;
+Ctl + D
+psql -U postgres
+
+
+
+zcat autodp_ot_production_202207260307.dmp.gz | /opt/pgpro/std-12/bin/psql -d ot_dump_20220726 -U pg1c -h isrs1c02 -p 5433 -W
+
+zcat autodp_ot_production_202207260307.dmp.gz | -d ot_dump_20220726 -U postgres
+
+http://srs16/01/autodp_ot_production_202207260307.dmp.gz
+
+
+
+
+20220726 dump pcm
+
+cd dl
+ pcm
+wget http://srs16/01/autodp_pcm_production_202207260307.dmp.gz
+
+/opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
+CREATE DATABASE ot_dump_20220726 OWNER pg1c;
+Ctl + D
+zcat autodp_ot_production_202207260307.dmp.gz | /opt/pgpro/std-12/bin/psql -d ot_dump_20220726 -U pg1c -h isrs1c02 -p 5433 -W
+
+
+20220801 dump dr
+
+cd dl
+/usr/local/bin/list-archive.sh dr
+wget http://srs16/01/autodp_dr_retail_production_202208010307.dmp.gz
+
+/opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
+CREATE DATABASE dr_dump_20220801 OWNER pg1c;
+Ctl + D
+zcat autodp_dr_retail_production_202208010307.dmp.gz | /opt/pgpro/std-12/bin/psql -d dr_dump_20220801 -U pg1c -h isrs1c02 -p 5433 -W
+
+
+
+http://srs16/01/autodp_ot_production_202207260307.dmp.gz
+
+
+
+
+20210501 dump erp
+
+cd dl
+/usr/local/bin/list-archive.sh erp
+wget http://srs16/01/autodp_erp_production_202209050307.dmp.gz
+
+/opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
+CREATE DATABASE autodp_erp_production_202212290307 OWNER pg1c;
+Ctl + D
+zcat autodp_erp_production_202212290307.dmp.gz | /opt/pgpro/std-12/bin/psql -d autodp_erp_production_202212290307 -U pg1c -h isrs1c02 -p 5433 -W
+
+
+
+dump erp 20220905 razdolie
+
+cd dl
+
+wget http://srs16/01/autodp_erp_production_202209050307.dmp.gz
+
+/opt/pgpro/std-12/bin/psql -d postgres -U pg1c -h isrs1c02 -p 5433 -W
+CREATE DATABASE erp_test_moi_20221229 OWNER pg1c;
+Ctl + D
+zcat autodp_erp_production_202301090307.dmp.gz | /opt/pgpro/std-12/bin/psql -d erp_test_20230109 -U pg1c -h isrs1c02 -p 5433 -W
+ 
+
+
+
+
+autodp_erp_production_202209020307.dmp.gz
+
+screen
+CTRL A + D
+screen -x
+
+
+ppg1csrs1c02Herb

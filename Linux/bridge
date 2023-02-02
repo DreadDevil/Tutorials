@@ -1,0 +1,33 @@
+iface eth0 inet manual
+
+auto br0
+iface br0 inet static
+    # Use the MAC address identified above.
+    hwaddress ether 19:7c:3b:92:ec:ee
+    address 203.0.113.166
+    netmask 255.255.255.248
+    gateway 203.0.113.161
+
+    bridge_ports eth0
+    # If you want to turn on Spanning Tree Protocol, ask your hosting
+    # provider first as it may conflict with their network.
+    bridge_stp off
+    # If STP is off, set to 0. If STP is on, set to 2 (or greater).
+    bridge_fd 0
+    
+Proxmox
+    auto lo
+iface lo inet loopback
+
+iface ens18f0 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+        address 192.168.103.252/24
+        gateway 192.168.103.1
+        bridge-ports ens18f0
+        bridge-stp off
+        bridge-fd 0
+
+iface ens18f1 inet manual
+

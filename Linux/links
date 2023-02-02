@@ -1,3 +1,10 @@
+IPMI
+
+https://habr.com/ru/post/354490/ - linux router gre+ipsec+ospf
+
+IPsec strongswan
+https://www.tecmint.com/setup-ipsec-vpn-with-strongswan-on-debian-ubuntu/
+
 x2ltpd
 https://wiki.debian.org/ru/xl2tpd/Server
 
@@ -28,3 +35,9 @@ SSH Jump proxy
 https://habr.com/ru/company/cloud4y/blog/530516/
 
 https://www.dmosk.ru/miniinstruktions.php?mini=prometheus-request#system
+<<<<<<< HEAD
+=======
+
+BOT ID
+https://poschitat.online/chat-id-telegram
+>>>>>>> 28686ca3b8efafe9d72acf610ab07acfda25f36a

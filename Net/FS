@@ -1,0 +1,245 @@
+show mac-address-table address 20cf.30bd.d1fe
+
+
+ip default-network 192.168.103.0
+!
+Gateway of last resort is 194.12.59.1 to network 0.0.0.0
+S*    0.0.0.0/0 [1/0] via 194.12.59.1
+C     192.168.103.0/24 is directly connected, VLAN 103
+C     192.168.103.111/32 is local host. 
+C     194.12.59.0/24 is directly connected, VLAN 100
+C     194.12.59.5/32 is local host. 
+
+
+
+
+ip route 0.0.0.0 0.0.0.0 192.168.103.1
+ip route 0.0.0.0 0.0.0.0 194.12.59.1
+ip route 192.168.103.0 255.255.255.0 VLAN 103
+ip route 192.168.103.0 255.255.255.0 VLAN 103 192.168.103.1
+ip route 194.12.59.0 255.255.255.0 VLAN 100 194.12.59.1
+
+
+show ip route
+ip default-network 192.168.103.1
+
+
+fsw0#show running-config
+hostname fsw0
+!
+sntp server oob 216.239.35.12
+sntp enable
+!
+username pim privilege 15 secret 5 $1$<redacted>
+!
+ip name-server oob 8.8.8.8
+!
+service password-encryption
+!
+enable service ssh-server
+no enable service telnet-server
+!
+interface Mgmt 0
+ ip address 192.168.1.10 255.255.255.0
+ gateway 192.168.1.1
+!
+snmp-server location Zurich, Switzerland
+snmp-server contact noc@ipng.ch
+snmp-server community 7 <redacted> ro
+!
+
+ssh -o "HostKeyAlgorithms ssh-rsa" root@192.168.103.111
+
+ip route 0.0.0.0 0.0.0.0 192.168.103.1
+ip default-network
+
+enable
+configure terminal
+show running-config
+show startup-config
+show services
+show running or show interfaces (gigabitEthernet 0/1)
+show vlan brief
+enable service ssh-server
+host
+ switch-floor-1
+interface vlan 1
+	ip address 192.168.1.1 255.255.255.0
+no shutdown
+
+boot config { flash:filename | usb0:filename }
+
+#snmp-server if-index persist
+#snmp trap link-status
+TenGigabitEthernet
+
+interface GigabitEthernet 0/7
+interface range GigabitEthernet 0/4 - 5
+switchport mode access (trunk)
+sw1(config-if-range)# switchport access vlan 1
+
+ip route 192.168.2.0 255.255.255.0 
+interface shutdown(no shutdown)
+
+switchport trunk encapsulation dot1q
+sw1(config-if)# switchport mode trunk
+
+
+1. cisco> enable
+2. cisco# clock set 10:10:12 6 20 2003
+3. cisco# configure terminal
+4. cisco(config)# ip domain name test.dom
+5. cisco(config)# crypto key generate rsa
+6. cisco(config)# service password-encryption
+7. cisco(config)# username user privilege 15 password 7 Pa$$w0rd
+8. cisco(config)# aaa new-model
+9. cisco(config)# line vty 0 4
+show line vty ?
+10. cisco(config-line)# transport input ssh
+11. cisco(config-line)# logging synchronous
+12. cisco(config-line)# exec-timeout 60 0
+13. cisco(config-line)# exit
+14. cisco(config)# exit
+15. cisco# copy running-config startup-config
+
+copy running-config startup-config
+erase startup-config
+
+sh run int gi1/30
+interface GigabitEthernet1/30
+speed auto
+-------------------------------------------------------------------------------
+
+copy running-config startup-config
+
+no switchport trunk native vlan 20
+no username root
+username mynewuser password MyNewUserPassword
+
+Источник: https://intellect.icu/cisco-dobavlyaem-ili-udalyaem-polzovatelej-11393
+interface vlan 1
+
+switchport trunk native vlan 1
+
+show ip interfaces
+
+# configure terminal
+A(config)# interface GigabitEthernet 0/1
+A(config-if-GigabitEthernet 0/1)# switchport mode access
+A(config-if-GigabitEthernet 0/1)# switchport access vlan 1
+A(config-if-GigabitEthernet 0/1)# exit
+A(config)# interface vlan 1
+A(config-if-VLAN 1)# ip address 192.168.1.1 255.255.255.0
+A(config-if-VLAN 1)# exit
+A(config)# ip route 192.168.2.0 255.255.255.0 VLAN 1 192.168.1.2
+
+configure terminal
+B(config)# interface GigabitEthernet 0/1
+B(config-if-GigabitEthernet 0/1)# switchport mode trunk
+B(config-if-GigabitEthernet 0/1)# exit
+B(config)# interface vlan 1
+B(config-if-VLAN 1)# ip address 192.168.1.2 255.255.255.0
+B(config-if-VLAN 1)# exit
+switchport trunk allowed vlan { all | [add | remove | except | only ] }
+
+
+B(config)# interface GigabitEthernet 0/3
+B(config-if-GigabitEthernet 0/3)# no switchport
+B(config-if-GigabitEthernet 0/3)# ip address 192.168.2.2 255.255.255.0
+B(config-if-GigabitEthernet 0/3)# exit
+
+show interfaces
+
+SSH
+FS(config)#enable
+FS(config)# enable service ssh-server
+FS(config)#clock set 10:10:12 6 20 2003
+FS(config)#configure terminal
+FS(config)ssh version 2
+FS(config)#crypto key generate rsa
+FS(config)#service password-encryption
+FS(config)#username user privilege 15 password 7 Pa$$w0rd
+FS(config)#aaa new-model
+FS(config)#line vty 0 4
+FS(config)#transport input ssh
+FS(config)#logging synchronous
+FS(config)#exec-timeout 60 0
+FS(config-line)#exit
+FS(config)#copy running-config startup-config
+ip ssh peer test public-key rsaflash:test_key.pub
+
+Aggregation
+Switch A
+SwitchA# configure terminal
+lacp system-priority 4096
+SwitchA(config)# interface range GigabitEthernet 1/1-2
+SwitchA(config-if-range)# port-group 3 mode { active | passive }
+
+Switch B
+SwitchB# configure terminal
+lacp system-priority 4096
+SwitchB(config)# interface range GigabitEthernet 2/1-2
+SwitchB(config-if-range)# port-group 3 mode { active | passive }
+show aggregateport summary
+show lacp summary
+
+VLAN
+FS# configure terminal
+FS(config)# vlan 888
+FS(config-vlan)# name test888
+FS(config-vlan)# exit
+FS(config)# interface GigabitEthernet 0/3
+FS(config-if-GigabitEthernet 0/3)# switchport mode access FS(config-if-GigabitEthernet 0/3)# switchport access vlan 20
+SwitchA(config)#vlan 20
+SwitchA(config-vlan)#add interface GigabitEthernet 0/3
+show vlan
+
+STACK
+1
+FS# configure terminal
+FS(config)# switch virtual domain 100
+FS(config-vs-domain)#switch 1
+FS(config-vs-domain)#switch 1 priority 200
+FS(config-vs-domain)#switch 1 description switch-1
+FS(config-vs-domain)# switch crc errors 10 times 20
+FS(config-vs-domain))#exit
+FS(config)#vsl-port
+FS(config-vsl-port)#port-member interface Tengigabitethernet 1/1
+FS(config-vsl-port)#port-member interface Tengigabitethernet 1/2
+FS(config)#exit
+FS#switch convert mode virtual
+
+2
+FS# configure terminal
+FS(config)# switch virtual domain 100
+FS(config-vs-domain)# switch 2
+FS(config-vs-domain)# switch 2 priority 100
+FS(config-vs-domain)# switch 2 description switch-2
+FS(config-vs-domain)# switch crc errors 10 times 20
+FS(config-vs-domain))#exit
+FS(config)#vsl-port
+FS(config-vsl-port)#port-member interface Tengigabitethernet 1/1
+FS(config-vsl-port)#port-member interface Tengigabitethernet 1/2
+FS(config-vsl-port)#exit
+FS#switch convert mode virtual
+
+Test
+show switch virtual config
+
+upgrade usb0:
+copy
+show boot config
+delete flash:/config.text
+erase startup-config
+reload
+write
+write or copy Flash:/FS/FS.text a
+
+auto bond0.102
+iface bond0.102 inet static
+ address 10.1.102.30
+ netmask 255.255.255.0
+ gateway 10.1.101.1
+
+
+

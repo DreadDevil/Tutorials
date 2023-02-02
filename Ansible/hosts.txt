@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [ALL_LINUX:children]
 PROD
 STAGING
@@ -8,3 +9,7 @@ linux2 ansible_host=10.10.10.11
 
 [STAGING]
 linux3 ansible_host=10.10.10.12
+=======
+[test]
+158.160.49.8
+>>>>>>> 28686ca3b8efafe9d72acf610ab07acfda25f36a

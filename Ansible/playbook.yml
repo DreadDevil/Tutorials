@@ -1,9 +1,9 @@
 ---
-name: Install Apache and Upload my Web Page
-hosts: all
-become: yes
+- name: Install Apache and Upload my Web Page
+  hosts: all
+  become: yes
 
-vars:
+  vars:
   source_folder: ./MyWebSite/
   destin_folder: ./var/www/html
 
