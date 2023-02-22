@@ -10,7 +10,7 @@ COPY . /srv/app/
 RUN pip install Flask Psycopg2 ConfigParser
 ENV FLASK_APP=web.py
 
-EXPOSE 80
+EXPOSE 5000
 
 CMD ["flask", "run"]
 
