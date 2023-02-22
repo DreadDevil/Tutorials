@@ -7,10 +7,10 @@ WORKDIR /srv/app/
 
 COPY . /srv/app/
 
-RUN pip install Flask Psycopg2 ConfigParser
-ENV FLASK_APP=web.py
+RUN pip install Flask psycopg2 configparser
 
 EXPOSE 5000
 
-CMD ["flask", "run"]
+CMD ["python3", "web.py"]
+
 
