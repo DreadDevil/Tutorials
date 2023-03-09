@@ -4,4 +4,4 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -aG docker $USER
 sudo docker swarm init --advertise-addr 51.250.86.116
-sudo docker swarm join --token <токен> 51.250.86.116:2377
+sudo docker swarm join --token aje6qfrgclf5og0gahpl 51.250.86.116:2377
