@@ -1,0 +1,2 @@
+https://serveradmin.ru/ustanovka-i-nastroyka-elasticsearch-logstash-kibana-elk-stack/
+apt install openjdk-11-jdk -y
