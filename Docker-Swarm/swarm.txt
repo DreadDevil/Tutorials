@@ -6,3 +6,5 @@ sudo usermod -aG docker $USER
 sudo docker swarm init --advertise-addr 192.168.10.12
 sudo docker swarm join --token aje6qfrgclf5og0gahpl 192.168.10.44:2377
 sudo docker swarm join --token aje6qfrgclf5og0gahpl 192.168.10.22:2377
+docker-compose up -d
+
