@@ -75,6 +75,32 @@ docker pull 12345678.dkr.ecr.ca-central-1.amazonaws.com/myrepo:latest
 Kill and Delete Containers and Images
 
 docker create -d network bridge name
+
+docker exec -t "id" sh
+
+minikube start --driver=docker
+
+sudo usermod -aG docker $USER && newgrp docker
+
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+https://minikube.sigs.k8s.io/docs/start/
+
+minicube start --nodes=5
+
+Stop your Minikube cluster by running the following command:
+
+Copy code
+minikube stop
+Start your Minikube cluster again with the --network-plugin=cni flag:
+
+Copy code
+minikube start --network-plugin=cni
+Verify that the CNI plugin is running by running the following command:
+
+Copy code
+kubectl get pods -n kube-system
+kubectl get nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 docker rm -f $(docker ps -aq)        # Delete all Containers
 docker rmi -f $(docker images -q)    # Delete all Images
