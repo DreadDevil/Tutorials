@@ -1,0 +1,15 @@
+kubectl create deployment nginx-sf --image=nginx:1.21.1-alpine --replicas=3
+
+kubectl create configmap nginx-config --from-file=nginx.conf
+
+kubectl set volume deployment/nginx-sf --add --name=nginx-config --configmap-name=nginx-config --mount-path=/etc/nginx/nginx.conf
+
+kubectl expose deployment nginx-sf --name=sf-webserver --port=80 --target-port=80 --type=NodePort
+
+kubectl create secret generic auth-basic --from-literal=user1=password1
+
+kubectl create configmap nginx-config --from-file=nginx.conf
+
+kubectl set volume deployment/nginx-sf --add --name=nginx-config --configmap-name=nginx-config --mount-path=/etc/nginx/nginx.conf
+
+kubectl set env deployment/nginx-sf --from=secret/auth-basic
