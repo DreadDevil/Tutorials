@@ -1,0 +1,73 @@
+kubectl create ns prometheus
+helm upgrade --install -n prometheus prometheus prometheus-community/prometheus
+helm status prometheus -n prometheus
+values.yaml
+https://github.com/SkillfactoryCoding/DEVOPS-Helm-helm-charts/tree/main/charts/prometheus
+helm upgrade --install --namespace prometheus prometheus prometheus-community/prometheus --set alertmanager.enabled=false --set nodeExporter.enabled=false	
+helm upgrade --install --namespace prometheus prometheus prometheus-community/prometheus --values values.yaml
+helm rollback prometheus -n prometheus 1
+helm uninstall -n prometheus prometheus
+helm upgrade --install --create-namespace --namespace myapp nginx
+В deployment.yaml заменяем
+
+replicas: 1
+на
+
+replicas: {{ .Values.nginx.replicas }}
+Создаём в каталоге chart файл values-dev-1.yaml и указываем там нужное нам значение, например:
+
+nginx:
+  replicas: 1
+Создадим ещё один файл, values-dev-2.yaml, — пусть там будет две реплики.
+
+nginx:
+  replicas: 2
+
+helm lint и helm template
+
+helm upgrade --atomic \
+              --timeout 300s \
+              --values values/app.yaml \
+              --values values/secrets.yaml \
+              --install \
+              --namespace develop \
+              frontend .
+
+ ├── envs
+    │   ├── dev
+    │   │   └── values
+    │   │       ├── frontend.yaml
+    │   │       └── nginx.yaml
+    │   └── prod
+    │       └── values
+    │           ├── frontend.yaml
+    │           └── nginx.yaml
+    └── helmfile.yaml
+А вот пример самого helmfile.yaml:
+
+environments:
+  devel:
+  production:
+
+releases:
+  - name: nginx
+    labels:
+      app: nginx
+    wait: true
+    chart: stable/nginx
+    version: 8.4.0
+    values:
+      - envs/{{ .Environment.Name }}/values/nginx.yaml
+  - name: frontend
+    labels:
+      app: frontend
+    wait: true
+    chart: private-helm-repo/frontend
+    version: 1.0.5
+    needs:
+      - postgres
+    values:
+      - envs/{{ .Environment.Name }}/values/frontend.yaml
+Применить это можно так:
+
+helmfile -n <namespace> -e <env> apply

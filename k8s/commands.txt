@@ -111,3 +111,69 @@ edit — говорим о том, что мы хотим отредактиро
 svc — тип ресурса;
 docker-registry — собственное имя ресурса.
 После ввода этой команды откроется редактор по умолчанию, нужно внести изменения, сохранить их и K8S попытается их применить.
+
+/app/manifests/deployment.yaml
+/app/manifests/service.yaml
+
+А вот их содержимое:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+    component: myapp
+    release: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      component: myapp
+      release: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        component: myapp
+        release: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+deployment.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+    component: myapp
+    release: nginx
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: nginx
+    component: myapp
+    release: nginx
+service.yaml
+
+Если бы мы захотели их применить, мы бы использовали команду:
+
+kubectl apply -f manifests/ -n myapp
+
+Содержимое Chart.yaml:
+
+---
+apiVersion: v2
+name: nginx
+version: 1.0.0
