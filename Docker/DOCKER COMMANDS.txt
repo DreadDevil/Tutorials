@@ -1,3 +1,10 @@
+docker build -t ваше_имя_пользователя/nginx .
+docker run -d -p 80:80 ваше_имя_пользователя/nginx
+
+docker login
+docker tag ваше_имя_пользователя/nginx ваше_имя_пользователя/nginx:версия
+docker push ваше_имя_пользователя/nginx:версия
+
 #-------------------------------------------------
 # Introduction to Docker by Denis Astahov
 
