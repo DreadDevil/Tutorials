@@ -5,3 +5,8 @@ function sumArray(array) {
 function findMaxNumber(array) {
   return Math.max(...array);
 }
+
+module.exports = {
+  sum,
+  average
+};
