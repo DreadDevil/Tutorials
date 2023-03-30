@@ -1,0 +1,2 @@
+Minikube
+https://computingforgeeks.com/run-kubernetes-on-debian-11-with-minikube/
