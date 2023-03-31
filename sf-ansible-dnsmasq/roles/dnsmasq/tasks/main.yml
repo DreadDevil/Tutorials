@@ -1,0 +1,21 @@
+---
+- name: Install dnsmasq package
+  apt:
+    name: dnsmasq
+    state: present
+
+- name: Copy dnsmasq configuration file
+  template:
+    src: templates/dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+  notify:
+    - restart dnsmasq
+
+- name: Enable dnsmasq service
+  service:
+    name: dnsmasq
+    enabled: yes
+    state: started
+
+- name: Flush DNS cache
+  command: systemctl restart dnsmasq

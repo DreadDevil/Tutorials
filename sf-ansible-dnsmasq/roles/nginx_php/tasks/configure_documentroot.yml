@@ -1,0 +1,22 @@
+---
+- name: Create DocumentRoot directory
+  file:
+    path: /opt/nginx/ansible
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Set Nginx root directory
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*root\s*)(.*)\;$'
+    line: '\1/opt/nginx/ansible;'
+  notify: Restart nginx
+
+- name: Set ownership of DocumentRoot
+  file:
+    path: /opt/nginx/ansible
+    owner: www-data
+    group: www-data
+    mode: '0755'

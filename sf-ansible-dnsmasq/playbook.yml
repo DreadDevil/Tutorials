@@ -1,0 +1,23 @@
+---
+- name: Configure superusers
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Add superusers group
+      group:
+        name: "superusers"
+        state: present
+
+    - name: Add superusers to superusers group
+      lineinfile:
+        path: /etc/group
+        regexp: '^superusers:'
+        line: 'superusers:x:user2,user3'
+        validate: 'group superusers'
+
+    - name: Allow superusers to execute sudo -i
+      lineinfile:
+        path: /etc/sudoers
+        line: '%superusers ALL=(ALL) NOPASSWD: /bin/su -'
+        validate: 'visudo -cf %s'

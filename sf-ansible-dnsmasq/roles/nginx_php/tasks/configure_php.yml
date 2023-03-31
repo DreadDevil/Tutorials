@@ -1,0 +1,7 @@
+---
+- name: Configure php-fpm
+  copy:
+    src: files/php-fpm-www.conf
+    dest: /etc/php/7.4/fpm/pool.d/www.conf
+  notify:
+    - Restart php-fpm
