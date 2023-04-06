@@ -1,0 +1,13 @@
+---
+- name: Deploying Nginx and PHP-FPM on servers
+  hosts:
+    nginx:
+      ansible_host: 62.84.112.244
+    php-fpm:
+      ansible_host: 158.160.46.73
+  become: true
+
+  roles:
+    - users
+    - http
+    - php

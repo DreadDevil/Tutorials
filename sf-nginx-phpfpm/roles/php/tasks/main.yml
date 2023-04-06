@@ -1,0 +1,16 @@
+---
+- name: Open port 9000 for PHP-FPM
+  ufw:
+    rule: allow
+    port: 9000
+
+- name: Copy php.ini file
+  copy:
+    src: php.ini
+    dest: /etc/php/7.4/fpm/php.ini
+  notify: Restart php-fpm
+
+- name: Restart php-fpm
+  service:
+    name: php7.4-fpm
+    state: restarted
