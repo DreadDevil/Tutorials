@@ -1,0 +1,14 @@
+server:
+  enabled: true
+
+pushgateway:
+  enabled: false
+
+nodeExporter:
+  enabled: false
+
+kubeStateMetrics:
+  enabled: true
+
+alertmanager:
+  enabled: false
