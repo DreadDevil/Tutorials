@@ -1,0 +1,55 @@
+---
+- name: Install Docker, Docker Compose, and SSH public keys
+  hosts: srv
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: "'Ubuntu' in inventory_hostname"
+
+    - name: Install dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add Docker APT repository key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+      when: "'Ubuntu' in inventory_hostname"
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+      when: "'Ubuntu' in inventory_hostname"
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+      when: "'Ubuntu' in inventory_hostname"
+
+    - name: Install Docker Compose
+      pip:
+        name: docker-compose
+        state: present
+
+    - name: Create SSH directory
+      file:
+        path: ~/.ssh
+        state: directory
+        mode: '0700'
+
+    - name: Install SSH public keys
+      authorized_key:
+        user: "{{ ansible_user }}"
+        state: present
+        key: "{{ lookup('file', item) }}"
+      with_fileglob:
+        - "path/to/public/keys/*"
