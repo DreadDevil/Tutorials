@@ -1,3 +1,4 @@
+---
 - name: Install Docker, Docker Compose, and SSH public keys
   hosts: srv
   become: yes
