@@ -1,6 +1,3 @@
-cluster.name: my_cluster
-node.name: node1
-path.data: /path/to/data
-path.logs: /path/to/logs
+cluster.name: my-cluster
 network.host: 0.0.0.0
-http.port: 9200
+discovery.type: single-node
