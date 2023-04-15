@@ -1,0 +1,13 @@
+stages:
+  - build
+  - push
+
+build:
+  stage: build
+  script:
+    - docker build -t your-docker-registry/your-image-name:your-tag .
+
+push:
+  stage: push
+  script:
+    - docker push your-docker-registry/your-image-name:your-tag
