@@ -1,4 +1,4 @@
-yandex_cloud_token    = "your_yandex_cloud_token"
-yandex_cloud_id       = "your_yandex_cloud_id"
-yandex_cloud_folder_id = "your_yandex_cloud_folder_id"
-yandex_cloud_zone     = "your_yandex_cloud_zone"
+yandex_cloud_token    = "y0_AgAAAABmOtwFAATuwQAAAADVYJG9wgJFmqsESdCTNX0QRhiCkansvqA"
+yandex_cloud_id       = "b1g0utbakijalqm7pqve"
+yandex_cloud_folder_id = "b1g4oh4ltrfd2mnlravq"
+yandex_cloud_zone     = "ru-central1-a"

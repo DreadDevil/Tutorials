@@ -21,4 +21,4 @@
         key: "{{ lookup('file', item) }}"
         state: present
       loop:
-        - "/path/to/your/public_key.pub"
+        - "C:\Users\DreadDevil\.ssh\id_rsa"
