@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    yandex = {
+      source  = "yandex-cloud/yandex"
+      version = "0.89.0"
+    }
+  }
+}
+
 provider "yandex" {
   token     = var.yandex_cloud_token
   cloud_id  = var.yandex_cloud_id
@@ -33,18 +42,25 @@ resource "yandex_vpc_subnet" "default" {
   name           = "my-subnet"
   zone           = var.yandex_cloud_zone
   network_id     = yandex_vpc_network.default.id
-  v4_cidr_blocks = ["192.168.0.0/24"]
+  v4_cidr_blocks = ["192.168.1.0/24"]
+}
+
+resource "yandex_iam_service_account" "k8s_sa" {
+  name = "k8s-sa"
 }
 
 resource "yandex_kubernetes_cluster" "this" {
-  name        = "my-k8s-cluster"
-  description = "Kubernetes cluster with 1 master and 1 app server"
-
-  network_id = yandex_vpc_network.default.id
+  name                  = "my-k8s-cluster"
+  description           = "Kubernetes cluster with 1 master and 1 app server"
+  network_id            = yandex_vpc_network.default.id
+  service_account_id    = yandex_iam_service_account.k8s_sa.id
+  node_service_account_id = yandex_iam_service_account.k8s_sa.id
 
   master {
     version = "1.22"
-    zone    = var.yandex_cloud_zone
+    zonal {
+      zone = var.yandex_cloud_zone
+    }
   }
 }
 
@@ -58,7 +74,7 @@ resource "yandex_kubernetes_node_group" "master" {
     type = "master"
   }
 
-  template {
+  instance_template {
     platform_id = "standard-v2"
     resources {
       cores  = 2
@@ -83,7 +99,7 @@ resource "yandex_kubernetes_node_group" "app" {
     type = "app"
   }
 
-  template {
+  instance_template {
     platform_id = "standard-v2"
     resources {
       cores  = 2

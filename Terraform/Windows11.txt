@@ -1,0 +1,15 @@
+Для установки провайдера Yandex Cloud для Terraform вручную на Windows 11, выполните следующие шаги:
+
+Определите вашу архитектуру (например, windows_amd64 для Windows на архитектуре amd64).
+
+Перейдите на страницу релизов провайдера Yandex.Cloud для Terraform и найдите соответствующий своей архитектуре файл архива (например, terraform-provider-yandex_v0.67.0_windows_amd64.zip для Windows на архитектуре amd64).
+
+Скачайте архив с бинарным файлом провайдера и распакуйте его.
+
+Создайте каталог для хранения Terraform провайдеров, если его еще нет. Для этого откройте проводник и перейдите в ваш домашний каталог. В адресной строке введите %APPDATA%\terraform.d\plugins\registry.terraform.io\yandex-cloud\yandex\0.67.0\windows_amd64 и нажмите Enter. Подставьте нужную версию и архитектуру, если требуется.
+
+Скопируйте файл провайдера terraform-provider-yandex.exe из распакованного архива в созданный каталог.
+
+Теперь провайдер Yandex Cloud для Terraform установлен вручную на вашем компьютере с Windows 11. Вы можете использовать его в своих Terraform проектах, указав его в блоке provider в файле main.tf.
+
+https://github.com/yandex-cloud/terraform-provider-yandex/releases
