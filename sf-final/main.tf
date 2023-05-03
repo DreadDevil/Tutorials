@@ -134,6 +134,12 @@ resource "yandex_compute_instance" "srv" {
   }
 
   metadata = {
-    user-data = "#cloud-config\nssh_authorized_keys:\n  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBXekn+DK9mN2/9HfWxbWXfljXgwDrgck9EA5Be2QJR9hBgVuUNrXT85YQ4rWzuaHrN9Trloaza5j5Dx9Uw0PsVNej9/Hm2nI1SEvpw3gdVp4d32FzY1KQ1pNCq5cSDB4ocpvMHogbT9jfY+aEGQm9ISlvXV6hps4FNS8iWYk1sXx1gQvryYLAVKlcgM/m7+0mFFl/pNzU5HtgBNPZBvPYUX1LM3t8EENxWXl1xs3Y3XQ628gGd+wTWSPfk3PFveXKg6ORf03JwnfUzh/NkK2SzqWwaVPAtoVY3Zm3ZCuixUSVhlcb+XsdsacBOLA9r5WUmMKr+cEAkPLMV5+L26ygiM++DfKTyBtbW8WEAGta7WPZRimNWPPPLBYRWvLhk1qeUsrkMIyHhdRujmj4VPrfd87gXg8k95+INkoRuiObmi9+BSPo90NBTSm7l3vjC6HV8nhUyXQbupvuYEvf5mTCNbFZqtIHm5w0gSq8Z0BGnYDmxUzRDtwS9Z9Xk+A5bSM= unepic@unepic-X553MA"
+    user-data = <<-EOF
+      #cloud-config
+      users:
+        - name: yc-user
+          ssh-authorized-keys:
+            - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBXekn+DK9mN2/9HfWxbWXfljXgwDrgck9EA5Be2QJR9hBgVuUNrXT85YQ4rWzuaHrN9Trloaza5j5Dx9Uw0PsVNej9/Hm2nI1SEvpw3gdVp4d32FzY1KQ1pNCq5cSDB4ocpvMHogbT9jfY+aEGQm9ISlvXV6hps4FNS8iWYk1sXx1gQvryYLAVKlcgM/m7+0mFFl/pNzU5HtgBNPZBvPYUX1LM3t8EENxWXl1xs3Y3XQ628gGd+wTWSPfk3PFveXKg6ORf03JwnfUzh/NkK2SzqWwaVPAtoVY3Zm3ZCuixUSVhlcb+XsdsacBOLA9r5WUmMKr+cEAkPLMV5+L26ygiM++DfKTyBtbW8WEAGta7WPZRimNWPPPLBYRWvLhk1qeUsrkMIyHhdRujmj4VPrfd87gXg8k95+INkoRuiObmi9+BSPo90NBTSm7l3vjC6HV8nhUyXQbupvuYEvf5mTCNbFZqtIHm5w0gSq8Z0BGnYDmxUzRDtwS9Z9Xk+A5bSM= unepic@unepic-X553MA
+    EOF
   }
 }
