@@ -45,7 +45,7 @@ resource "yandex_vpc_subnet" "default" {
   v4_cidr_blocks = ["192.168.1.0/24"]
 }
 
-resource "yandex_iam_service_account" "k8s_sa" {
+data "yandex_iam_service_account" "k8s_sa" {
   name = "k8s-sa"
 }
 
@@ -53,8 +53,8 @@ resource "yandex_kubernetes_cluster" "this" {
   name                  = "my-k8s-cluster"
   description           = "Kubernetes cluster with 1 master and 1 app server"
   network_id            = yandex_vpc_network.default.id
-  service_account_id    = yandex_iam_service_account.k8s_sa.id
-  node_service_account_id = yandex_iam_service_account.k8s_sa.id
+  service_account_id    = data.yandex_iam_service_account.k8s_sa.id
+  node_service_account_id = data.yandex_iam_service_account.k8s_sa.id
 
   master {
     version = "1.22"
@@ -124,7 +124,7 @@ resource "yandex_compute_instance" "srv" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8vm4k4t8st8a2nff27"
+      image_id = "fd8fphfpeqijnlu1phu4"
     }
   }
 
