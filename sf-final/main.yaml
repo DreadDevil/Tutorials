@@ -21,4 +21,4 @@
         key: "{{ lookup('file', item) }}"
         state: present
       loop:
-        - "C:\Users\DreadDevil\.ssh\id_rsa"
+        - "/home/unepic/.ssh"
