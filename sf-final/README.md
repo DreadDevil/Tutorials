@@ -8,7 +8,7 @@ Terraform v0.13+ (установка)
 
 Подготовка
 Клонируйте репозиторий:
-git clone https://github.com/DreadDevil/Tutorials.git
+git clone gitlab
 cd your-github-repo
 Создайте файл terraform.tfvars со следующим содержимым:
 

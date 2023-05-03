@@ -3,22 +3,38 @@
   hosts: server
   become: yes
   tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+
+    - name: Add Docker's official GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+      register: docker_repo_added
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: docker_repo_added.changed
+
     - name: Install Docker
       ansible.builtin.package:
-        name: docker
+        name: docker-ce
         state: present
-      register: docker_installed
 
     - name: Install Docker Compose
-      ansible.builtin.package:
+      ansible.builtin.pip:
         name: docker-compose
         state: present
-      when: docker_installed is changed
-
-    - name: Add public SSH keys
-      authorized_key:
-        user: "{{ ansible_user }}"
-        key: "{{ lookup('file', item) }}"
-        state: present
-      loop:
-        - "/home/unepic/.ssh"
