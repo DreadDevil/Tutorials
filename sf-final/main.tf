@@ -124,7 +124,7 @@ resource "yandex_compute_instance" "srv" {
 
   boot_disk {
     initialize_params {
-      image_id = "debian-cloud/debian-11"
+      image_id = "fd8vm4k4t8st8a2nff27"
     }
   }
 
