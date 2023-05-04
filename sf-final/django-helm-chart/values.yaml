@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: your_dockerhub_username/your_repository_name
+  repository: dreaddevil/django-pg-docker-tutorial
   tag: latest
   pullPolicy: IfNotPresent
 
