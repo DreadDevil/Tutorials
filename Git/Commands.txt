@@ -1,0 +1,5 @@
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git init
+git remote add origin
+git push --set-upstream origin master
