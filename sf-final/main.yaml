@@ -1,11 +1,11 @@
 - name: Install Docker, Docker Compose and add public SSH keys
   hosts: server
   become: yes
+  vars:
+    users:
+      - name: yc-user
+        ssh_key: /home/unepic/.ssh/id_rsa.pub
   tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: yes
-
     - name: Install required packages
       ansible.builtin.package:
         name:
@@ -37,7 +37,28 @@
         name: docker-ce
         state: present
 
+    - name: Install Python pip
+      ansible.builtin.package:
+        name: python3-pip
+        state: present
+
     - name: Install Docker Compose
       ansible.builtin.pip:
         name: docker-compose
         state: present
+        executable: pip3
+
+    - name: Create users and add their public SSH keys
+      block:
+        - name: Create user
+          ansible.builtin.user:
+            name: "{{ item.name }}"
+            state: present
+          loop: "{{ users }}"
+
+        - name: Add public SSH key for user
+          ansible.builtin.authorized_key:
+            user: "{{ item.name }}"
+            key: "{{ lookup('file', item.ssh_key) }}"
+            state: present
+          loop: "{{ users }}"
