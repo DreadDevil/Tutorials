@@ -2,6 +2,7 @@ app:
   image:
     repository: dreaddevil/django-pg-docker-tutorial
     tag: latest
+    pullPolicy: Always
   service:
     type: ClusterIP
     port: 3003

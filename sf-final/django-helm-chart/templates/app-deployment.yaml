@@ -6,15 +6,18 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app.kubernetes.io/name: {{ include "django-pg-docker-tutorial.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: app
+        app.kubernetes.io/name: {{ include "django-pg-docker-tutorial.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-        - name: app
-          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 3003
           env:
