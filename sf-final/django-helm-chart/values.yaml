@@ -1,43 +1,22 @@
-replicaCount: 1
-
-image:
-  repository: dreaddevil/django-pg-docker-tutorial
-  tag: latest
-  pullPolicy: IfNotPresent
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
+app:
+  image:
+    repository: <YOUR_DOCKERHUB_USERNAME>/django-pg-docker-tutorial
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 3003
 
 db:
   image:
     repository: postgres
     tag: 13-alpine
-    pullPolicy: IfNotPresent
   service:
+    type: ClusterIP
     port: 5432
+
   postgresDatabase: tutorial-dev
   postgresUser: vinhle
   postgresPassword: password
-  persistence:
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    storageClass: ""
 
-resources: {}
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+storage:
+  size: 1Gi
