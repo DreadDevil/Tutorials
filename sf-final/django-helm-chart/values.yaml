@@ -1,6 +1,6 @@
 app:
   image:
-    repository: <YOUR_DOCKERHUB_USERNAME>/django-pg-docker-tutorial
+    repository: dreaddevil/django-pg-docker-tutorial
     tag: latest
   service:
     type: ClusterIP
