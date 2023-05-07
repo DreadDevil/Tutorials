@@ -41,6 +41,35 @@
     state: present
     executable: pip3
 
+- name: Add Kubernetes apt key
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add Kubernetes repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://apt.kubernetes.io/kubernetes-bullseye main"
+    state: present
+  register: kubernetes_repo_added
+
+- name: Update apt cache (again) if Kubernetes repository added
+  ansible.builtin.apt:
+    update_cache: yes
+  when: kubernetes_repo_added.changed
+
+- name: Install kubectl
+  ansible.builtin.package:
+    name: kubectl
+    state: present
+
+- name: Install Helm
+  ansible.builtin.command:
+    cmd: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
+    creates: /usr/local/bin/helm
+    args:
+      warn: false
+  become: yes
+
 - name: Create users and add their public SSH keys
   block:
     - name: Create user
