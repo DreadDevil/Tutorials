@@ -45,6 +45,12 @@
     state: present
     executable: pip3
 
+- name: Get Debian distribution codename
+  ansible.builtin.command:
+    cmd: lsb_release -cs
+  register: distribution_codename
+  changed_when: false
+
 - name: Add Kubernetes apt key
   ansible.builtin.apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -52,7 +58,7 @@
 
 - name: Add Kubernetes repository
   ansible.builtin.apt_repository:
-    repo: "deb https://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main"
+    repo: "deb https://apt.kubernetes.io/ kubernetes-{{ distribution_codename.stdout }} main"
     state: present
   register: kubernetes_repo_added
 
@@ -74,20 +80,6 @@
       warn: false
   become: yes
 
-- name: Install Ansible
-  block:
-    - name: Add Ansible PPA
-      ansible.builtin.apt_repository:
-        repo: ppa:ansible/ansible
-        state: present
-    - name: Update apt cache (again) after adding Ansible PPA
-      ansible.builtin.apt:
-        update_cache: yes
-    - name: Install Ansible
-      ansible.builtin.package:
-        name: ansible
-        state: present
-
 - name: Create users and add their public SSH keys
   block:
     - name: Create user
@@ -95,9 +87,15 @@
         name: "{{ item.name }}"
         state: present
       loop: "{{ users }}"
+
     - name: Add public SSH key for user
       ansible.builtin.authorized_key:
         user: "{{ item.name }}"
         key: "{{ lookup('file', item.ssh_key) }}"
         state: present
       loop: "{{ users }}"
+
+- name: Install Ansible
+  ansible.builtin.package:
+    name: ansible
+    state: present
