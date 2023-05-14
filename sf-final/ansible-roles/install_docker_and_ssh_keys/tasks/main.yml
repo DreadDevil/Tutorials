@@ -51,7 +51,7 @@
 
 - name: Add Kubernetes repository
   ansible.builtin.apt_repository:
-    repo: "deb https://apt.kubernetes.io/kubernetes-bullseye main"
+    repo: "deb https://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main"
     state: present
   register: kubernetes_repo_added
 
