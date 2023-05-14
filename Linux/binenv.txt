@@ -1,0 +1,21 @@
+You can install binenv from the Github repository by following these steps:
+
+First, download the latest version of binenv for your operating system from the releases page. For example, if you're on a Linux system, you would do:
+bash
+Copy code
+curl -Lo binenv https://github.com/devops-works/binenv/releases/latest/download/binenv_linux_amd64
+Make the downloaded file executable:
+bash
+Copy code
+chmod +x binenv
+Move the executable to a directory in your PATH. For example, you could move it to /usr/local/bin:
+bash
+Copy code
+sudo mv binenv /usr/local/bin/
+Verify the installation by checking the version of binenv:
+bash
+Copy code
+binenv --version
+Please note that the above commands assume a Unix-like environment (such as Linux or MacOS). If you're using a different operating system, the process might be slightly different. Be sure to adapt the commands to your specific environment.
+
+mkdir -p /root/.binenv/shim

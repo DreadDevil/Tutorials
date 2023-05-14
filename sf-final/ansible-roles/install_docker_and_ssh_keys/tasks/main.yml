@@ -45,32 +45,19 @@
     state: present
     executable: pip3
 
-- name: Get Debian distribution codename
-  ansible.builtin.command:
-    cmd: lsb_release -cs
-  register: distribution_codename
-  changed_when: false
+- name: Install binenv
+  ansible.builtin.shell:
+    cmd: |
+      curl -LsSf https://github.com/devops-works/binenv/releases/latest/download/binenv_linux_amd64 > /usr/local/bin/binenv && chmod +x /usr/local/bin/binenv
+      mkdir -p /root/.binenv/shim
+  args:
+    creates: /usr/local/bin/binenv
 
-- name: Add Kubernetes apt key
-  ansible.builtin.apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
-
-- name: Add Kubernetes repository
-  ansible.builtin.apt_repository:
-    repo: "deb https://apt.kubernetes.io/ kubernetes-{{ distribution_codename.stdout }} main"
-    state: present
-  register: kubernetes_repo_added
-
-- name: Update apt cache (again) if Kubernetes repository added
-  ansible.builtin.apt:
-    update_cache: yes
-  when: kubernetes_repo_added.changed
-
-- name: Install kubectl
-  ansible.builtin.package:
-    name: kubectl
-    state: present
+- name: Install kubectl using binenv
+  ansible.builtin.shell:
+    cmd: binenv install kubectl
+  args:
+    executable: /bin/bash
 
 - name: Install Helm
   ansible.builtin.command:
@@ -99,3 +86,4 @@
   ansible.builtin.package:
     name: ansible
     state: present
+...
