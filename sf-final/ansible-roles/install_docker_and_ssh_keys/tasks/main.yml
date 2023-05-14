@@ -86,4 +86,23 @@
   ansible.builtin.package:
     name: ansible
     state: present
+- name: Add Nginx Ingress repository
+  ansible.builtin.command:
+    cmd: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    creates: /root/.helm/repository/repositories.yaml
+  args:
+    warn: false
+
+- name: Update helm repositories
+  ansible.builtin.command:
+    cmd: helm repo update
+  args:
+    warn: false
+
+- name: Install Nginx Ingress Controller
+  ansible.builtin.command:
+    cmd: helm install my-nginx ingress-nginx/ingress-nginx
+    creates: /root/.helm/repository/repositories.yaml
+  args:
+    warn: false
 ...
