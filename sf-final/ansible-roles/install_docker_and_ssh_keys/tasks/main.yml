@@ -63,8 +63,7 @@
   ansible.builtin.command:
     cmd: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
     creates: /usr/local/bin/helm
-    args:
-      warn: false
+    warn: false
   become: yes
 
 - name: Create users and add their public SSH keys
