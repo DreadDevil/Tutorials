@@ -2,6 +2,7 @@
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: yes
+
 - name: Install required packages
   ansible.builtin.package:
     name:
@@ -73,6 +74,20 @@
       warn: false
   become: yes
 
+- name: Install Ansible
+  block:
+    - name: Add Ansible PPA
+      ansible.builtin.apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+    - name: Update apt cache (again) after adding Ansible PPA
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install Ansible
+      ansible.builtin.package:
+        name: ansible
+        state: present
+
 - name: Create users and add their public SSH keys
   block:
     - name: Create user
@@ -80,7 +95,6 @@
         name: "{{ item.name }}"
         state: present
       loop: "{{ users }}"
-
     - name: Add public SSH key for user
       ansible.builtin.authorized_key:
         user: "{{ item.name }}"
