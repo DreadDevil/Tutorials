@@ -90,7 +90,7 @@
 - name: Set PATH environment variable
   lineinfile:
     path: /home/debian/.bashrc
-    line: 'export PATH=$PATH:/home/debian/.binenv/shim'
+    line: 'export PATH=$PATH:/home/debian/.binenv/binaries/kubectl'
   become: yes
   become_user: debian
 ...
