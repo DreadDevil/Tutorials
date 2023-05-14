@@ -1,6 +1,4 @@
 apiVersion: v2
-name: django-pg
-description: A simple Django application with PostgreSQL
-type: application
+name: django-app
+description: A Django application
 version: 0.1.0
-appVersion: 1.0.0

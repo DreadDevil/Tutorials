@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: django-app
+  template:
+    metadata:
+      labels:
+        app: django-app
+    spec:
+      containers:
+      - name: app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 3003
+        env:
+        - name: DB_HOST
+          value: db
+        - name: DB_NAME
+          value: {{ .Values.database.name }}
+        - name: DB_USER
+          value: {{ .Values.database.user }}
+        - name: DB_PASS
+          value: {{ .Values.database.password }}
+      - name: db
+        image: "{{ .Values.database.image }}"
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.database.name }}
+        - name: POSTGRES_USER
+          value: {{ .Values.database.user }}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.database.password }}
+        volumeMounts:
+        - name: tutorial-volume
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: tutorial-volume
+        persistentVolumeClaim:
+          claimName: tutorial-volume

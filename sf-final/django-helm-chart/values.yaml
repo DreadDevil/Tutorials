@@ -1,23 +1,24 @@
-app:
-  image:
-    repository: dreaddevil/django-pg-docker-tutorial
-    tag: latest
-    pullPolicy: Always
-  service:
-    type: ClusterIP
-    port: 3003
+replicaCount: 1
 
-db:
-  image:
-    repository: postgres
-    tag: 13-alpine
-  service:
-    type: ClusterIP
-    port: 5432
+image:
+  repository: dreaddevil/django-pg-docker-tutorial
+  tag: latest
+  pullPolicy: IfNotPresent
 
-  postgresDatabase: tutorial-dev
-  postgresUser: vinhle
-  postgresPassword: password
+service:
+  type: ClusterIP
+  port: 3003
 
-storage:
+ingress:
+  enabled: true
+  host: 192.168.1.34
+
+database:
+  name: tutorial-dev
+  user: vinhle
+  password: password
+  image: postgres:13-alpine
+
+persistence:
+  enabled: true
   size: 1Gi
