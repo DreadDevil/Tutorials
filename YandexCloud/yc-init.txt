@@ -1,0 +1,6 @@
+curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+yc init
+yc managed-kubernetes cluster list
+yc managed-kubernetes cluster get-credentials <CLUSTER_ID> --external
+yc managed-kubernetes cluster get-credentials catloijtd9f0bj7dl9g2 --internal
+kubectl get nodes

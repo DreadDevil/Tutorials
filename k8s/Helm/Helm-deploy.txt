@@ -1,0 +1,2 @@
+helm package mychart
+helm install django-app ./mychart-0.1.0.tgz
