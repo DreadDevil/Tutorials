@@ -22,11 +22,10 @@ db:
     POSTGRES_USER: vinhle
     POSTGRES_PASSWORD: password
 
-volumeClaim:
+persistence:
   enabled: true
-  name: tutorial-volume
   size: 1Gi
 
 ingress:
   enabled: false
-  hosts: []to/app
+  hosts: []
