@@ -1,4 +1,4 @@
 apiVersion: v2
-name: django-helm-chart
-description: A Helm chart for Kubernetes
+name: mychart
+description: A Helm chart for deploying the application
 version: 0.1.0
