@@ -1,27 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "django-helm-chart.fullname" . }}-app
+  name: {{ include "django-helm-chart.fullname" . }}
+  labels:
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      {{- include "django-helm-chart.selectorLabels" . | nindent 6 }}
   template:
+    metadata:
+      labels:
+        {{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-      - name: app
-        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
-        ports:
-        - containerPort: {{ .Values.app.service.port }}
-        env:
-        - name: DB_HOST
-          value: {{ .Values.app.env.DB_HOST }}
-        - name: DB_NAME
-          value: {{ .Values.app.env.DB_NAME }}
-        - name: DB_USER
-          value: {{ .Values.app.env.DB_USER }}
-        - name: DB_PASS
-          value: {{ .Values.app.env.DB_PASS }}
-        volumeMounts:
-        - mountPath: /app
-          name: app-volume
-      volumes:
-      - name: app-volume
-        emptyDir: {}
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+          ports:
+            - containerPort: {{ .Values.app.service.port }}
+          env:
+            {{- toYaml .Values.app.env | nindent 10 }}
