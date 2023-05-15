@@ -3,26 +3,32 @@ kind: Deployment
 metadata:
   name: {{ include "mychart.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "mychart.name" . }}
+    {{- include "mychart.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.app.replicas }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "mychart.name" . }}
+      {{- include "mychart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "mychart.name" . }}
+        {{- include "mychart.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: app
           image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
           ports:
             - containerPort: {{ .Values.app.service.port }}
+          env:
+            {{- toYaml .Values.app.env | nindent 10 }}
+          command:
+            - sh
+            - -c
+            - "{{ .Values.app.command }}"
           volumeMounts:
             - name: app-volume
               mountPath: /app
       volumes:
         - name: app-volume
-          hostPath:
-            path: /path/to/app
+          persistentVolumeClaim:
+            claimName: {{ include "mychart.fullname" . }}-pvc
