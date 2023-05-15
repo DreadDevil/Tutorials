@@ -3,7 +3,7 @@ app:
   image: dreaddevil/django-pg-docker-tutorial
   tag: latest
   service:
-    type: NodePort
+    type: ClusterIP
     port: 3003
   ingress:
     enabled: true
