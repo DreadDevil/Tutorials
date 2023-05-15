@@ -1,10 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tutorial-volume
+  name: {{ include "django-helm-chart.fullname" . }}
+  labels:
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}alues.storage.size }}
+      storage: {{ .Values.db.persistence.size }}tence.size }}alues.storage.size }}

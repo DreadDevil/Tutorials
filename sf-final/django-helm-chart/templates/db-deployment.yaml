@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "django-helm-chart.fullname" . }}-db
+spec:
+  template:
+    spec:
+      containers:
+      - name: db
+        image: "{{ .Values.db.image }}"
+        ports:
+        - containerPort: {{ .Values.db.service.port }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.db.env.POSTGRES_DB }}
+        - name: POSTGRES_USER
+          value: {{ .Values.db.env.POSTGRES_USER }}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.db.env.POSTGRES_PASSWORD }}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: db-volume
+      volumes:
+      - name: db-volume
+        persistentVolumeClaim:
+          claimName: {{ include "django-helm-chart.fullname" . }}-pvc

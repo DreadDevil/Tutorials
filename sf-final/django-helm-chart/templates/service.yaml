@@ -1,14 +1,23 @@
+# For app service
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "django-app.fullname" . }}
+  name: {{ include "django-helm-chart.fullname" . }}
 spec:
-  type: {{ default "ClusterIP" .Values.app.service.type }}  # change here
+  type: {{ .Values.app.service.type }}
   ports:
-    - port: {{ .Values.app.service.port }}  # change here
-      targetPort: http
-      protocol: TCP
-      name: http
+    - port: 8000
   selector:
-    app.kubernetes.io/name: {{ include "django-app.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ include "django-helm-chart.fullname" . }}
+
+# For db service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "django-helm-chart.fullname" . }}-db
+spec:
+  type: {{ .Values.db.service.type }}
+  ports:
+    - port: 5432
+  selector:
+    app: {{ include "django-helm-chart.fullname" . }}-db

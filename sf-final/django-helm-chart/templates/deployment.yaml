@@ -1,47 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-app
+  name: {{ include "django-helm-chart.fullname" . }}-app
 spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: django-app
   template:
-    metadata:
-      labels:
-        app: django-app
     spec:
       containers:
       - name: app
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
         ports:
-        - containerPort: 3003
+        - containerPort: {{ .Values.app.service.port }}
         env:
         - name: DB_HOST
-          value: db
+          value: {{ .Values.app.env.DB_HOST }}
         - name: DB_NAME
-          value: {{ .Values.database.name }}
+          value: {{ .Values.app.env.DB_NAME }}
         - name: DB_USER
-          value: {{ .Values.database.user }}
+          value: {{ .Values.app.env.DB_USER }}
         - name: DB_PASS
-          value: {{ .Values.database.password }}
-      - name: db
-        image: "{{ .Values.database.image }}"
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: {{ .Values.database.name }}
-        - name: POSTGRES_USER
-          value: {{ .Values.database.user }}
-        - name: POSTGRES_PASSWORD
-          value: {{ .Values.database.password }}
+          value: {{ .Values.app.env.DB_PASS }}
         volumeMounts:
-        - name: tutorial-volume
-          mountPath: /var/lib/postgresql/data
+        - mountPath: /app
+          name: app-volume
       volumes:
-      - name: tutorial-volume
-        persistentVolumeClaim:
-          claimName: tutorial-volume
+      - name: app-volume
+        emptyDir: {}
