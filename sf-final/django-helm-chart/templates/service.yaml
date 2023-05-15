@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: {{ include "django-app.fullname" . }}
 spec:
-  type: {{ default "ClusterIP" .Values.service.type }}
+  type: {{ default "ClusterIP" .Values.app.service.type }}  # change here
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.app.service.port }}  # change here
       targetPort: http
       protocol: TCP
       name: http
