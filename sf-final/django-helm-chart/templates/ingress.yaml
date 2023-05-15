@@ -14,11 +14,8 @@ spec:
       http:
         paths:
           - path: /
-            pathType: ImplementationSpecific
             backend:
-              service:
-                name: {{ include "django-helm-chart.fullname" . }}
-                port:
-                  number: 80
+              serviceName: {{ include "django-helm-chart.fullname" . }}
+              servicePort: {{ .Values.app.service.port }}
     {{- end }}
 {{- end }}
