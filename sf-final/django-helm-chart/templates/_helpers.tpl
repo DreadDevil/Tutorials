@@ -1,5 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
-{{/*
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -8,7 +6,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := include "django-helm-chart.name" . }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -42,4 +40,11 @@ Selector labels
 {{- define "django-helm-chart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "django-helm-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Name template
+*/}}
+{{- define "django-helm-chart.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
