@@ -5,9 +5,10 @@ metadata:
   labels:
     {{- include "mychart.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.app.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http
+      port: {{ .Values.app.service.port }}
       targetPort: {{ .Values.app.service.port }}
   selector:
     {{- include "mychart.selectorLabels" . | nindent 4 }}
