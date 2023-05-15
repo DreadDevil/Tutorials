@@ -1,14 +1,24 @@
-apiVersion: v1
-kind: Service
+{{- if .Values.app.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
   name: {{ include "django-helm-chart.fullname" . }}
   labels:
     {{- include "django-helm-chart.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.app.ingress.annotations | nindent 4 }}
 spec:
-  type: {{ .Values.app.service.type }}
-  ports:
-    - port: {{ .Values.app.service.port }}
-      targetPort: {{ .Values.app.service.port }}
-      protocol: TCP
-  selector:
-    {{- include "django-helm-chart.selectorLabels" . | nindent 4 }}
+  rules:
+    {{- range .Values.app.ingress.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "django-helm-chart.fullname" . }}
+                port:
+                  number: 80
+    {{- end }}
+{{- end }}

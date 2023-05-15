@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "django-helm-chart.fullname" . }}
-  labels:
-    {{- include "django-helm-chart.labels" . | nindent 4 }}
+name: {{ include "django-helm-chart.fullname" . }}
+labels:
+{{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.app.replicas }}
-  selector:
-    matchLabels:
-      {{- include "django-helm-chart.selectorLabels" . | nindent 6 }}
-  template:
-    metadata:
-      labels:
-        {{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
-    spec:
-      containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
-          ports:
-            - containerPort: {{ .Values.app.service.port }}
-          env:
-            {{- toYaml .Values.app.env | nindent 10 }}
+replicas: {{ .Values.app.replicas }}
+selector:
+matchLabels:
+{{- include "django-helm-chart.selectorLabels" . | nindent 6 }}
+template:
+metadata:
+labels:
+{{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
+spec:
+containers:
+- name: {{ .Chart.Name }}
+image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+ports:
+- containerPort: {{ .Values.app.service.port }}
+env:
+{{- toYaml .Values.app.env | nindent 10 }}.env | nindent 10 }} 10 }}
