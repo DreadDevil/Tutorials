@@ -16,6 +16,6 @@ spec:
           - path: /
             backend:
               serviceName: {{ include "django-helm-chart.fullname" . }}
-              servicePort: {{ .Values.app.service.port }}
+              servicePort: 80
     {{- end }}
 {{- end }}
