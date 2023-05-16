@@ -1,20 +1,20 @@
+---
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-name: {{ include "django-helm-chart.fullname" . }}-ingress
-labels:
-{{- include "django-helm-chart.labels" . | nindent 4 }}
-annotations:
-{{- toYaml .Values.app.ingress.annotations | nindent 4 }}
+  name: {{ include "django-helm-chart.fullname" . }}
+  labels:
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
-rules:
-- host: {{ .Values.app.ingress.host }}
-http:
-paths:
-- path: /
-pathType: ImplementationSpecific
-backend:
-service:
-name: {{ include "django-helm-chart.fullname" . }}
-port:
-number: {{ .Values.app.service.port }}
+  rules:
+    - host: {{ .Values.app.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "django-helm-chart.fullname" . }}
+                port:
+                  number: {{ .Values.app.service.port }}
