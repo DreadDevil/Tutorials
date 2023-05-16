@@ -1,15 +1,14 @@
-# mychart/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fullname" . }}
+  name: {{ include "django-helm-chart.fullname" . }}
   labels:
-    {{- include "mychart.labels" . | nindent 4 }}
+    {{ include "django-helm-chart.labels" . | indent 4 }}
 spec:
   type: {{ .Values.app.service.type }}
   ports:
-    - name: http
-      port: {{ .Values.app.service.port }}
+    - port: {{ .Values.app.service.port }}
       targetPort: {{ .Values.app.service.port }}
+      protocol: TCP
   selector:
-    {{- include "mychart.selectorLabels" . | nindent 4 }}
+    {{ include "django-helm-chart.selectorLabels" . | indent 2 }}nt 4 }}

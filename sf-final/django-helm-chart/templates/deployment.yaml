@@ -1,19 +1,18 @@
-# mychart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mychart.fullname" . }}
+  name: {{ include "django-helm-chart.fullname" . }}
   labels:
-    {{- include "mychart.labels" . | nindent 4 }}
+    {{ include "django-helm-chart.labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "mychart.selectorLabels" . | nindent 6 }}
+      {{ include "django-helm-chart.selectorLabels" . | indent 6 }}
   template:
     metadata:
       labels:
-        {{- include "mychart.selectorLabels" . | nindent 8 }}
+        {{ include "django-helm-chart.selectorLabels" . | indent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -21,14 +20,5 @@ spec:
           ports:
             - containerPort: {{ .Values.app.service.port }}
           env:
-            {{- range $key, $value := .Values.app.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-          volumeMounts:
-            - name: tutorial-volume
-              mountPath: /var/lib/postgresql/data
-      volumes:
-        - name: tutorial-volume
-          persistentVolumeClaim:
-            claimName: tutorial-pvc
+            {{- toYaml .Values.app.env | nindent 12 }}
+      {{- toYaml .Values.app.resources | nindent 6 }}

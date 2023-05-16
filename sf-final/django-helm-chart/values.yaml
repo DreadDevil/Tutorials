@@ -1,4 +1,3 @@
-# mychart/values.yaml
 app:
   image:
     repository: dreaddevil/django-pg-docker-tutorial
