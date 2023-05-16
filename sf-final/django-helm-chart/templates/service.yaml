@@ -1,24 +1,13 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: {{ include "django-helm-chart.fullname" . }}
+  name: db
   labels:
-    {{ include "django-helm-chart.labels" . | indent 4 }}
+    app: db
 spec:
-  replicas: 1
   selector:
-    matchLabels:
-      {{ include "django-helm-chart.selectorLabels" . | indent 6 }}
-  template:
-    metadata:
-      labels:
-        {{ include "django-helm-chart.selectorLabels" . | indent 8 }}
-    spec:
-      containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
-          ports:
-            - containerPort: {{ .Values.app.service.port }}
-          env:
-            {{- toYaml .Values.app.env | nindent 12 }}
-      {{- toYaml .Values.app.resources | nindent 6 }}
+    app: db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

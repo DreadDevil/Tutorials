@@ -1,24 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: {{ include "django-helm-chart.fullname" . }}
-labels:
-{{- include "django-helm-chart.labels" . | nindent 4 }}
+  name: db
+  labels:
+    app: db
 spec:
-replicas: 1
-selector:
-matchLabels:
-{{- include "django-helm-chart.selectorLabels" . | nindent 6 }}
-template:
-metadata:
-labels:
-{{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
-spec:
-containers:
-- name: {{ .Chart.Name }}
-image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
-ports:
-- containerPort: {{ .Values.app.service.port }}
-env:
-{{- toYaml .Values.app.env | nindent 12 }}
-{{- toYaml .Values.app.resources | nindent 6 }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: postgres:13-alpine
+          env:
+            - name: POSTGRES_DB
+              value: tutorial-dev
+            - name: POSTGRES_USER
+              value: vinhle
+            - name: POSTGRES_PASSWORD
+              value: password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: tutorial-volume
+              mountPath: /var/lib/postgresql/data

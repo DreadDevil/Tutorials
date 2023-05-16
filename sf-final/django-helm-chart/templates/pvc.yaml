@@ -1,13 +1,11 @@
-# mychart/templates/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tutorial-pvc
-  labels:
-    {{- include "django-helm-chart.labels" . | nindent 4 }}
+  name: tutorial-volume
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.db.persistence.size }}
+      storage: 1Gi
+  storageClassName: standard
