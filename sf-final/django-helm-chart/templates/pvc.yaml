@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: tutorial-pvc
   labels:
-    {{- include "mychart.labels" . | nindent 4 }}
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
