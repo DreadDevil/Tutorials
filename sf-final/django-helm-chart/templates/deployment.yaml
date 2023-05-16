@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ include "django-helm-chart.fullname" . }}
   labels:
-    {{ include "django-helm-chart.labels" . | indent 4 }}
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{ include "django-helm-chart.selectorLabels" . | indent 6 }}
+      {{- include "django-helm-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{ include "django-helm-chart.selectorLabels" . | indent 8 }}
+        {{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
