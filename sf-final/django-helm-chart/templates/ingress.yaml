@@ -1,24 +1,17 @@
-{{- if .Values.app.ingress.enabled -}}
-apiVersion: networking.k8s.io/v1
+# mychart/templates/ingress.yaml
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ include "mychart.fullname" . }}
   labels:
     {{- include "mychart.labels" . | nindent 4 }}
   annotations:
-    {{- toYaml .Values.app.ingress.annotations | nindent 4 }}
+    # Add your desired annotations here
 spec:
   rules:
-    {{- range .Values.app.ingress.hosts }}
+    {{- range .Values.ingress.hosts }}
     - host: {{ . }}
       http:
         paths:
           - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "mychart.fullname" . }}
-                port:
-                  number: {{ .Values.app.service.port }}
-    {{- end }}
-{{- end }}

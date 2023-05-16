@@ -1,3 +1,4 @@
+# mychart/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +6,7 @@ metadata:
   labels:
     {{- include "mychart.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.app.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "mychart.selectorLabels" . | nindent 6 }}
@@ -19,9 +20,15 @@ spec:
           image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
           ports:
             - containerPort: {{ .Values.app.service.port }}
+          env:
+            {{- range $key, $value := .Values.app.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           volumeMounts:
-            - name: app-volume
-              mountPath: /app
+            - name: tutorial-volume
+              mountPath: /var/lib/postgresql/data
       volumes:
-        - name: app-volume
-          {{- toYaml .Values.app.volumes | nindent 6 }}
+        - name: tutorial-volume
+          persistentVolumeClaim:
+            claimName: tutorial-pvc

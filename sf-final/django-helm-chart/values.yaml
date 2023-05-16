@@ -1,5 +1,5 @@
+# mychart/values.yaml
 app:
-  replicas: 1
   image:
     repository: dreaddevil/django-pg-docker-tutorial
     tag: latest
@@ -21,11 +21,11 @@ db:
     POSTGRES_DB: tutorial-dev
     POSTGRES_USER: vinhle
     POSTGRES_PASSWORD: password
-
-persistence:
-  enabled: true
-  size: 1Gi
+  persistence:
+    enabled: true
+    size: 1Gi
 
 ingress:
-  enabled: false
-  hosts: []
+  enabled: true
+  hosts:
+    - 192.168.1.17

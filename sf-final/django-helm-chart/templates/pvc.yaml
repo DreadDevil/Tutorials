@@ -1,10 +1,13 @@
+# mychart/templates/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.volumeClaim.name }}
+  name: tutorial-pvc
+  labels:
+    {{- include "mychart.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.volumeClaim.size }}
+      storage: {{ .Values.db.persistence.size }}
