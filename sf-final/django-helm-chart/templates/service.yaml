@@ -3,13 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: db
+  name: {{ include "django-helm-chart.fullname" . }}
   labels:
-    app: db
+    {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
-  selector:
-    app: db
+  type: {{ .Values.app.service.type }}
   ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+    - port: {{ .Values.app.service.port }}
+      targetPort: {{ .Values.app.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "django-helm-chart.selectorLabels" . | nindent 4 }}
