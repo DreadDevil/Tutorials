@@ -1,4 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -28,7 +27,6 @@ Common labels
 */}}
 {{- define "django-helm-chart.labels" -}}
 helm.sh/chart: {{ include "django-helm-chart.chart" . }}
-{{ include "django-helm-chart.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
