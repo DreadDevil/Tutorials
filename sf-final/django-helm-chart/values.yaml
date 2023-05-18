@@ -12,10 +12,6 @@ app:
     DB_NAME: tutorial-dev
     DB_USER: vinhle
     DB_PASS: password
-  ingress:
-    enabled: true
-    hosts:
-      - 192.168.1.16
 
 db:
   image: postgres:13-alpine

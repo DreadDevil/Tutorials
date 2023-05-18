@@ -11,7 +11,5 @@ spec:
   ports:
     - port: {{ .Values.app.service.port }}
       targetPort: {{ .Values.app.service.port }}
-      protocol: TCP
-      name: http
   selector:
     {{- include "django-helm-chart.selectorLabels" . | nindent 4 }}
