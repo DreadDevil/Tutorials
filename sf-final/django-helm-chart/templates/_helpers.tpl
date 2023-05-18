@@ -26,11 +26,12 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Common labels
 */}}
 {{- define "django-helm-chart.labels" -}}
-helm.sh/chart: {{ include "django-helm-chart.chart" . }}
+helm.sh/chart: "{{ include "django-helm-chart.chart" . }}"
+{{ include "django-helm-chart.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/version: "{{ .Chart.AppVersion | quote }}"
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/managed-by: "{{ .Release.Service }}"
 {{- end }}
 
 {{/*
@@ -44,6 +45,6 @@ Chart name and version as used by the chart label.
 Selector labels
 */}}
 {{- define "django-helm-chart.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "django-helm-chart.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: "{{ include "django-helm-chart.name" . }}"
+app.kubernetes.io/instance: "{{ .Release.Name }}"
 {{- end }}
