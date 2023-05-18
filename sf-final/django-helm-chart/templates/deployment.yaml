@@ -21,9 +21,8 @@ spec:
           image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
           ports:
             - containerPort: {{ .Values.app.service.port }}
-          command:
-            - "sh"
-            - "-c"
-            - "python manage.py migrate && python manage.py runserver 0.0.0.0:3003"
           env:
-            {{- toYaml .Values.app.env | nindent 12 }}
+            {{- range $key, $value := .Values.app.env }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
