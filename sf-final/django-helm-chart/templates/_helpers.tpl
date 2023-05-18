@@ -36,6 +36,13 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Chart name and version as used by the chart label.
+*/}}
+{{- define "django-helm-chart.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "django-helm-chart.selectorLabels" -}}
