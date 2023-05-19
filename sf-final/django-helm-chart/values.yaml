@@ -25,3 +25,6 @@ db:
   persistence:
     enabled: true
     size: 1Gi
+
+dockerhubUsername: "dreaddevil"
+dockerhubAccessToken: "dckr_pat_pSeve3UaHNpgG-cJ2Vz8wkiYE08"

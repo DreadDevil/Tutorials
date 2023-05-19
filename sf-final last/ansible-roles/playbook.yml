@@ -1,0 +1,8 @@
+- name: Install Docker, Docker Compose and add public SSH keys
+  hosts: server
+  become: yes
+  roles:
+    - role: install_docker_and_ssh_keys
+      users:
+        - name: yc-user
+          ssh_key: /home/unepic/.ssh/id_rsa.pub
