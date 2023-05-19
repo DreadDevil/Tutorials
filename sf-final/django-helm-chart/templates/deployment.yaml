@@ -1,3 +1,5 @@
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,5 +22,7 @@ spec:
           ports:
             - containerPort: {{ .Values.app.service.port }}
           env:
-            {{- toYaml .Values.app.env | nindent 12 }}
-      {{- toYaml .Values.app.resources | nindent 6 }}
+            {{- range $key, $value := .Values.app.env }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
