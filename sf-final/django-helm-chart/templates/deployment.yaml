@@ -1,14 +1,5 @@
 ---
 
-app:
-  image:
-    repository: dreaddevil/django-pg-docker-tutorial
-    tag: latest
-    pullSecret:
-      enabled: true
-      name: dockerhub-credentials
-
-# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,9 +19,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
-          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.app.service.port }}
           env:
             {{- toYaml .Values.app.env | nindent 12 }}
-
+      {{- toYaml .Values.app.resources | nindent 6 }}
