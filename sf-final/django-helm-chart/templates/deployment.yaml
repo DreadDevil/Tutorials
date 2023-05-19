@@ -22,5 +22,5 @@ spec:
           ports:
             - containerPort: {{ .Values.app.service.port }}
           env:
-{{ toYaml .Values.app.env | indent 12 }}
+            {{- toYaml .Values.app.env | nindent 12 }}
       {{- toYaml .Values.app.resources | nindent 6 }}
