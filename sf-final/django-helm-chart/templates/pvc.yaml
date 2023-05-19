@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "django-helm-chart.fullname" . }}
+  name: {{ include "django-helm-chart.fullname" . }}-db
   labels:
     {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
