@@ -26,5 +26,5 @@ db:
     enabled: true
     size: 1Gi
 
-dockerhubUsername: your_dockerhub_username
-dockerhubAccessToken: your_dockerhub_access_token
+dockerhubUsername: dreaddevil
+dockerhubAccessToken: dckr_pat_pSeve3UaHNpgG-cJ2Vz8wkiYE08
