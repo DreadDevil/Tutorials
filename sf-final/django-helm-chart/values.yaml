@@ -28,3 +28,8 @@ db:
 
 dockerhubUsername: "dreaddevil"
 dockerhubAccessToken: "dckr_pat_pSeve3UaHNpgG-cJ2Vz8wkiYE08"
+
+dockerhubCredentials:
+  auths:
+    https://index.docker.io/v1/:
+      auth: {{ printf "%s:%s" .Values.dockerhubUsername .Values.dockerhubAccessToken | b64enc }}
