@@ -1,0 +1,40 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'cluster']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: 'telegram'
+
+receivers:
+  - name: 'telegram'
+    telegram_configs:
+      - api_key: '<TELEGRAM_API_KEY>'
+        chat_id: '<TELEGRAM_CHAT_ID>'
+        parse_mode: 'html'
+        disable_web_page_preview: true
+        title: '{{ template "templateTitle" . }}'
+        text: '{{ template "templateText" . }}'
+
+templates:
+  - name: 'templateTitle'
+    text: 'Alert: {{ .CommonLabels.alertname }}'
+
+  - name: 'templateText'
+    text: >-
+      *Alert details:*
+      {{ range .Alerts }}
+        *Alertname:* {{ .Labels.alertname }}
+        *Description:* {{ .Annotations.description }}
+        *Severity:* {{ .Labels.severity }}
+        *Status:* {{ .Status }}
+        *Starts at:* {{ .StartsAt }}
+        *Ends at:* {{ .EndsAt }}
+        *Firing at:* {{ .FiredAt }}
+      {{ end }}
+      {{ if .GroupLabels.cluster }}
+        *Cluster:* {{ .GroupLabels.cluster }}
+      {{ end }}
+      *Link to Alert:* {{ .ExternalURL }}

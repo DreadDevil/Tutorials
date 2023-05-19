@@ -1,9 +1,7 @@
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "django-helm-chart.fullname" . }}
+  name: {{ include "django-helm-chart.fullname" . }}-app
   labels:
     {{- include "django-helm-chart.labels" . | nindent 4 }}
 spec:
@@ -17,12 +15,54 @@ spec:
         {{- include "django-helm-chart.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        - name: {{ .Chart.Name }}-app
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.app.service.port }}
+            - name: http
+              containerPort: {{ .Values.app.service.port }}
+              protocol: TCP
           env:
-            {{- range $key, $value := .Values.app.env }}
-            - name: {{ $key }}
-              value: {{ $value }}
-            {{- end }}
+            - name: DB_HOST
+              value: db
+            - name: DB_NAME
+              value: {{ .Values.app.env.DB_NAME }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "django-helm-chart.fullname" . }}-secrets
+                  key: app-db-user
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "django-helm-chart.fullname" . }}-secrets
+                  key: app-db-pass
+        - name: {{ .Chart.Name }}-db
+          image: "{{ .Values.db.image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.db.service.port }}
+              protocol: TCP
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "django-helm-chart.fullname" . }}-secrets
+                  key: db-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "django-helm-chart.fullname" . }}-secrets
+                  key: db-password
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: {{ include "django-helm-chart.fullname" . }}-db
+      imagePullSecrets:
+        - name: {{ include "django-helm-chart.fullname" . }}-secrets

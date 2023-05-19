@@ -1,0 +1,13 @@
+input {
+  file {
+    path => "/path/to/your/log/file.log"
+    start_position => "beginning"
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["localhost:9200"]
+    index => "my_log_index"
+  }
+}
