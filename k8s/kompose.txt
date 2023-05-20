@@ -26,3 +26,5 @@ Verify the installation by opening a new terminal window and running
 Copy code
 kompose version
 If the installation was successful, you should see the version information of Kompose.
+
+That's it! You have now installed Kompose on Debian and can use it to convert Docker Compose files to Kubernetes manifests.
