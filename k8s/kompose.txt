@@ -1,0 +1,28 @@
+
+Unfortunately, Kompose is not available in the official Debian repositories, so you cannot install it using the apt package manager. However, you can still install Kompose on Debian by downloading the binary directly from the official GitHub repository. Here's how
+
+Open a terminal window.
+
+Download the Kompose binary by running the following command
+
+Copy code
+curl -L httpsgithub.comkuberneteskomposereleaseslatestdownloadkompose-linux-amd64 -o kompose
+This command downloads the Kompose binary for Linux.
+
+After the download is complete, make the binary executable by running
+
+bash
+Copy code
+chmod +x kompose
+Move the binary to a directory listed in your system's PATH environment variable. For example, you can use the usrlocalbin directory by running
+
+bash
+Copy code
+sudo mv kompose usrlocalbin
+Note The sudo command may prompt you for your password.
+
+Verify the installation by opening a new terminal window and running
+
+Copy code
+kompose version
+If the installation was successful, you should see the version information of Kompose.
