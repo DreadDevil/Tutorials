@@ -1,0 +1,1 @@
+scrape_configs:\n  - job_name: system\n    static_configs:\n      - targets:\n          - localhost:9090\n    pipeline_stages:\n      - regex:\n          expression: "error|warn|fatal"
