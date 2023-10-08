@@ -1,2 +1,13 @@
 Installation
 https://aitool.ai/model/74886
+https://mrdeepfakes.com/forums/threads/installing-stable-diffusion-webui-nudifying-inpainting-guide.11797/?ref=aitool.ai#55421-1.%2BInstalling%2BAUTOMATIC1111%2BWebui
+
+Repo
+https://huggingface.co/
+
+Models
+https://civitai.com/
+
+Photoshop FireFly AI SD
+https://vc.ru/ml/693785-stable-diffusion-ustanovka-i-nastroyka-lokalnoy-versii-dlya-besplatnoy-generacii-izobrazheniy-bez-ogranicheniy
+https://vc.ru/design/708008-stable-diffusion-v-photoshop-rukovodstvo-po-ustanovke-plagina-dlya-raboty-s-lokalnym-serverom-sd?ysclid=lngphypyvk503921786
