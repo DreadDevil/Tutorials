@@ -17,3 +17,4 @@ https://dtf.ru/u/441609-kto/2062489-gayd-po-lokalnoy-trenirovke-ii-golosa-rvc2-i
 python tools/download_models.py
 python infer-web.py
 https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/tree/main
+https://leingpt.ru/chat/
