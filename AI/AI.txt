@@ -1,0 +1,19 @@
+https://app.leonardo.ai/
+https://chat.openai.com/
+https://claude.ai/chats
+starcoder
+metabob
+askyoupdf
+leiapics.com
+https://github.com/bregman-arie/devops-exercises
+https://www.watzatsong.com/
+https://github.com/svc-develop-team/so-vits-svc
+https://github.com/ddPn08/rvc-webui?ysclid=lpcdcbagy7381792628
+https://github.com/friuns2/BlackFriday-GPTs-Prompts
+https://twitter.com/hasantoxr/status/1716065432950726830
+conda
+pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu118
+https://dtf.ru/u/441609-kto/2062489-gayd-po-lokalnoy-trenirovke-ii-golosa-rvc2-i-sozdaniyu-kavera-na-ego-osnove?ysclid=lpcw3cm4x3348188117
+python tools/download_models.py
+python infer-web.py
+https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/tree/main
