@@ -18,3 +18,5 @@ python tools/download_models.py
 python infer-web.py
 https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/tree/main
 https://leingpt.ru/chat/
+https://learnmmd.com/downloads/#latestMMD
+https://learnmmd.com/http:/learnmmd.com/make-mmd-animated-gifs-using-gimp-2-6-mikumikudance/
