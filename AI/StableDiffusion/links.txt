@@ -14,3 +14,9 @@ https://vc.ru/ml/693785-stable-diffusion-ustanovka-i-nastroyka-lokalnoy-versii-d
 Photoshop SD Plugin
 https://www.fotosklad.ru/expert/articles/kak-vstroit-stable-diffusion-v-adobe-photoshop/
 https://vc.ru/design/708008-stable-diffusion-v-photoshop-rukovodstvo-po-ustanovke-plagina-dlya-raboty-s-lokalnym-serverom-sd?ysclid=lngphypyvk503921786
+
+Interrogator
+https://diffusionart.co/clip-interrogator/
+
+Lycoris
+https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris
