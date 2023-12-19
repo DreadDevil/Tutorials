@@ -1,6 +1,7 @@
 https://app.leonardo.ai/
 https://chat.openai.com/
 https://claude.ai/chats
+https://elevenlabs.io/dubbing
 starcoder
 metabob
 askyoupdf
@@ -17,6 +18,11 @@ https://dtf.ru/u/441609-kto/2062489-gayd-po-lokalnoy-trenirovke-ii-golosa-rvc2-i
 python tools/download_models.py
 python infer-web.py
 https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/tree/main
-https://leingpt.ru/chat/
+https://leingpt.ru/chat/ GPT-4
 https://learnmmd.com/downloads/#latestMMD
 https://learnmmd.com/http:/learnmmd.com/make-mmd-animated-gifs-using-gimp-2-6-mikumikudance/
+https://www.dalle3.org/
+https://www.bing.com/create%5C - GPT-4
+https://gist.github.com/emilianavt/cbf4d6de6f7fb01a42d4cce922795794 - Vtube
+https://obsproject.com/ru
+https://hub.vroid.com/
