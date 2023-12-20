@@ -26,3 +26,4 @@ https://learnmmd.com/http:/learnmmd.com/make-mmd-animated-gifs-using-gimp-2-6-mi
 https://gist.github.com/emilianavt/cbf4d6de6f7fb01a42d4cce922795794 - Vtube
 https://obsproject.com/ru
 https://hub.vroid.com/
+https://civitai.com/models - models sd
