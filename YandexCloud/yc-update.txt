@@ -1,0 +1,3 @@
+yc compute instance-group update \
+  --id <instance_group_id> \
+  --file <путь_к_файлу_specification.yaml> 

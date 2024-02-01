@@ -1,0 +1,3 @@
+yc container registry configure-docker
+docker build . -t cr.yandex/<идентификатор_реестра>/ubuntu-nginx:latest
+docker push cr.yandex/<идентификатор_реестра>/ubuntu-nginx:latest

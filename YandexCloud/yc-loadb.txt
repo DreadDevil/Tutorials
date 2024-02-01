@@ -1,0 +1,10 @@
+yc load-balancer target-group list
+
+yc load-balancer network-load-balancer target-states my-load-balancer \
+    --target-group-id <идентификатор_целевой_группы>
+
+yc load-balancer network-load-balancer create \
+  --region-id ru-central1 \
+  --name my-load-balancer \
+  --listener name=my-listener,external-ip-version=ipv4,port=80 \
+  --target-group target-group-id=<идентификатор_целевой_группы>,healthcheck-name=test-health-check,healthcheck-interval=2s,healthcheck-timeout=1s,healthcheck-unhealthythreshold=2,healthcheck-healthythreshold=2,healthcheck-http-port=80 

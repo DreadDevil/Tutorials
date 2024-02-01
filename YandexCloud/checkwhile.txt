@@ -1,0 +1,10 @@
+while true; do \
+yc compute instance-group \
+  --id <идентификатор_группы_ВМ> list-instances; \
+yc load-balancer network-load-balancer \
+  --id <идентификатор_балансировщика> target-states \
+  --target-group-id <идентификатор_целевой_группы>; \
+sleep 5; done
+
+
+while true; do wget -q -O- <адрес_сайта>; done

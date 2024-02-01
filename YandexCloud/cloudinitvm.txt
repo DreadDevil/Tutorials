@@ -20,6 +20,13 @@ instance_template:
     metadata:
       user-data: |-
         #cloud-config
+          users:
+            - name: my-user
+              groups: sudo
+              lock_passwd: true
+              sudo: 'ALL=(ALL) NOPASSWD:ALL'
+              ssh-authorized-keys:
+                - <содержимое_публичной_части_SSH-ключа>
           package_update: true
           runcmd:
             - [ apt-get, install, -y, nginx ]
