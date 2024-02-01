@@ -1,0 +1,16 @@
+- name: Deleting/Installing postfix
+  hosts: remote_server
+  become: true
+
+  tasks:
+    - name: Installing postfix
+      yum:
+        name: postfix
+        state: present
+      tags: init
+
+    - name: Deleting postfix
+      yum:
+        name: postfix
+        state: absent
+      tags: drop

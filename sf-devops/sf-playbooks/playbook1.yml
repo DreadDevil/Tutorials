@@ -1,0 +1,37 @@
+- name: Create user and SSH-key
+  hosts: remote_server
+  become: true
+
+  vars_prompt:
+    - name: "user_password"
+      prompt: "Enter password:"
+      private: true
+
+  tasks:
+    - name: Creating user
+      user:
+        name: user1
+        password: "{{ user_password | password_hash('sha512') }}"
+        createhome: yes
+        shell: /bin/bash
+
+    - name: Generating SSH-key
+      ansible.builtin.command: ssh-keygen -t rsa -b 4096 -f /home/user1/.ssh/id_rsa -N ""
+
+    - name: Encrypting SSH-key
+      ansible.builtin.command: ansible-vault encrypt /home/user1/.ssh/id_rsa.pub
+      args:
+        vault_password_file: .vault_pass.txt
+
+    - name: Adding SSh-key to authorized_keys
+      ansible.builtin.copy:
+        src: /home/user1/.ssh/id_rsa.pub
+        dest: /home/user1/.ssh/authorized_keys
+        owner: user1
+        group: user1
+        mode: "0600"
+
+    - name: Deleting unencrypted key
+      ansible.builtin.file:
+        path: /home/user1/.ssh/id_rsa.pub
+        state: absent
