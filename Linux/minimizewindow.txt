@@ -1,0 +1,3 @@
+Ctrl+Z
+bg
+fg

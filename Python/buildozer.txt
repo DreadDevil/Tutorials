@@ -1,0 +1,2 @@
+buildozer ios debug
+buildozer andrioid debug

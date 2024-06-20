@@ -1,0 +1,6 @@
+wsl --shutdown
+wsl --terminate Ubuntu-22.04
+wsl --export Ubuntu-22.04 C:\Ubuntu-22.04.tar
+mkdir E:\WSL\Ubuntu-22.04
+wsl --unregister Ubuntu-22.04
+wsl --import Ubuntu-22.04 E:\WSL\Ubuntu-22.04 C:\Ubuntu-22.04.tar

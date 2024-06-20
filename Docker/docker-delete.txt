@@ -1,0 +1,10 @@
+docker run -it ubuntu /bin/bash
+docker ps -a
+docker rm -f <container_id>
+docker rmi -f dreaddevil/mysql:latest
+docker ps -aq
+docker rm -f $(docker ps -aq)
+docker system prune
+docker rmi -f $(docker images -a -q)
+docker rmi $(docker images -f "dangling=true" -q)
+docker-compose down -v
