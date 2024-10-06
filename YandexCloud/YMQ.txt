@@ -3,7 +3,7 @@ yc iam access-key create --service-account-name service-account-for-cf
 
 echo "export VERBOSE_LOG=True" >> ~/.bashrc && . ~/.bashrc
 echo "export AWS_ACCESS_KEY_ID=YCAJEl0x_suA3GdQ-IrVzCRyA" >> ~/.bashrc && . ~/.bashrc
-echo "export AWS_SECRET_ACCESS_KEY=YCMBwcCxsn178qVvR0USrHgGFuohm07qt9s99zAc" >> ~/.bashrc && . ~/.bashrc
+echo "export AWS_SECRET_ACCESS_KEY=" >> ~/.bashrc && . ~/.bashrc
 echo "export QUEUE_URL=https://message-queue.api.cloud.yandex.net/b1g5tgf4874usr4tav2d/dj600000001pnefc00ja/my-first-queue" >> ~/.bashrc && . ~/.bashrc 
 
 
