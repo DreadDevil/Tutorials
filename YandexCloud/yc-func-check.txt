@@ -1,0 +1,157 @@
+yc resource-manager folder add-access-binding b1g8fbi4tulggjadd6es\
+  --role serverless.mdbProxies.user \
+  --subject serviceAccount:$SERVICE_ACCOUNT_ID 
+
+yc vpc subnet list
+
+
+yc managed-postgresql cluster create \
+  --name my-pg-database \
+  --description 'For Serverless' \
+  --postgresql-version 13 \
+  --environment production \
+  --network-name default \
+  --resource-preset b1.medium \
+  --host zone-id=ru-central1-c,subnet-id=<идентификатор_подсети> \
+  --disk-type network-hdd \
+  --disk-size 10 \
+  --user name=user1,password=user1user1 \
+  --database name=db1,owner=user1 \
+  --websql-access \
+  --serverless-access 
+
+
+yc managed-postgresql cluster list
+
+yc managed-postgresql cluster get <имя или идентификатор кластера> 
+
+
+
+CREATE TABLE measurements (
+    result integer,
+    time float
+); 
+
+
+akf3rg2iiuia7rbjdl83
+akf3rg2iiuia7rbjdl83.postgresql-proxy.serverless.yandexcloud.net
+
+
+
+echo "export CONNECTION_ID=akf3rg2iiuia7rbjdl83" >> ~/.bashrc && . ~/.bashrc
+echo "export DB_USER=user1" >> ~/.bashrc && . ~/.bashrc
+echo "export DB_HOST=user1user1" >> ~/.bashrc && . ~/.bashrc 
+
+
+import datetime
+import logging
+import requests
+import os
+
+#Эти библиотеки нужны для работы с PostgreSQL
+import psycopg2
+import psycopg2.errors
+
+CONNECTION_ID = os.getenv("CONNECTION_ID")
+DB_USER = os.getenv("DB_USER")
+DB_HOST = os.getenv("DB_HOST")
+
+# Настраиваем функцию для записи информации в журнал функции
+# Получаем стандартный логер языка Python
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+# Вычитываем переменную VERBOSE_LOG, которую мы указываем в переменных окружения 
+verboseLogging = eval(os.environ['VERBOSE_LOG'])  ## Convert to bool
+
+#Функция log, которая запишет текст в журнал выполнения функции, если в переменной окружения VERBOSE_LOG будет значение True
+def log(logString):
+    if verboseLogging:
+        logger.info(logString)
+
+#Запись в базу данных
+def save(result, time, context):
+    connection = psycopg2.connect(
+        database=CONNECTION_ID, # Идентификатор подключения
+        user=DB_USER, # Пользователь БД
+        password=context.token["access_token"],
+        host=DB_HOST, # Точка входа
+        port=6432,
+        sslmode="require")
+
+    cursor = connection.cursor()    
+    postgres_insert_query = """INSERT INTO measurements (result, time) VALUES (%s,%s)"""
+    record_to_insert = (result, time)
+    cursor.execute(postgres_insert_query, record_to_insert)
+    connection.commit()
+
+# Это обработчик. Он будет вызван первым при запуске функции
+def entry(event, context):
+
+    #Выводим в журнал значения входных параметров event и context
+    log(event)
+    log(context)
+
+    # Тут мы запоминаем текущее время, отправляем запрос к ya.ru и вычисляем время выполнения запроса
+    try:
+        now = datetime.datetime.now()
+        #здесь указано два таймаута: 1c для установки связи с сервисом и 3 секунды на получение ответа
+        response = requests.get('https://ya.ru', timeout=(1.0000, 3.0000))
+        timediff = datetime.datetime.now() - now
+        #сохраняем результат запроса
+        result = response.status_code
+    #если в процессе запроса сработали таймауты, то в результат записываем соответствующие коды
+    except requests.exceptions.ReadTimeout:
+        result = 601
+    except requests.exceptions.ConnectTimeout:
+        result = 602
+    except requests.exceptions.Timeout:
+        result = 603
+    log(f'Result: {result} Time: {timediff.total_seconds()}')    
+    save(result, timediff.total_seconds(), context)
+
+    #возвращаем результат запроса
+    return {
+        'statusCode': result,
+        'headers': {
+            'Content-Type': 'text/plain'
+        },
+        'isBase64Encoded': False
+    } 
+
+
+
+yc serverless function create \
+  --name  function-for-postgresql \
+  --description "function for postgresql"
+
+yc serverless function version create \
+  --function-name=function-for-postgresql \
+  --memory=256m \
+  --execution-timeout=5s \
+  --runtime=python37 \
+  --entrypoint=function-for-postgresql.entry \
+  --service-account-id $SERVICE_ACCOUNT_ID \
+  --environment VERBOSE_LOG=True \
+  --environment CONNECTION_ID=$CONNECTION_ID \
+  --environment DB_USER=$DB_USER \
+  --environment DB_HOST=$DB_HOST \
+  --source-path function-for-postgresql.py
+
+
+yc serverless function version list --function-name function-for-postgresql
+yc serverless function invoke --name function-for-postgresql
+
+
+
+
+
+yc serverless trigger create timer \
+  --name trigger-for-postgresql \
+  --invoke-function-name function-for-postgresql \
+  --invoke-function-service-account-id $SERVICE_ACCOUNT_ID \
+  --cron-expression '* * * * ? *' 
+
+
+yc serverless trigger delete trigger-for-postgresql 
+
+

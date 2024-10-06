@@ -1,0 +1,316 @@
+. Создание структуры проекта
+Для начала создадим структуру файлов и папок проекта:
+
+bash
+Копировать код
+/my_flask_project
+    /app
+        __init__.py
+        routes.py
+        models.py
+        forms.py
+        templates/
+            index.html
+            login.html
+            dashboard.html
+            admin.html
+            create_user.html
+            edit_access.html
+    /migrations
+    config.py
+    app.py
+    requirements.txt
+Теперь распишем, что нужно поместить в каждый файл.
+
+2. app.py - Основной файл для запуска приложения
+Этот файл будет содержать настройки приложения и его инициализацию.
+
+python
+Копировать код
+from app import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(debug=True)
+3. config.py - Настройки конфигурации
+Этот файл будет содержать конфигурационные данные, включая настройки базы данных.
+
+python
+Копировать код
+import os
+
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql://username:password@localhost/my_database'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+4. /app/__init__.py - Инициализация приложения
+Этот файл будет инициализировать приложение Flask, базы данных и миграции.
+
+python
+Копировать код
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from config import Config
+
+db = SQLAlchemy()
+migrate = Migrate()
+login_manager = LoginManager()
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
+
+    from app import routes, models
+    app.register_blueprint(routes.bp)
+
+    return app
+5. /app/routes.py - Определение маршрутов
+Этот файл содержит все маршруты для приложения, включая маршруты для администрирования.
+
+python
+Копировать код
+from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from app import db
+from app.models import User, Role, TableAccess
+from app.forms import LoginForm, UserForm, TableAccessForm
+
+bp = Blueprint('main', __name__)
+
+@bp.route('/')
+def index():
+    return render_template('index.html')
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('main.dashboard'))
+        else:
+            flash('Invalid username or password')
+    return render_template('login.html', form=form)
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
+
+@bp.route('/dashboard')
+@login_required
+def dashboard():
+    tables = TableAccess.query.filter_by(user_id=current_user.id)
+    return render_template('dashboard.html', tables=tables)
+
+@bp.route('/admin')
+@login_required
+def admin():
+    if current_user.role.name != 'admin':
+        return redirect(url_for('main.dashboard'))
+
+    users = User.query.all()
+    return render_template('admin.html', users=users)
+
+@bp.route('/admin/create_user', methods=['GET', 'POST'])
+@login_required
+def create_user():
+    if current_user.role.name != 'admin':
+        return redirect(url_for('main.dashboard'))
+
+    form = UserForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, role_id=form.role.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User created successfully.')
+        return redirect(url_for('main.admin'))
+    return render_template('create_user.html', form=form)
+
+@bp.route('/admin/edit_access/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_access(user_id):
+    if current_user.role.name != 'admin':
+        return redirect(url_for('main.dashboard'))
+
+    user = User.query.get(user_id)
+    form = TableAccessForm()
+
+    if form.validate_on_submit():
+        table_access = TableAccess(user_id=user_id, table_name=form.table_name.data, access_type=form.access_type.data)
+        db.session.add(table_access)
+        db.session.commit()
+        flash('Access updated successfully.')
+        return redirect(url_for('main.admin'))
+
+    return render_template('edit_access.html', form=form, user=user)
+6. /app/models.py - Модели данных
+Этот файл содержит модели для пользователей, ролей и таблиц с доступами.
+
+python
+Копировать код
+from app import db
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+    role = db.relationship('Role')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class TableAccess(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    table_name = db.Column(db.String(64))
+    access_type = db.Column(db.String(16))  # 'read', 'edit', 'none'
+    user = db.relationship('User')
+7. /app/forms.py - Веб-формы
+Этот файл содержит формы для логина, создания пользователей и управления доступами.
+
+python
+Копировать код
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SelectField, SubmitField
+from wtforms.validators import DataRequired
+from app.models import Role
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Log In')
+
+class UserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    role = SelectField('Role', coerce=int, choices=[(role.id, role.name) for role in Role.query.all()])
+    submit = SubmitField('Create User')
+
+class TableAccessForm(FlaskForm):
+    table_name = StringField('Table Name', validators=[DataRequired()])
+    access_type = SelectField('Access Type', choices=[('read', 'Read Only'), ('edit', 'Edit')])
+    submit = SubmitField('Update Access')
+8. /app/templates/ - Шаблоны HTML
+index.html
+html
+Копировать код
+<h1>Welcome to the Application!</h1>
+<a href="{{ url_for('main.login') }}">Log In</a>
+login.html
+html
+Копировать код
+<h1>Login</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.username.label }}: {{ form.username }}</p>
+    <p>{{ form.password.label }}: {{ form.password }}</p>
+    <p>{{ form.submit }}</p>
+</form>
+dashboard.html
+html
+Копировать код
+<h1>Dashboard</h1>
+<p>Welcome, {{ current_user.username }}!</p>
+<h2>Your tables:</h2>
+<ul>
+    {% for table in tables %}
+    <li>{{ table.table_name }} ({{ table.access_type }})</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('main.logout') }}">Log out</a>
+admin.html
+html
+Копировать код
+<h1>Admin Panel</h1>
+<h2>Users:</h2>
+<ul>
+    {% for user in users %}
+    <li>{{ user.username }} - Role: {{ user.role.name }}
+        <a href="{{ url_for('main.edit_access', user_id=user.id) }}">Edit Access</a>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('main.create_user') }}">Create New User</a>
+create_user.html
+html
+Копировать код
+<h1>Create User</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.username.label }}: {{ form.username }}</p>
+    <p>{{ form.password.label }}: {{ form.password }}</p>
+    <p>{{ form.role.label }}: {{ form.role }}</p>
+    <p>{{ form.submit }}</p>
+</form>
+edit_access.html
+html
+Копировать код
+<h1>Edit Access for {{ user.username }}</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.table_name.label }}: {{ form.table_name }}</p>
+    <p>{{ form.access_type.label }}: {{ form.access_type }}</p>
+    <p>{{ form.submit }}</p>
+</form>
+9. Шаги по настройке проекта
+Создай и активируй виртуальное окружение:
+
+bash
+Копировать код
+python3 -m venv venv
+source venv/bin/activate  # Linux/MacOS
+venv\Scripts\activate     # Windows
+Установи зависимости:
+
+bash
+Копировать код
+pip install flask flask_sqlalchemy flask_migrate flask_login flask_wtf mysqlclient
+Создай базу данных MySQL:
+
+Создай новую базу данных и обнови строку подключения в config.py.
+sql
+Копировать код
+CREATE DATABASE my_database;
+Создай роли в базе данных:
+
+Добавь в таблицу ролей админа и другие роли.
+sql
+Копировать код
+INSERT INTO role (name) VALUES ('admin'), ('user');
+Запусти миграции:
+
+bash
+Копировать код
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+Запусти приложение:
+
+bash
+Копировать код
+flask run
+Зайди на страницу администрирования:
+
+Авторизуйся как администратор и начни управлять доступами пользователей к таблицам.

@@ -1,0 +1,3 @@
+pip install pipreqs
+pipreqs $PWD --print
+pipreqs $PWD --force 

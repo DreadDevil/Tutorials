@@ -1,3 +1,7 @@
+SD GitHub
+https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Features#hires-fix
+
+
 Installation
 https://aitool.ai/model/74886
 https://mrdeepfakes.com/forums/threads/installing-stable-diffusion-webui-nudifying-inpainting-guide.11797/?ref=aitool.ai#55421-1.%2BInstalling%2BAUTOMATIC1111%2BWebui
@@ -20,3 +24,20 @@ https://diffusionart.co/clip-interrogator/
 
 Lycoris
 https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris
+
+
+Lypsync
+https://github.com/numz/sd-wav2lip-uhq
+https://github.com/topics/lipsync
+
+Upscale
+https://upscale.wiki/wiki/Main_Page
+https://nmkd.de/?esrgan
+
+Restoration
+https://github.com/epicMellow/Real-ESRGAN-W-Ultrasharp4x?tab=readme-ov-file
+
+https://www.posemaniacs.com/ru
+
+
+https://www.aiarty.com/stable-diffusion-guide/best-stable-diffusion-models.htm

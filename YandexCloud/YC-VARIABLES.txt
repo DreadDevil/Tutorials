@@ -1,0 +1,10 @@
+yc serverless function version list --function-name
+
+echo "export FOLDER_ID=$(yc config get folder-id)" >> ~/.bashrc && . ~/.bashrc
+echo $FOLDER_ID
+
+echo "export OAUTH_TOKEN=$(yc config get token)" >> ~/.bashrc && . ~/.bashrc
+echo $OAUTH_TOKEN
+
+echo "export CLOUD_ID=$(yc config get cloud-id)" >> ~/.bashrc && . ~/.bashrc
+echo $CLOUD_ID

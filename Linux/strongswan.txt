@@ -1,0 +1,27 @@
+/etc/ipsec.conf 
+
+config setup
+        charondebug="all"
+        uniqueids=yes
+        strictcrlpolicy=no 
+
+conn hq-to-cloud
+        authby=secret
+        left=%defaultroute
+        leftid=1.1.1.1
+        leftsubnet=192.168.0.0/24
+        right=130.193.32.25
+        rightsubnet=10.128.0.0/24
+        ike=aes256-sha2_256-modp1024!
+        esp=aes256-sha2_256!
+        keyingtries=0
+        ikelifetime=1h
+        lifetime=8h
+        dpddelay=30
+        dpdtimeout=120
+        dpdaction=restart
+        auto=start 
+
+/etc/ipsec.secrets
+
+130.193.32.25 1.1.1.1 : PSK "<пароль>" 

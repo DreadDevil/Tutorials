@@ -1,0 +1,54 @@
+pip install awscli 
+
+
+aws configure 
+
+
+export ENDPOINT=<значение endpoint> 
+
+
+Создание таблицы
+
+aws dynamodb create-table \
+  --table-name docapitest/series \
+  --attribute-definitions \
+  AttributeName=series_id,AttributeType=N \
+  AttributeName=title,AttributeType=S \
+  --key-schema \
+  AttributeName=series_id,KeyType=HASH \
+  AttributeName=title,KeyType=RANGE \
+  --endpoint $ENDPOINT 
+
+
+Добавление данных в таблицу
+
+aws dynamodb put-item \
+  --table-name docapitest/series \
+  --item '{"series_id": {"N": "1"}, "title": {"S": "IT Crowd"}, "series_info": {"S": "The IT Crowd is a British sitcom produced by Channel 4, written by Graham Linehan, produced by Ash Atalla and starring Chris ODowd, Richard Ayoade, Katherine Parkinson, and Matt Berry."}, "release_date": {"S": "2006-02-03"}}' \
+  --endpoint $ENDPOINT 
+
+
+aws dynamodb put-item \
+  --table-name docapitest/series \
+  --item '{"series_id": {"N": "2"}, "title": {"S": "Silicon Valley"}, "series_info": {"S": "Silicon Valley is an American comedy television series created by Mike Judge, John Altschuler and Dave Krinsky."}, "release_date": {"S": "2014-04-06"}}' \
+  --endpoint $ENDPOINT
+
+
+Чтение данных из таблицы
+
+aws dynamodb get-item --consistent-read \
+  --table-name docapitest/series \
+  --key '{"series_id": {"N": "1"}, "title": {"S": "IT Crowd"}}' \
+  --endpoint $ENDPOINT 
+
+Для того, чтобы выбрать данные из таблицы series по ключу series_id, выполните следующую команду:
+aws dynamodb query \
+  --table-name docapitest/series \
+  --key-condition-expression "series_id = :name" \
+  --expression-attribute-values '{":name":{"N":"2"}}' \
+  --endpoint $ENDPOINT 
+
+Удаление таблицы
+aws dynamodb delete-table \
+  --table-name docapitest/series \
+  --endpoint $ENDPOINT 

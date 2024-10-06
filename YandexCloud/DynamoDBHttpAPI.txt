@@ -1,0 +1,33 @@
+export ENDPOINT=<значение_endpoint> 
+
+curl \
+  -H 'X-Amz-Target: DynamoDB_20120810.CreateTable' \
+  -H "Authorization: Bearer $(yc iam create-token)" \
+  -H "Content-Type: application/json" \
+  -d '{"TableName": "docapitest/series","AttributeDefinitions":[{"AttributeName": "series_id", "AttributeType": "N"},{"AttributeName": "title", "AttributeType": "S"}],"KeySchema":[{"AttributeName": "series_id", "KeyType": "HASH"},{"AttributeName": "title", "KeyType": "RANGE"}]}' \
+  $ENDPOINT 
+
+curl \
+  -H 'X-Amz-Target: DynamoDB_20120810.PutItem' \
+  -H "Authorization: Bearer $(yc iam create-token)" \
+  -H "Content-Type: application/json" \
+  -d '{"TableName": "docapitest/series", "Item": {"series_id": {"N": "1"}, "title": {"S": "IT Crowd"}, "series_info": {"S": "The IT Crowd is a British sitcom produced by Channel 4, written by Graham Linehan, produced by Ash Atalla and starring Chris ODowd, Richard Ayoade, Katherine Parkinson, and Matt Berry."}, "release_date": {"S": "2006-02-03"}}}' \
+  $ENDPOINT 
+
+
+curl \
+  -H 'X-Amz-Target: DynamoDB_20120810.GetItem' \
+  -H "Authorization: Bearer $(yc iam create-token)" \
+  -H "Content-Type: application/json" \
+  -d '{"TableName": "docapitest/series", "Key": {"series_id":{"N":"1"}, "title":{"S":"IT Crowd"}}}' \
+  $ENDPOINT 
+
+
+curl \
+  -H 'X-Amz-Target: DynamoDB_20120810.DeleteTable' \
+  -H "Authorization: Bearer $(yc iam create-token)" \
+  -H "Content-Type: application/json" \
+  -d '{"TableName": "docapitest/series"}' \
+  $ENDPOINT 
+
+

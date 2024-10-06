@@ -1,0 +1,88 @@
+Photorealism:
+Urban Landscapes:
+
+Morning fog enveloping skyscrapers in a bustling metropolis, with pedestrians in warm coats, ultra-realistic, high resolution.
+Abandoned industrial district with graffiti-covered walls and rusty pipes, illuminated by the setting sun, photorealistic detail.
+Nighttime view of a New York street with bright neon signs, wet asphalt, and a traffic jam of cars, cinematic quality.
+Nature Scenes:
+
+Alpine mountain lake reflecting snow-capped peaks and dense forests along the shores, crystal clear water, photorealism.
+Tropical rainforest with vibrant exotic birds, cascading waterfalls, and lush foliage, hyper-detailed, vivid colors.
+Norwegian coastline with steep cliffs, crashing waves, and clouds floating low over the land, ultra-realistic atmosphere.
+Portraits:
+
+Elderly fisherman with a thick beard and deep wrinkles, dressed in an old jacket, standing against an ocean backdrop, photorealistic.
+Young woman in traditional Japanese kimono, standing against a backdrop of blooming cherry blossoms, highly detailed, lifelike.
+Musician playing an acoustic guitar under the shade of an old oak tree in a park, realistic lighting, natural colors.
+Fantasy:
+Epic Landscapes:
+
+Floating island with waterfalls cascading into the endless sky, and a castle perched on top, highly detailed, fantasy setting.
+Massive dragon guarding a treasure hoard deep within a cave, illuminated by magical fireflies, ultra-detailed.
+Enchanted forest with ancient trees, glowing blue and green fireflies, and a hidden entrance to an underground kingdom, high fantasy.
+Fantasy Characters:
+
+Wizard with a long grey beard, holding a scroll with ancient runes, surrounded by magical auras, highly detailed, mystical.
+Warriors riding gryphons over icy peaks, searching for adventure, dynamic scene, epic fantasy.
+Forest nymph with flowering hair and glowing eyes, dancing among ancient ruins, ethereal quality, high fantasy.
+Science Fiction:
+Cyberpunk:
+
+Futuristic cityscape with towering skyscrapers covered in neon advertisements, and streets filled with people in cybernetic suits, ultra-realistic, dystopian.
+Android examining its reflection in a mirror, against a backdrop of a high-tech laboratory, ultra-detailed, cyberpunk aesthetic.
+Giant megacity under a dome on Mars, with red sandstorms outside and glowing buildings inside, photorealistic, sci-fi setting.
+Space Landscapes:
+
+Massive spaceship hovering above an exoplanet with rings and nebulae in the background, ultra-detailed, photorealistic.
+Alien planet with bioluminescent forests, strange creatures, and two moons in the night sky, hyper-detailed, sci-fi.
+Colony on an asteroid surrounded by star clouds and floating debris, ultra-realistic, detailed textures.
+Anime:
+School Life:
+
+Group of students walking down a busy street in a Japanese city, with cherry blossoms in full bloom and a bright sky, anime style, vibrant colors.
+Classroom in a Japanese school, illuminated by sunlight, with characters in school uniforms engaged in various activities, anime style, high detail.
+Boy and girl standing on a school rooftop at sunset, with wind blowing through their hair and uniforms, anime style, romantic atmosphere.
+Fantasy Anime:
+
+Swordmaster in a fantasy world with a long cloak and magical weapon, battling a demon in a desert, anime style, dynamic scene.
+Female warrior with magical abilities, commanding the elements in a world with floating islands and mythical creatures, anime style, epic.
+Anime hero team preparing to fight a giant dragon against the backdrop of a ruined city, anime style, highly detailed.
+Romance:
+
+Romantic moment at a festival with lanterns in the night sky, characters holding hands, surrounded by a lively crowd, anime style, warm colors.
+Confession of love in the rain on an old bridge, with raindrops falling into the water and reflecting city lights, anime style, emotional scene.
+Strolling through an autumn park with falling leaves and a touching atmosphere, characters looking at each other warmly, anime style, soft lighting.
+Retro and Vintage:
+Vintage Portraits:
+
+Man in 1920s style, dressed in a classic suit with a bow tie, sitting in a leather chair with a cigar, high detail, vintage.
+Woman in 1950s style, dressed in a red polka-dot dress, standing by an old car against an evening city backdrop, vintage colors, realistic.
+Family in 1970s style, gathered around a table in the kitchen, with bright wallpaper and retro appliances, photorealistic, nostalgic.
+Retro-Futurism:
+
+Futuristic city in 1960s retro-futurism style, with flying cars and round architectural designs, high detail, retro aesthetic.
+Space station in retro-futurism style, with domes and control panels adorned with bright buttons and indicators, photorealistic, sci-fi.
+Characters in vintage space suits exploring the surface of the Moon against the backdrop of Earth, retro-futuristic, high detail.
+Abstract and Surrealism:
+Surrealist Scenes:
+
+Desert where giant flowers grow instead of sand, and fish swim in the sky, highly detailed, surrealist.
+Melting clocks hanging from the branches of distorted trees in a strange, warped world, surrealist, high detail.
+Person with a head made up of multiple eyes, looking in different directions, against a cosmic background, surrealist, photorealistic.
+Abstract Forms:
+
+Swirls of colors and light, creating the illusion of motion and depth, abstract, vibrant.
+Geometric shapes intersecting in space, creating complex patterns and forms, abstract, high detail.
+Experimental textures and materials creating unusual and impressive visual effects, abstract, photorealistic.
+Gothic and Dark Themes:
+Gothic Scenes:
+
+Abandoned castle on a hill, shrouded in fog with ivy crawling up the walls, photorealistic, gothic.
+Vampire in a long black cloak standing on a balcony under the moon, overlooking an ancient city, gothic, highly detailed.
+Dark forest with ghostly trees and mystical light filtering through dense foliage, photorealistic, gothic atmosphere.
+Horror and Mysticism:
+
+Old house with broken windows and shadows flickering behind them, surrounded by a gloomy forest, photorealistic, eerie.
+Demonic creature with glowing eyes emerging from the shadows in an abandoned temple, high detail, horror.
+Witch conducting a ritual in the forest, surrounded by burning candles and mystical smoke, gothic, dark atmosphere.
+These prompts should give you a diverse and high-quality portfolio that spans multiple genres and styles, showcasing your versatility with Midjourney. If you have any specific styles or adjustments in mind, feel free to ask!

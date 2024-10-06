@@ -1,0 +1,31 @@
+f __name__ == '__main__':
+    MyApp().run()
+
+
+
+Certainly! To help you with that, I need the Python code you want to rewrite for iOS to compile and use with Buildozer. Could you please provide the code?
+
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+
+import webbrowser
+
+
+class MyApp(App):
+
+    def build(self):
+        layout = BoxLayout(orientation='vertical', padding=50, spacing=10)
+        button = Button(text='Открыть ссылку')
+        button.bind(on_press=self.open_link)
+        layout.add_widget(button)
+        return layout
+
+    def open_link(self, instance):
+        # Замените "https://example.com" на вашу конкретную ссылку
+        url = "https://example.com"
+        webbrowser.open(url)
+
+
+if __name__ == '__main__':
+    MyApp().run()

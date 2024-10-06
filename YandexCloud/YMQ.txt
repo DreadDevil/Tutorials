@@ -1,0 +1,318 @@
+yc iam access-key create --service-account-name service-account-for-cf
+
+
+echo "export VERBOSE_LOG=True" >> ~/.bashrc && . ~/.bashrc
+echo "export AWS_ACCESS_KEY_ID=YCAJEl0x_suA3GdQ-IrVzCRyA" >> ~/.bashrc && . ~/.bashrc
+echo "export AWS_SECRET_ACCESS_KEY=YCMBwcCxsn178qVvR0USrHgGFuohm07qt9s99zAc" >> ~/.bashrc && . ~/.bashrc
+echo "export QUEUE_URL=https://message-queue.api.cloud.yandex.net/b1g5tgf4874usr4tav2d/dj600000001pnefc00ja/my-first-queue" >> ~/.bashrc && . ~/.bashrc 
+
+
+
+my-url-receiver-function.py
+
+import logging
+import os
+import boto3
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+verboseLogging = eval(os.environ['VERBOSE_LOG'])  ## Convert to bool
+queue_url = os.environ['QUEUE_URL']
+
+def log(logString):
+    if verboseLogging:
+        logger.info(logString)
+
+def handler(event, context):
+
+    # Get url
+    try:
+        url = event['queryStringParameters']['url']
+    except Exception as error:
+        logger.error(error)
+        statusCode = 400
+        return {
+            'statusCode': statusCode
+        }
+
+    # Create client
+    client = boto3.client(
+        service_name='sqs',
+        endpoint_url='https://message-queue.api.cloud.yandex.net',
+        region_name='ru-central1'
+    )
+
+    # Send message to queue
+    client.send_message(
+        QueueUrl=queue_url,
+        MessageBody=url
+    )
+    log('Successfully sent test message to queue')
+
+    statusCode = 200
+
+    return {
+        'statusCode': statusCode
+    }
+
+
+
+pipreqs $PWD --force
+
+
+
+zip my-url-receiver-function my-url-receiver-function.py requirements.txt
+
+
+Создайте функцию и её версию:
+
+yc serverless function create \
+  --name  my-url-receiver-function \
+  --description "function for url"
+
+yc serverless function version create \
+  --function-name=my-url-receiver-function \
+  --memory=256m \
+  --execution-timeout=5s \
+  --runtime=python37 \
+  --entrypoint=my-url-receiver-function.handler \
+  --service-account-id $SERVICE_ACCOUNT_ID \
+  --environment VERBOSE_LOG=$VERBOSE_LOG \
+  --environment AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+  --environment AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  --environment QUEUE_URL=$QUEUE_URL \
+  --source-path my-url-receiver-function.zip
+
+
+
+Тестирование функции
+Перейдите в раздел Cloud Functions консоли управления облаком и выберите созданную функцию my-url-receiver-function. На вкладке Тестирование в боковом меню выберите шаблон HTTPS-вызов и замените раздел queryStringParameters:
+    "queryStringParameters": {
+        "a": "2",
+        "b": "1",
+    },     
+на аналогичный, но с параметром url с любым сайтом. Важно указывать ссылку целиком.
+    "queryStringParameters": {
+        "url": "https://ya.ru/"
+    },     
+Нажмите кнопку Запустить тест.
+
+
+
+
+Обновление спецификации API Gateway
+
+yc serverless api-gateway get-spec \
+  --name hello-world >> hello-world-new.yaml
+
+
+yc serverless function version list --function-name my-first-function 
+
+
+Внесите изменения, добавив секцию о ранее созданной функции:
+
+    /check:
+        get:
+            x-yc-apigateway-integration:
+                type: cloud-functions
+                function_id: <идентификатор функции>
+                service_account_id: <идентификатор сервисного аккаунта>
+            operationId: add-url
+
+
+
+
+Обновите конфигурацию:
+
+yc serverless api-gateway update \
+  --name hello-world \
+  --spec=hello-world-new.yaml 
+
+https://<идентификатор API Gateway>.apigw.yandexcloud.net/check?url=https://ya.ru/
+
+
+
+Создание функции для чтения из очереди
+
+function-for-url-from-mq.py
+
+import logging
+import os
+import boto3
+import datetime
+import requests
+
+#Эти библиотеки нужны для работы с PostgreSQL
+import psycopg2
+import psycopg2.errors
+import psycopg2.extras
+
+CONNECTION_ID = os.getenv("CONNECTION_ID")
+DB_USER = os.getenv("DB_USER")
+DB_HOST = os.getenv("DB_HOST")
+QUEUE_URL = os.environ['QUEUE_URL']
+
+# Настраиваем функцию для записи информации в журнал функции
+# Получаем стандартный логер языка Python
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+# Вычитываем переменную VERBOSE_LOG, которую мы указываем в переменных окружения 
+verboseLogging = eval(os.environ['VERBOSE_LOG'])  ## Convert to bool
+
+#Функция log, которая запишет текст в журнал выполнения функции, если в переменной окружения VERBOSE_LOG будет значение True
+def log(logString):
+    if verboseLogging:
+        logger.info(logString)
+
+#Получаем подключение
+def getConnString(context):
+    """
+    Extract env variables to connect to DB and return a db string
+    Raise an error if the env variables are not set
+    :return: string
+    """
+    connection = psycopg2.connect(
+        database=CONNECTION_ID, # Идентификатор подключения
+        user=DB_USER, # Пользователь БД
+        password=context.token["access_token"],
+        host=DB_HOST, # Точка входа
+        port=6432,
+        sslmode="require")
+    return connection
+
+"""
+    Create SQL query with table creation
+"""
+def makeCreateDataTableQuery(table_name):
+    query = f"""CREATE TABLE public.{table_name} (
+    url text,
+    result integer,
+    time float
+    )"""
+    return query
+
+def makeInsertDataQuery(table_name, url, result, time):
+    query = f"""INSERT INTO {table_name} 
+    (url, result,time)
+    VALUES('{url}', {result}, {time})
+    """
+    return query
+
+def handler(event, context):
+
+    # Create client
+    client = boto3.client(
+        service_name='sqs',
+        endpoint_url='https://message-queue.api.cloud.yandex.net',
+        region_name='ru-central1'
+    )
+
+    # Receive sent message
+    messages = client.receive_message(
+        QueueUrl=QUEUE_URL,
+        MaxNumberOfMessages=1,
+        VisibilityTimeout=60,
+        WaitTimeSeconds=1
+    ).get('Messages')
+
+    if messages is None:
+        return {
+            'statusCode': 200
+        }
+
+    for msg in messages:
+        log('Received message: "{}"'.format(msg.get('Body')))
+
+    # Get url from message
+    url = msg.get('Body');
+
+    # Check url
+    try:
+        now = datetime.datetime.now()
+        response = requests.get(url, timeout=(1.0000, 3.0000))
+        timediff = datetime.datetime.now() - now
+        result = response.status_code
+    except requests.exceptions.ReadTimeout:
+        result = 601
+    except requests.exceptions.ConnectTimeout:
+        result = 602
+    except requests.exceptions.Timeout:
+        result = 603
+    log(f'Result: {result} Time: {timediff.total_seconds()}')
+    
+    connection = getConnString(context)
+    log(f'Connecting: {connection}')    
+    cursor = connection.cursor()
+
+    table_name = 'custom_request_result'
+    sql = makeInsertDataQuery(table_name, url, result, timediff.total_seconds())
+
+    log(f'Exec: {sql}')
+    try:
+        cursor.execute(sql)
+    except psycopg2.errors.UndefinedTable as error:
+        log(f'Table not exist - create and repeate insert')
+        connection.rollback()
+        logger.error(error)
+        createTable = makeCreateDataTableQuery(table_name)
+        log(f'Exec: {createTable}')
+        cursor.execute(createTable)
+        connection.commit()
+        log(f'Exec: {sql}')
+        cursor.execute(sql)
+    except Exception as error:
+        logger.error( error)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    # Delete processed messages
+    for msg in messages:
+        client.delete_message(
+            QueueUrl=QUEUE_URL,
+            ReceiptHandle=msg.get('ReceiptHandle')
+        )
+        print('Successfully deleted message by receipt handle "{}"'.format(msg.get('ReceiptHandle')))
+
+    statusCode = 200
+
+    return {
+        'statusCode': statusCode
+    } 
+
+
+
+
+
+zip function-for-url-from-mq function-for-url-from-mq.py requirements.txt
+
+yc serverless function create \
+  --name function-for-url-from-mq \
+  --description "function for url from mq"
+
+yc serverless function version create \
+  --function-name=function-for-url-from-mq \
+  --memory=256m \
+  --execution-timeout=5s \
+  --runtime=python37 \
+  --entrypoint=function-for-url-from-mq.handler \
+  --service-account-id $SERVICE_ACCOUNT_ID \
+  --environment VERBOSE_LOG=True \
+  --environment CONNECTION_ID=$CONNECTION_ID \
+  --environment DB_USER=$DB_USER \
+  --environment DB_HOST=$DB_HOST \
+  --environment AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+  --environment AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  --environment QUEUE_URL=$QUEUE_URL \
+  --source-path function-for-url-from-mq.zip
+
+
+Создание триггера
+
+yc serverless trigger create timer \
+  --name trigger-for-mq \
+  --invoke-function-name function-for-url-from-mq \
+  --invoke-function-service-account-id $SERVICE_ACCOUNT_ID \
+  --cron-expression '* * * * ? *' 

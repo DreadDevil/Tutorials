@@ -1,0 +1,62 @@
+Step 1: Create a Virtual Environment
+Creating a virtual environment allows you to manage dependencies for your project separately from your system Python installation.
+
+In Terminal, run:
+
+bash
+Копировать код
+python3 -m venv myenv
+Activate the virtual environment:
+
+bash
+Копировать код
+source myenv/bin/activate
+If you see an error about the venv module, you may need to install it first:
+
+bash
+Копировать код
+python3 -m ensurepip --default-pip
+Step 2: Install Cython in the Virtual Environment
+Now that the virtual environment is active, you can use pip without the restrictions.
+
+Install Cython:
+bash
+Копировать код
+pip install cython
+Step 3: Install Buildozer in the Virtual Environment
+Continue to install Buildozer within the same virtual environment.
+
+Install Buildozer:
+bash
+Копировать код
+pip install buildozer
+Step 4: Install Additional Dependencies for Android (if needed)
+If you plan to build Android applications, you can install additional dependencies as outlined before. Make sure to do this within your virtual environment.
+
+Step 5: Verify Installation
+To confirm that everything is installed correctly:
+
+Check the version of Cython:
+
+bash
+Копировать код
+cython --version
+Check the version of Buildozer:
+
+bash
+Копировать код
+buildozer --version
+Step 6: Use Buildozer
+You can now use Buildozer to package your applications. Ensure your virtual environment is active whenever you use Buildozer.
+
+Initialize a Buildozer project:
+
+bash
+Копировать код
+buildozer init
+Build your application:
+
+bash
+Копировать код
+buildozer -v android debug
+By using a virtual environment, you avoid conflicts with your system Python and can manage your project dependencies more effectively.

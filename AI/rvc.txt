@@ -1,0 +1,9 @@
+There are too many alternatives to list here but:
+
+RVC family: IAHispano/Applio (MIT), fumiama's RVC (AGPL) and original RVC (MIT)
+VCClient (MIT etc.) is quite actively maintained and offers web-based GUI for real-time conversion.
+fish-diffusion tried to be quite modular but not quite actively maintained.
+yxlllc/DDSP-SVC - new releases are issued occasionally. yxlllc/ReFlow-VAE-SVC
+coqui-ai/TTS was for TTS but was partially modular. However, it is not maintained anymore, unfortunately.
+
+https://github.com/voicepaw/so-vits-svc-fork?tab=readme-ov-file

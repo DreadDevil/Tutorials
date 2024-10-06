@@ -1,0 +1,393 @@
+export SERVICE_ACCOUNT=$(yc iam service-account create --name ffmpeg-account-for-cf \
+  --description "service account for serverless" \
+  --format json | jq -r .)
+
+yc iam service-account list
+
+
+echo "export SERVICE_ACCOUNT_FFMPEG_ID=aje2cr4b3iq2i7uhqroq" >> ~/.bashrc && . ~/.bashrc
+echo $SERVICE_ACCOUNT_FFMPEG_ID 
+
+
+yc lockbox secret create --name ffmpeg-sa-key \
+  --folder-id $FOLDER_ID \
+  --description "keys for serverless" \
+  --payload '[{"key": "ACCESS_KEY_ID", "text_value": YCAJE2fNxrY7tH1X4nb0CuvaL}, {"key": "SECRET_ACCESS_KEY", "text_value": "YCPHpH3l813UzXtLd0ll2wDzFDi7LjD6EY9Y9bSI"}]'
+
+
+yc lockbox secret list
+
+yc lockbox secret get --name ffmpeg-sa-key
+
+echo "export SECRET_ID=e6q6v1ij3objotbgl49d" >> ~/.bashrc && . ~/.bashrc
+echo $SECRET_ID 
+
+aje2cr4b3iq2i7uhqroq
+echo "export SERVICE_ACCOUNT_FFMPEG_ID=aje2cr4b3iq2i7uhqroq" >> ~/.bashrc && . ~/.bashrc
+echo $SERVICE_ACCOUNT_FFMPEG_ID 
+access_key:
+  id: aje4r1rjsgr2ltm7bivc
+  service_account_id: aje2cr4b3iq2i7uhqroq
+  created_at: "2024-06-27T03:56:42.429961758Z"
+  key_id: YCAJE2fNxrY7tH1X4nb0CuvaL
+secret: YCPHpH3l813UzXtLd0ll2wDzFDi7LjD6EY9Y9bSI
+
+
+
+
+Роли
+
+echo "export FOLDER_ID=$(yc config get folder-id)" >> ~/.bashrc && . ~/.bashrc
+echo $FOLDER_ID
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role storage.viewer
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role storage.uploader
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role ymq.reader
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role ymq.writer
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role ydb.admin
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role serverless.functions.invoker
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role lockbox.payloadViewer
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --role editor 
+
+
+Вы можете назначить несколько ролей и с помощью команды set-access-binding. Но эта команда полностью перезаписывает права доступа к ресурсу и все текущие роли на него будут удалены! Поэтому сначала убедитесь, что ресурсу не назначены роли, которые вы не хотите потерять:
+yc resource-manager folder list-access-bindings $FOLDER_ID
+
+yc resource-manager folder set-access-bindings $FOLDER_ID \
+  --access-binding role=storage.viewer,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=storage.uploader,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=ymq.reader,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=ymq.writer,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=ydb.admin,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=serverless.functions.invoker,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=lockbox.payloadViewer,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID \
+  --access-binding role=editor,subject=serviceAccount:$SERVICE_ACCOUNT_FFMPEG_ID 
+
+
+Создание элемента в сервисе Lockbox
+
+yc lockbox secret create --name ffmpeg-sa-key \
+  --folder-id $FOLDER_ID \
+  --description "keys for serverless" \
+  --payload '[{"key": "ACCESS_KEY_ID", "text_value": <ACCESS_KEY_ID>}, {"key": "SECRET_ACCESS_KEY", "text_value": "<SECRET_ACCESS_KEY>"}]'
+
+yc lockbox secret list
+
+yc lockbox secret get --name ffmpeg-sa-key
+
+echo "export SECRET_ID=<SECRET_ID>" >> ~/.bashrc && . ~/.bashrc
+echo $SECRET_ID
+
+
+Создание очереди с помощью утилиты aws
+
+aws sqs create-queue --queue-name ffmpeg --endpoint https://message-queue.api.cloud.yandex.net/ 
+
+echo "export YMQ_QUEUE_URL=<YMQ_QUEUE_URL>" >> ~/.bashrc && . ~/.bashrc
+echo $YMQ_QUEUE_URL 
+
+
+aws sqs get-queue-attributes \
+  --endpoint https://message-queue.api.cloud.yandex.net \
+  --queue-url $YMQ_QUEUE_URL \
+  --attribute-names QueueArn
+
+echo "export YMQ_QUEUE_ARN=<YMQ_QUEUE_ARN>" >> ~/.bashrc && . ~/.bashrc
+echo $YMQ_QUEUE_ARN 
+
+
+
+Создание базы данных в сервисе YDB
+
+yc ydb database create ffmpeg \
+  --serverless \
+  --folder-id $FOLDER_ID
+
+yc ydb database list
+
+yc ydb database get --name ffmpeg
+echo "export DOCAPI_ENDPOINT=<DOCAPI_ENDPOINT>" >> ~/.bashrc && . ~/.bashrc
+echo $DOCAPI_ENDPOINT
+
+
+
+aws dynamodb create-table \
+  --cli-input-json '{
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "task_id",
+        "AttributeType": "S"
+      }
+    ],
+    "KeySchema": [
+      {
+        "AttributeName": "task_id",
+        "KeyType": "HASH"
+      }
+    ],
+    "TableName": "tasks"
+  }' \
+  --endpoint-url $DOCAPI_ENDPOINT \
+  --region ru-central1
+
+Бакет
+storage-for-ffmpeg
+echo "export S3_BUCKET=storage-for-ffmpeg" >> ~/.bashrc && . ~/.bashrc
+echo $S3_BUCKET
+
+
+Создание функций
+
+echo $SERVICE_ACCOUNT_FFMPEG_ID
+echo $SECRET_ID
+echo $YMQ_QUEUE_URL
+echo $DOCAPI_ENDPOINT
+echo $S3_BUCKET
+
+
+
+Для обработки видео понадобится утилита FFmpeg. Скачайте статический релизный бинарный файл для Linux amd64 на сайте ffmpeg.org (обычно он находится в разделе FFmpeg Static Builds и называется примерно так: ffmpeg-release-amd64-static.tar.xz). Извлеките из архива файл ffmpeg.
+
+index.py
+
+import json
+import os
+import subprocess
+import uuid
+from urllib.parse import urlencode
+
+import boto3
+import requests
+import yandexcloud
+from yandex.cloud.lockbox.v1.payload_service_pb2 import GetPayloadRequest
+from yandex.cloud.lockbox.v1.payload_service_pb2_grpc import PayloadServiceStub
+
+boto_session = None
+storage_client = None
+docapi_table = None
+ymq_queue = None
+
+
+def get_boto_session():
+    global boto_session
+    if boto_session is not None:
+        return boto_session
+
+    # initialize lockbox and read secret value
+    yc_sdk = yandexcloud.SDK()
+    channel = yc_sdk._channels.channel("lockbox-payload")
+    lockbox = PayloadServiceStub(channel)
+    response = lockbox.Get(GetPayloadRequest(secret_id=os.environ['SECRET_ID']))
+
+    # extract values from secret
+    access_key = None
+    secret_key = None
+    for entry in response.entries:
+        if entry.key == 'ACCESS_KEY_ID':
+            access_key = entry.text_value
+        elif entry.key == 'SECRET_ACCESS_KEY':
+            secret_key = entry.text_value
+    if access_key is None or secret_key is None:
+        raise Exception("secrets required")
+    print("Key id: " + access_key)
+
+    # initialize boto session
+    boto_session = boto3.session.Session(
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key
+    )
+    return boto_session
+
+
+def get_ymq_queue():
+    global ymq_queue
+    if ymq_queue is not None:
+        return ymq_queue
+
+    ymq_queue = get_boto_session().resource(
+        service_name='sqs',
+        endpoint_url='https://message-queue.api.cloud.yandex.net',
+        region_name='ru-central1'
+    ).Queue(os.environ['YMQ_QUEUE_URL'])
+    return ymq_queue
+
+
+def get_docapi_table():
+    global docapi_table
+    if docapi_table is not None:
+        return docapi_table
+
+    docapi_table = get_boto_session().resource(
+        'dynamodb',
+        endpoint_url=os.environ['DOCAPI_ENDPOINT'],
+        region_name='ru-central1'
+    ).Table('tasks')
+    return docapi_table
+
+
+def get_storage_client():
+    global storage_client
+    if storage_client is not None:
+        return storage_client
+
+    storage_client = get_boto_session().client(
+        service_name='s3',
+        endpoint_url='https://storage.yandexcloud.net',
+        region_name='ru-central1'
+    )
+    return storage_client
+
+# API handler
+
+def create_task(src_url):
+    task_id = str(uuid.uuid4())
+    get_docapi_table().put_item(Item={
+        'task_id': task_id,
+        'ready': False
+    })
+    get_ymq_queue().send_message(MessageBody=json.dumps({'task_id': task_id, "src": src_url}))
+    return {
+        'task_id': task_id
+    }
+
+
+def get_task_status(task_id):
+    task = get_docapi_table().get_item(Key={
+        "task_id": task_id
+    })
+    if task['Item']['ready']:
+        return {
+            'ready': True,
+            'gif_url': task['Item']['gif_url']
+        }
+    return {'ready': False}
+
+
+def handle_api(event, context):
+    action = event['action']
+    if action == 'convert':
+        return create_task(event['src_url'])
+    elif action == 'get_task_status':
+        return get_task_status(event['task_id'])
+    else:
+        return {"error": "unknown action: " + action}
+
+# Converter handler
+
+def download_from_ya_disk(public_key, dst):
+    api_call_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?' + \
+                   urlencode(dict(public_key=public_key))
+    response = requests.get(api_call_url)
+    download_url = response.json()['href']
+    download_response = requests.get(download_url)
+    with open(dst, 'wb') as video_file:
+        video_file.write(download_response.content)
+
+
+def upload_and_presign(file_path, object_name):
+    client = get_storage_client()
+    bucket = os.environ['S3_BUCKET']
+    client.upload_file(file_path, bucket, object_name)
+    return client.generate_presigned_url('get_object', Params={'Bucket': bucket, 'Key': object_name}, ExpiresIn=3600)
+
+
+def handle_process_event(event, context):
+    for message in event['messages']:
+        task_json = json.loads(message['details']['message']['body'])
+        task_id = task_json['task_id']
+        # Download video
+        download_from_ya_disk(task_json['src'], '/tmp/video.mp4')
+        # Convert with ffmpeg
+        subprocess.run(['ffmpeg', '-i', '/tmp/video.mp4', '-r', '10', '-s', '320x240', '/tmp/result.gif'])
+        result_object = task_id + ".gif"
+        # Upload to Object Storage and generate presigned url
+        result_download_url = upload_and_presign('/tmp/result.gif', result_object)
+        # Update task status in DocAPI
+        get_docapi_table().update_item(
+            Key={'task_id': task_id},
+            AttributeUpdates={
+                'ready': {'Value': True, 'Action': 'PUT'},
+                'gif_url': {'Value': result_download_url, 'Action': 'PUT'},
+            }
+        )
+    return "OK"
+
+
+
+yc serverless function create \
+  --name ffmpeg-api \
+  --description "function for ffmpeg-api"
+
+yc serverless function create \
+  --name ffmpeg-converter \
+  --description "function for ffmpeg-converter"
+
+yc serverless function version create \
+  --function-name ffmpeg-api \
+  --memory=256m \
+  --execution-timeout=5s \
+  --runtime=python37 \
+  --entrypoint=index.handle_api \
+  --service-account-id $SERVICE_ACCOUNT_FFMPEG_ID \
+  --environment SECRET_ID=$SECRET_ID \
+  --environment YMQ_QUEUE_URL=$YMQ_QUEUE_URL \
+  --environment DOCAPI_ENDPOINT=$DOCAPI_ENDPOINT \
+  --package-bucket-name $S3_BUCKET \
+  --package-object-name src.zip
+
+yc serverless function version create \
+  --function-name ffmpeg-converter \
+  --memory=2048m \
+  --execution-timeout=600s \
+  --runtime=python37 \
+  --entrypoint=index.handle_process_event \
+  --service-account-id $SERVICE_ACCOUNT_FFMPEG_ID \
+  --environment SECRET_ID=$SECRET_ID \
+  --environment YMQ_QUEUE_URL=$YMQ_QUEUE_URL \
+  --environment DOCAPI_ENDPOINT=$DOCAPI_ENDPOINT \
+  --environment S3_BUCKET=$S3_BUCKET \
+  --package-bucket-name $S3_BUCKET \
+  --package-object-name src.zip
+
+
+Тестирование функции
+
+{"action":"convert", "src_url":"https://disk.yandex.ru/i/38RbVC0spb_jQQ"} 
+
+
+Создание триггера
+
+
+yc serverless trigger create message-queue \
+  --name ffmpeg \
+  --queue $YMQ_QUEUE_ARN \
+  --queue-service-account-id $SERVICE_ACCOUNT_FFMPEG_ID \
+  --invoke-function-name ffmpeg-converter  \
+  --invoke-function-service-account-id $SERVICE_ACCOUNT_FFMPEG_ID \
+  --batch-size 1 \
+  --batch-cutoff 10s
+
+

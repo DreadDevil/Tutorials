@@ -1,3 +1,5 @@
+yc iam access-key create --service-account-name service-account-for-cf
+
 Создайте авторизованный ключ для сервисного аккаунта и запишите его файл:
 
 yc iam key create \

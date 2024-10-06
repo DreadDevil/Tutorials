@@ -1,0 +1,236 @@
+Фаза 1: Подготовка инфраструктуры и начальная настройка (2–3 дня)
+1.1. Установка и настройка окружения
+Установка Python и необходимых библиотек:
+
+Установите Python 3.x:
+bash
+Копировать код
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+Установка MySQL:
+
+Установите сервер MySQL:
+bash
+Копировать код
+sudo apt install mysql-server
+Настройте MySQL:
+bash
+Копировать код
+sudo mysql_secure_installation
+Установка Nginx:
+
+Установите Nginx:
+bash
+Копировать код
+sudo apt install nginx
+Настройка виртуального окружения Python:
+
+Создайте проектную директорию и активируйте виртуальное окружение:
+bash
+Копировать код
+mkdir my_flask_app
+cd my_flask_app
+python3 -m venv venv
+source venv/bin/activate
+Настройка SSL:
+
+Установите Certbot и получите сертификаты:
+bash
+Копировать код
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your_domain
+1.2. Инициализация проекта Flask
+Установка Flask и необходимых библиотек:
+
+bash
+Копировать код
+pip install flask flask_sqlalchemy flask_login flask_migrate
+Создание Flask-приложения:
+
+Создайте файл app.py с минимальной конфигурацией:
+python
+Копировать код
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@localhost/dbname'
+app.config['SECRET_KEY'] = 'yoursecretkey'
+db = SQLAlchemy(app)
+
+@app.route('/')
+def home():
+    return "Hello, Flask!"
+
+if __name__ == '__main__':
+    app.run()
+Запуск приложения:
+
+bash
+Копировать код
+python app.py
+Фаза 2: Создание базы данных и модели данных (2–3 дня)
+2.1. Проектирование базы данных MySQL
+Создайте базу данных и таблицы для пользователей, ролей и прав доступа:
+sql
+Копировать код
+CREATE DATABASE flask_db;
+USE flask_db;
+
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(100) NOT NULL,
+    role_id INT,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+2.2. Моделирование данных в Flask
+Создайте модели в app.py:
+
+python
+Копировать код
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@localhost/flask_db'
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+Инициализация миграций:
+
+bash
+Копировать код
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+Фаза 3: Реализация аутентификации и авторизации (4–6 дней)
+3.1. Аутентификация с Flask-Login
+Настройте систему входа:
+
+bash
+Копировать код
+pip install flask_login
+Реализуйте систему аутентификации в app.py:
+
+python
+Копировать код
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+class User(UserMixin, db.Model):
+    # Модель пользователя
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Логика входа
+3.2. Авторизация пользователей
+Реализуйте декораторы для проверки прав доступа:
+python
+Копировать код
+from functools import wraps
+from flask import abort
+
+def role_required(role):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.role.name != role:
+                abort(403)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+Фаза 4: Разработка основного функционала веб-приложения (5–7 дней)
+4.1. Создание CRUD-функционала
+Реализуйте CRUD для записей:
+python
+Копировать код
+@app.route('/create', methods=['POST'])
+@role_required('admin')
+def create_record():
+    # Создание новой записи
+4.2. Добавление поддержки PWA
+Добавьте манифест PWA:
+
+json
+Копировать код
+{
+  "name": "Flask PWA",
+  "short_name": "PWA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000"
+}
+Настройте Service Worker для оффлайн-режима.
+
+Фаза 5: Тестирование и отладка (4–5 дней)
+Тестирование авторизации и доступа:
+
+Проверьте роли пользователей и права доступа.
+Тестирование PWA на мобильных устройствах.
+
+Фаза 6: Настройка Nginx и деплой (2–3 дня)
+6.1. Установка и настройка Gunicorn
+Установите Gunicorn:
+
+bash
+Копировать код
+pip install gunicorn
+Настройте Gunicorn:
+
+bash
+Копировать код
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+6.2. Настройка Nginx
+Создайте конфигурацию Nginx:
+
+bash
+Копировать код
+sudo nano /etc/nginx/sites-available/flask
+Конфигурация Nginx:
+
+nginx
+Копировать код
+server {
+    listen 80;
+    server_name your_domain;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+Активируйте сайт:
+
+bash
+Копировать код
+sudo ln -s /etc/nginx/sites-available/flask /etc/nginx/sites-enabled
+sudo systemctl restart nginx
+Фаза 7: Поддержка и расширение функционала (по мере необходимости)
+Реализация новых функций, оптимизация производительности, мониторинг безопасности и логирование.
+Итоговое время на разработку:
+Около 19–27 дней, в зависимости от сложности.

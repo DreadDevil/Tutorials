@@ -1,0 +1,93 @@
+sudo apt install jq 
+
+
+
+export SERVICE_ACCOUNT=$(yc iam service-account create \
+  --name service-account-for-cf \
+  --description "service account for cloud functions" \
+  --format json | jq -r .) 
+
+
+
+yc iam service-account list
+echo $SERVICE_ACCOUNT 
+
+
+
+echo "export SERVICE_ACCOUNT_ID=<идентификатор_сервисного_аккаунта>" >> ~/.bashrc && . ~/.bashrc
+echo $SERVICE_ACCOUNT_ID 
+
+
+
+echo "export FOLDER_ID=$(yc config get folder-id)" >> ~/.bashrc && . ~/.bashrc 
+echo $FOLDER_ID
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_ID \
+  --role editor 
+
+
+
+yc serverless function create --name my-first-function 
+
+
+
+sudo nano index.py 
+
+
+
+def handler(event, context):
+    return {
+        'statusCode': 200,
+        'body': 'Hello World!',
+    } 
+
+
+
+yc serverless function version create \
+    --function-name my-first-function \
+    --memory 256m \
+    --execution-timeout 5s \
+    --runtime python37 \
+    --entrypoint index.handler \
+    --service-account-id $SERVICE_ACCOUNT_ID \
+    --source-path index.py 
+
+
+
+yc serverless function list
+yc serverless function version list --function-name my-first-function 
+
+
+yc serverless function invoke <идентификатор_функции> 
+
+
+
+yc serverless function allow-unauthenticated-invoke my-first-function 
+
+
+yc serverless function get my-first-function 
+
+
+
+
+
+Загрузка новой версии
+
+yc serverless function version create \
+  --function-id <идентификатор_функции> \
+  --runtime <среда_выполнения> \
+  --entrypoint <точка_входа> \
+  --memory <объём_выделяемой_памяти,_МБ> \
+  --execution-timeout <таймаут,_с> \
+  --source-path <путь_к_ZIP-архиву_c_кодом_функции> 
+
+Тэг
+
+yc serverless function version set-tag \
+  --id <идентификатор_версии> \
+  --tag <тег> 
+
+yc serverless function version remove-tag \
+  --id <идентификатор_версии> \
+  --tag first 

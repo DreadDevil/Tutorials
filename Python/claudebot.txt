@@ -1,0 +1,96 @@
+Вот скрипт на Bash, который автоматически настраивает вашего Telegram-бота для квиза по аниме на новом сервере Yandex Cloud:
+bashCopy code#!/bin/bash
+
+# Переменные для Yandex Cloud
+YC_TOKEN="t1.9euelZqUlc-Nzp7KnYzNlZmXipTHne3rnpWans3PkYyampeNyZKOzZXIjczl9Pd5UndM-e8MVmLL3fT3OQF1TPnvDFZiy83n9euelZqUms7NzpLPkpDGj8iJmpiLj-_8xeuelZqUms7NzpLPkpDGj8iJmpiLjw.AnQsYFVPTWcpKlHApDuw_VG8nPZFPX1812ts1lT8SEL8XHfn86e-DOWF1Ln5Oicof0O17Cb8l9CRD0x92hYvBg"
+YC_FOLDER_ID="b1g8fbi4tulggjadd6es"
+YC_ZONE="ru-central1-d"
+YC_COMPUTE_URL="https://158.160.159.91"
+
+# Переменные для сервера
+SERVER_NAME="anime-quiz-bot-server"
+SERVER_IMAGE_ID="fd8ehocqsv90a0qltm4r"  # Ubuntu 20.04
+PUBLIC_SSH_KEY="$(cat ~/.ssh/id_rsa.pub)"
+
+# Путь к файлам бота
+BOT_SCRIPT="your_bot_script.py"
+QUESTIONS_FILE="anime_questions.json"
+
+# Создание нового сервера на Yandex Cloud
+echo "Создание сервера на Yandex Cloud..."
+RESPONSE=$(curl -X POST -H "Content-Type: application/json" \
+                  -H "Authorization: Bearer $YC_TOKEN" \
+                  -d "{
+                        \"folderId\": \"$YC_FOLDER_ID\",
+                        \"name\": \"$SERVER_NAME\",
+                        \"zoneName\": \"$YC_ZONE\",
+                        \"platformId\": \"standard-v1\",
+                        \"resourcesSpec\": {
+                            \"memory\": \"2G\",
+                            \"cores\": 2
+                        },
+                        \"bootDiskSpec\": {
+                            \"diskTypeId\": \"network-ssd\",
+                            \"diskSize\": \"20G\",
+                            \"imageId\": \"$SERVER_IMAGE_ID\"
+                        },
+                        \"networkInterfaceSpecs\": [
+                            {\"subnetId\": \"e9bhh8jmn0h00p57fes4\"}
+                        ],
+                        \"metadata\": {
+                            \"ssh-keys\": \"ubuntu:$PUBLIC_SSH_KEY\"
+                        }
+                   }" "$YC_COMPUTE_URL/instances?view=FULL")
+
+# Получение ID созданного сервера
+SERVER_ID=$(echo "$RESPONSE" | jq -r '.id')
+
+# Ожидание готовности сервера
+echo "Ожидание готовности сервера..."
+until curl -fsS --fail -H "Authorization: Bearer $YC_TOKEN" "$YC_COMPUTE_URL/instances/$SERVER_ID" | jq -e '.status == "RUNNING"' &> /dev/null; do
+    sleep 10
+done
+
+# Получение внешнего IP-адреса сервера
+EXTERNAL_IP=$(curl -H "Authorization: Bearer $YC_TOKEN" "$YC_COMPUTE_URL/instances/$SERVER_ID" | jq -r '.networkInterfaces[0].primaryV4Address.oneToOneNat.address')
+echo "Сервер создан. Внешний IP: $EXTERNAL_IP"
+
+# Установка необходимых зависимостей на сервере
+echo "Установка Python и необходимых библиотек на сервере..."
+ssh ubuntu@$EXTERNAL_IP << EOF
+    sudo apt-get update
+    sudo apt-get install -y python3 python3-pip
+    pip3 install python-telegram-bot
+EOF
+
+# Копирование файлов бота на сервер
+echo "Копирование файлов бота на сервер..."
+scp $BOT_SCRIPT $QUESTIONS_FILE ubuntu@$EXTERNAL_IP:~
+
+# Запуск бота на сервере
+echo "Запуск бота на сервере..."
+ssh ubuntu@$EXTERNAL_IP << EOF
+    nohup python3 $BOT_SCRIPT > bot.log 2>&1 &
+    disown
+    echo "Бот запущен. Логи в bot.log"
+EOF
+
+echo "Настройка завершена. Бот успешно запущен на сервере с IP $EXTERNAL_IP."
+Вот что делает этот скрипт:
+
+Задает переменные для аутентификации в Yandex Cloud и конфигурации сервера.
+Создает новый сервер на Yandex Cloud с указанными параметрами (Ubuntu 20.04, 2 ГБ ОЗУ, 2 ядра ЦП).
+Устанавливает Python3 и python-telegram-bot на созданном сервере.
+Копирует файлы бота (your_bot_script.py и anime_questions.json) на сервер.
+Запускает бот на сервере в фоновом режиме с помощью nohup и перенаправляет логи в файл bot.log.
+
+Чтобы использовать этот скрипт, вам нужно:
+
+Заменить ваш_яндекс_облако_токен_iam и ид_вашей_папки_в_яндекс_облаке на свои реальные значения IAM токена и идентификатора папки в Yandex Cloud.
+Убедиться, что файлы your_bot_script.py и anime_questions.json находятся в текущей директории.
+Сохранить скрипт с именем setup_bot.sh (или любым другим подходящим именем).
+Сделать скрипт исполняемым: chmod +x setup_bot.sh.
+Выполнить скрипт: ./setup_bot.sh.
+
+После выполнения скрипта ваш бот для квиза по аниме будет настроен и запущен на новом сервере Yandex Cloud. Внешний IP-адрес сервера будет выведен в консоль.
+Обратите внимание, что в этом скрипте используется публичный SSH-ключ из вашего ~/.ssh/id_rsa.pub. Если вы хотите использовать другой SSH-ключ, замените строку PUBLIC_SSH_KEY="$(cat ~/.ssh/id_rsa.pub)" на соответствующий путь к вашему публичному SSH-ключу.

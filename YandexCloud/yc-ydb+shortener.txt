@@ -1,0 +1,372 @@
+Создание аккаунта
+
+ export SERVICE_ACCOUNT_SHORTENER_ID=$(yc iam service-account create --name serverless-shortener \
+  --description "service account for serverless" \
+  --format json | jq -r .)
+
+yc iam service-account list 
+
+
+echo "export SERVICE_ACCOUNT_SHORTENER_ID=" >> ~/.bashrc && . ~/.bashrc
+echo $SERVICE_ACCOUNT_SHORTENER_ID 
+
+yc serverless function version list --function-name
+Назначение ролей
+
+echo "export FOLDER_ID=$(yc config get folder-id)" >> ~/.bashrc && . ~/.bashrc
+echo $FOLDER_ID
+
+echo "export OAUTH_TOKEN=$(yc config get token)" >> ~/.bashrc && . ~/.bashrc
+echo $OAUTH_TOKEN
+
+echo "export CLOUD_ID=$(yc config get cloud-id)" >> ~/.bashrc && . ~/.bashrc
+echo $CLOUD_ID
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_SHORTENER_ID \
+  --role editor
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_SHORTENER_ID \
+  --role ydb.admin
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+  --subject serviceAccount:$SERVICE_ACCOUNT_SHORTENER_ID \
+  --role storage.viewer
+
+
+Бакет
+storage-for-serverless-shortener10
+
+index.html
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Сокращатель URL</title>
+    <!-- предостережет от лишнего GET запроса на адрес /favicon.ico -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+
+<body>
+<h1>Добро пожаловать</h1>
+<form action="javascript:shorten()">
+    <label for="url">Введите ссылку:</label><br>
+    <input id="url" name="url" type="text"><br>
+    <input type="submit" value="Сократить">
+</form>
+<p id="shortened"></p>
+</body>
+
+<script>
+    function shorten() {
+        const link = document.getElementById("url").value
+        fetch("/shorten", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: link
+        })
+            .then(response => response.json())
+            .then(data => {
+                const url = data.url
+                document.getElementById("shortened").innerHTML = `<a href=${url}>${url}</a>`
+            })
+            .catch(error => {
+                document.getElementById("shortened").innerHTML = `<p>Произошла ошибка ${error}, попробуйте еще раз</p>`
+            })
+    }
+</script>
+
+</html>
+
+
+
+Создание базы данных
+for-serverless-shortener
+
+yc ydb database create for-serverless-shortener \
+  --serverless \
+  --folder-id $FOLDER_ID
+
+yc ydb database list 
+
+
+yc ydb database get --name for-serverless-shortener
+
+
+grpcs://ydb.serverless.yandexcloud.net:2135
+/ru-central1/b1g5tgf4874usr4tav2d/etnvr88l6f81efsf525f
+
+echo "export YDB_ENDPOINT=grpcs://ydb.serverless.yandexcloud.net:2135" >> ~/.bashrc && . ~/.bashrc
+echo $YDB_ENDPOINT
+
+echo "export YDB_DATABASE=/ru-central1/b1g5tgf4874usr4tav2d/etnvr88l6f81efsf525f" >> ~/.bashrc && . ~/.bashrc
+echo $YDB_DATABASE 
+
+
+
+curl https://storage.yandexcloud.net/yandexcloud-ydb/install.sh | bash
+
+
+yc iam key create \
+--service-account-name serverless-shortener \
+--output serverless-shortener.sa 
+
+echo "export SA_KEY_FILE=$PWD/serverless-shortener.sa" >> ~/.bashrc && . ~/.bashrc
+echo $SA_KEY_FILE 
+
+
+
+
+
+ydb \
+  --endpoint $YDB_ENDPOINT \
+  --database $YDB_DATABASE \
+  --sa-key-file $SA_KEY_FILE \
+  discovery whoami \
+  --groups
+
+
+links.yql
+
+CREATE TABLE links
+(
+    id Utf8,
+    link Utf8,
+    PRIMARY KEY (id)
+);
+COMMIT;
+
+
+ydb \
+  --endpoint $YDB_ENDPOINT \
+  --database $YDB_DATABASE \
+  --sa-key-file $SA_KEY_FILE \
+  scripting yql --file links.yql
+
+ydb \
+  --endpoint $YDB_ENDPOINT \
+  --database $YDB_DATABASE \
+  --sa-key-file $SA_KEY_FILE \
+  scheme describe links
+
+
+
+Создание функции
+index.py
+
+import ydb
+import urllib.parse
+import hashlib
+import base64
+import json
+import os
+
+
+def decode(event, body):
+    # тело запроса может быть закодировано
+    is_base64_encoded = event.get('isBase64Encoded')
+    if is_base64_encoded:
+        body = str(base64.b64decode(body), 'utf-8')
+    return body
+
+
+def response(statusCode, headers, isBase64Encoded, body):
+    return {
+        'statusCode': statusCode,
+        'headers': headers,
+        'isBase64Encoded': isBase64Encoded,
+        'body': body,
+    }
+
+
+def get_config():
+    endpoint = os.getenv("endpoint")
+    database = os.getenv("database")
+    if endpoint is None or database is None:
+        raise AssertionError("Нужно указать обе переменные окружения")
+    credentials = ydb.construct_credentials_from_environ()
+    return ydb.DriverConfig(endpoint, database, credentials=credentials)
+
+
+def execute(config, query, params):
+    with ydb.Driver(config) as driver:
+        try:
+            driver.wait(timeout=5)
+        except TimeoutError:
+            print("Connect failed to YDB")
+            print("Last reported errors by discovery:")
+            print(driver.discovery_debug_details())
+            return None
+
+        session = driver.table_client.session().create()
+        prepared_query = session.prepare(query)
+
+        return session.transaction(ydb.SerializableReadWrite()).execute(
+            prepared_query,
+            params,
+            commit_tx=True
+        )
+
+
+def insert_link(id, link):
+    config = get_config()
+    query = """
+        DECLARE $id AS Utf8;
+        DECLARE $link AS Utf8;
+
+        UPSERT INTO links (id, link) VALUES ($id, $link);
+        """
+    params = {'$id': id, '$link': link}
+    execute(config, query, params)
+
+
+def find_link(id):
+    print(id)
+    config = get_config()
+    query = """
+        DECLARE $id AS Utf8;
+
+        SELECT link FROM links where id=$id;
+        """
+    params = {'$id': id}
+    result_set = execute(config, query, params)
+    if not result_set or not result_set[0].rows:
+        return None
+
+    return result_set[0].rows[0].link
+
+
+def shorten(event):
+    body = event.get('body')
+
+    if body:
+        body = decode(event, body)
+        original_host = event.get('headers').get('Origin')
+        link_id = hashlib.sha256(body.encode('utf8')).hexdigest()[:6]
+        # в ссылке могут быть закодированные символы, например, %. это помешает работе api-gateway при редиректе,
+        # поэтому следует избавиться от них вызовом urllib.parse.unquote
+        insert_link(link_id, urllib.parse.unquote(body))
+        return response(200, {'Content-Type': 'application/json'}, False, json.dumps({'url': f'{original_host}/r/{link_id}'}))
+
+    return response(400, {}, False, 'В теле запроса отсутствует параметр url')
+
+
+def redirect(event):
+    link_id = event.get('pathParams').get('id')
+    redirect_to = find_link(link_id)
+
+    if redirect_to:
+        return response(302, {'Location': redirect_to}, False, '')
+
+    return response(404, {}, False, 'Данной ссылки не существует')
+
+
+# эти проверки нужны, поскольку функция у нас одна
+# в идеале сделать по функции на каждый путь в api-gw
+def get_result(url, event):
+    if url == "/shorten":
+        return shorten(event)
+    if url.startswith("/r/"):
+        return redirect(event)
+
+    return response(404, {}, False, 'Данного пути не существует')
+
+
+def handler(event, context):
+    url = event.get('url')
+    if url:
+        # из API-gateway url может прийти со знаком вопроса на конце
+        if url[-1] == '?':
+            url = url[:-1]
+        return get_result(url, event)
+
+    return response(404, {}, False, 'Эту функцию следует вызывать при помощи api-gateway')
+
+
+requirements.txt
+ydb==2.13.3
+
+
+zip src.zip index.py requirements.txt 
+
+
+yc serverless function create \
+  --name for-serverless-shortener \
+  --description "function for serverless-shortener"
+
+yc serverless function version create \
+  --function-name for-serverless-shortener \
+  --memory=256m \
+  --execution-timeout=5s \
+  --runtime=python39 \
+  --entrypoint=index.handler \
+  --service-account-id $SERVICE_ACCOUNT_SHORTENER_ID \
+  --environment USE_METADATA_CREDENTIALS=1 \
+  --environment endpoint=grpcs://ydb.serverless.yandexcloud.net:2135 \
+  --environment database=$YDB_DATABASE \
+  --source-path src.zip
+
+yc serverless function allow-unauthenticated-invoke for-serverless-shortener
+
+
+
+Конфигурирование Yandex API Gateway
+
+for-serverless-shortener.yml
+
+openapi: 3.0.0
+info:
+  title: for-serverless-shortener
+  version: 1.0.0
+paths:
+  /:
+    get:
+      x-yc-apigateway-integration:
+        type: object_storage
+        bucket:             <bucket_name>        # <-- имя бакета
+        object:             <html_file>          # <-- имя html-файла
+        presigned_redirect: false
+        service_account:    <service_account_id> # <-- идентификатор сервисного аккаунта
+      operationId: static
+  /shorten:
+    post:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id:  <function_id>               # <-- идентификатор функции
+      operationId: shorten
+  /r/{id}:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id:  <function_id>               # <-- идентификатор функции
+      operationId: redirect
+      parameters:
+        - description: id of the url
+          explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          style: simple
+
+
+
+
+yc serverless function version list --function-name
+
+
+
+yc serverless api-gateway create \
+  --name for-serverless-shortener \
+  --spec=for-serverless-shortener.yml \
+  --description "for serverless shortener" 
+
+
+yc serverless api-gateway list
+yc serverless api-gateway get --name for-serverless-shortener 

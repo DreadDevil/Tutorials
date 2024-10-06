@@ -1,0 +1,75 @@
+Here are some of the best Stable Diffusion models for each of the 15 categories you listed:
+Photorealism:
+
+Realistic Vision
+Prototype
+
+Anime and Manga:
+
+Anything V3
+Counterfeit V2.5
+
+Fantasy:
+
+Deliberate
+Dreamlike Diffusion
+
+Sci-Fi:
+
+Dreamshaper
+Stable Diffusion XL
+
+Surrealism:
+
+Dreamlike Photoreal
+Midjourney v4 style
+
+Portraiture:
+
+LOFI
+Portraitplus
+
+Landscape:
+
+epiCRealism
+Openjourney
+
+Concept Art:
+
+Conceptual Art
+Stable Diffusion 2.1
+
+Abstract:
+
+Abstract Art
+Kandinsky 2.2
+
+Cyberpunk:
+
+Cyberpunk Anime Diffusion
+Nightly Diffusion
+
+Steampunk:
+
+Steampunk Diffusion
+Vintedois Diffusion
+
+Horror:
+
+Horror Diffusion
+Darkest Diffusion
+
+Pop Art:
+
+Pop Art Diffusion
+Warhol Style
+
+Minimalism:
+
+Minimalist Diffusion
+Clean Diffusion
+
+Retro/Vintage:
+
+Vintage Diffusion
+Retrowave Diffusion

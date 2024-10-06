@@ -1,0 +1,487 @@
+git lfs install
+git clone https://huggingface.co/stabilityai/sdxl-turbo
+git clone https://huggingface.co/SG161222/Realistic_Vision_V6.0_B1_noVAE
+git clone https://huggingface.co/Lykon/DreamShaper
+git clone https://huggingface.co/ckpt/anything-v5.0
+git clone https://huggingface.co/swl-models/chilloutmix
+
+1. Photorealism: Creating highly detailed and realistic images.
+2. Anime and Manga: Designing characters and scenes in the style of Japanese animation and comics.
+3. Fantasy: Crafting imaginative and otherworldly scenes, often involving mythical creatures and magical elements.
+4. Sci-Fi: Developing futuristic and science fiction-themed artwork.
+5. Surrealism: Producing dream-like and abstract images that challenge reality.
+6. Portraiture: Creating detailed and expressive portraits of people or characters.
+7. Landscape: Designing expansive and detailed natural or urban environments.
+8. Concept Art: Developing visual concepts for characters, settings, and props, often for games or films.
+9. Abstract: Creating non-representational art that focuses on shapes, colors, and forms.
+10. Cyberpunk: Designing high-tech, dystopian futures with a focus on neon aesthetics.
+11. Steampunk: Combining Victorian-era design with steam-powered technology.
+12. Horror: Crafting eerie and unsettling images designed to evoke fear.
+13. Pop Art: Creating vibrant and bold images inspired by popular culture.
+14. Minimalism: Producing simple and clean designs with a focus on essential elements.
+15. Retro/Vintage: Designing artwork with a nostalgic feel, inspired by past decades.
+
+
+1. Photorealism: Creating highly detailed and realistic images
+Models: Realistic Vision, ChilloutMix, AbsoluteReality
+Prompts:
+A crystal-clear drop of water splashing into a calm lake, captured in slow motion.
+A close-up shot of freshly baked bread, every crumb and crack in perfect detail.
+A bustling city street at midday, with every passerby and vehicle rendered in high definition.
+A lush green forest in the early morning, with mist rising and sunlight filtering through the trees.
+A meticulously set dinner table, complete with polished silverware and a centerpiece of fresh flowers.
+A sports car speeding down a coastal highway at sunset, with light reflecting off its sleek body.
+A close-up of an eye, capturing every detail of the iris and eyelashes.
+A weathered wooden dock leading out onto a calm, mirror-like lake.
+A high-resolution image of a bouquet of roses, every petal and leaf intricately detailed.
+A panoramic view of a mountain range, with snow-capped peaks and a vibrant blue sky.
+2. Anime and Manga: Designing characters and scenes in the style of Japanese animation and comics
+Models: Anything V5, DreamShaper
+Prompts:
+A heroic character wielding a giant sword, standing in a dramatic pose with the wind blowing through their hair.
+A bustling marketplace in a fantasy world, filled with colorful characters and exotic goods.
+A magical girl mid-transformation, surrounded by sparkling lights and flowing ribbons.
+A peaceful school classroom at sunset, with students chatting and desks arranged neatly.
+A futuristic cityscape at night, with towering skyscrapers and neon signs.
+A traditional Japanese tea house surrounded by cherry blossom trees in full bloom.
+A fierce battle between a group of adventurers and a towering monster, dynamic action and expressions.
+A quiet moment between two characters on a park bench, with autumn leaves gently falling around them.
+A detailed character sheet for a new anime protagonist, showcasing different poses and expressions.
+A group of friends enjoying a summer festival, with fireworks lighting up the night sky.
+3. Fantasy: Crafting imaginative and otherworldly scenes, often involving mythical creatures and magical elements
+Models: ReV Animated, DreamShaper
+Prompts:
+A towering dragon perched on a mountain peak, breathing fire into the sky.
+A mystical forest filled with glowing plants and ethereal creatures.
+A grand castle floating in the sky, surrounded by clouds and rainbows.
+A band of adventurers exploring an ancient, forgotten temple.
+A sorcerer casting a powerful spell, surrounded by swirling magical energy.
+A mermaid swimming in the depths of the ocean, with a vibrant coral reef in the background.
+A village of elves hidden deep within a forest, with treehouses connected by wooden bridges.
+A battlefield where knights clash with orcs under a stormy sky.
+A mysterious figure in a cloak walking through a portal to another world.
+A phoenix rising from its ashes, wings ablaze with vibrant flames.
+4. Sci-Fi: Developing futuristic and science fiction-themed artwork
+Models: CyberRealistic, Anything V5
+Prompts:
+A spaceship navigating through an asteroid field, with planets visible in the background.
+A futuristic cityscape, with flying cars and towering holographic advertisements.
+A lone astronaut exploring an alien planet, with strange landscapes and alien life forms.
+A high-tech laboratory with scientists working on advanced robotics.
+A space battle between massive starships, lasers and explosions lighting up the void.
+A cyborg warrior standing in a desolate wasteland, with mechanical limbs and glowing eyes.
+A futuristic metropolis at night, with neon lights reflecting off rain-soaked streets.
+A group of explorers discovering a hidden alien temple on a distant planet.
+A sleek, futuristic aircraft soaring above a city, leaving a trail of light behind.
+A dystopian landscape with ruined buildings and giant machines dominating the skyline.
+5. Surrealism: Producing dream-like and abstract images that challenge reality
+Models: DreamShaper, Anything V5
+Prompts:
+A giant clock melting over the edge of a skyscraper, with a surreal sunset in the background.
+A floating island with a house upside down, surrounded by flying fish in a clear blue sky.
+A forest where the trees have human faces, whispering secrets to each other.
+A river flowing through the sky, with boats sailing on clouds instead of water.
+A staircase leading up to a door in the middle of an empty desert.
+A city made entirely of glass, with reflections distorting reality.
+A person with a galaxy inside their head, stars and planets orbiting around.
+A field of flowers where each bloom is a different, impossible color.
+A dreamlike scene where the ocean is pouring out of a giant teacup.
+A surreal landscape where the mountains are made of folded paper, and the sky is a patchwork quilt.
+6. Portraiture: Creating detailed and expressive portraits of people or characters
+Models: Realistic Vision, ChilloutMix
+Prompts:
+A close-up portrait of a young woman with freckles, her red hair flowing in the wind.
+A dramatic black-and-white portrait of an elderly man, his face lined with age and wisdom.
+A vibrant portrait of a dancer mid-spin, capturing the energy and grace of the movement.
+A portrait of a warrior with scars and a determined expression, holding a sword.
+A serene portrait of a child with a soft smile, surrounded by a field of wildflowers.
+A detailed portrait of a musician playing a guitar, lost in the music.
+A regal portrait of a queen in full ceremonial dress, with a crown and scepter.
+A haunting portrait of a ghostly figure, with pale skin and glowing eyes.
+A fantasy-inspired portrait of an elf with intricate face tattoos and pointed ears.
+A modern portrait of a businesswoman in a sleek suit, exuding confidence and power.
+7. Landscape: Designing expansive and detailed natural or urban environments
+Models: Realistic Vision, DreamShaper, AbsoluteReality
+Prompts:
+A breathtaking view of a mountain range at dawn, with fog rolling through the valleys.
+A tropical beach at sunset, with palm trees silhouetted against the vibrant sky.
+A peaceful countryside scene with rolling hills, a small village in the distance.
+A dense forest in autumn, the ground covered in fallen leaves, with a clear blue sky above.
+A bustling cityscape at night, with skyscrapers illuminated by thousands of lights.
+A serene lakeside with a small wooden pier, the water perfectly still and reflective.
+A desert landscape with towering sand dunes, under a clear, starry night sky.
+A snowy landscape with a frozen river winding through a forest of pine trees.
+A coastal cliff with waves crashing against the rocks, a lighthouse standing tall.
+A misty morning in a quiet village, with cobblestone streets and old stone buildings.
+8. Concept Art: Developing visual concepts for characters, settings, and props, often for games or films
+Models: DreamShaper, Anything V5
+Prompts:
+A futuristic soldier in advanced armor, holding a high-tech weapon, ready for battle.
+A fantasy city built into the side of a mountain, with waterfalls cascading down the cliffs.
+A mysterious artifact glowing with an eerie light, ancient runes carved into its surface.
+A post-apocalyptic vehicle designed for rugged terrain, heavily armored and weaponized.
+A detailed character design for a cybernetic assassin, with sleek, cutting-edge technology.
+A magical forest with towering trees and glowing mushrooms, inhabited by mythical creatures.
+A futuristic skyscraper with a unique, innovative design, towering above the city below.
+A steampunk-inspired airship, with brass gears and steam engines, flying through the clouds.
+A medieval knight in intricate armor, holding a glowing sword, standing in a grand hall.
+A concept design for a robotic companion, sleek and friendly, with glowing eyes.
+9. Abstract: Creating non-representational art that focuses on shapes, colors, and forms
+Models: DreamShaper, Anything V5
+Prompts:
+A swirling vortex of vibrant colors, with no discernible form or shape.
+
+
+9. Abstract: Creating non-representational art that focuses on shapes, colors, and forms (continued)
+Models: DreamShaper, Anything V5
+Prompts: 2. A series of geometric shapes overlapping, with sharp angles and contrasting colors. 3. A flowing pattern of lines and curves, resembling liquid motion, in a monochromatic palette. 4. A chaotic explosion of textures and colors, creating a sense of dynamic energy. 5. A minimalist design with a single bold shape on a stark background, playing with negative space. 6. A complex, layered composition of translucent shapes, creating depth and dimensionality. 7. A digital representation of sound waves, visualized as abstract, colorful patterns. 8. A fragmented image where reality breaks down into a mosaic of colors and forms. 9. A surreal combination of organic and mechanical shapes, blending natural and artificial elements. 10. A high-contrast abstract landscape, where the horizon is a blend of sharp lines and fluid forms.
+10. Cyberpunk: Designing high-tech, dystopian futures with a focus on neon aesthetics
+Models: ReV Animated, CyberRealistic
+Prompts:
+A neon-lit cityscape at night, with towering skyscrapers and holographic advertisements.
+A lone hacker sitting in a dimly lit room, surrounded by multiple screens displaying code.
+A cybernetically enhanced character walking through a crowded, rain-soaked street.
+A futuristic marketplace filled with street vendors selling high-tech gadgets and illegal mods.
+A heavily armored police force patrolling the streets in a dystopian megacity.
+A futuristic motorcycle racing through neon-lit alleys, leaving a trail of light in its wake.
+A character with glowing cybernetic implants, their face partially obscured by a high-tech mask.
+A dark alleyway with graffiti-covered walls, illuminated by flickering neon signs.
+A high-rise apartment with a panoramic view of the dystopian city below, filled with neon lights.
+A digital underworld where avatars meet in secret virtual spaces, surrounded by data streams.
+11. Steampunk: Combining Victorian-era design with steam-powered technology
+Models: DreamShaper, Anything V5
+Prompts:
+A grand airship floating above a Victorian city, with brass gears and steam engines visible.
+A character in elaborate steampunk attire, complete with goggles, top hat, and mechanical limbs.
+A sprawling industrial factory filled with steam-powered machinery and workers in period clothing.
+A futuristic locomotive traveling through a foggy landscape, powered by steam and gears.
+A steampunk-inspired weapon, with intricate gears and brass fittings, emitting steam.
+A Victorian-style laboratory filled with strange devices, bubbling beakers, and blueprints.
+A grand ballroom where guests in steampunk fashion dance under chandeliers made of brass and glass.
+A mechanical clocktower dominating a cityscape, with visible gears and moving parts.
+A detailed map of a steampunk city, showing airship routes, factories, and mechanical marvels.
+A steampunk robot, combining Victorian elegance with futuristic technology.
+12. Horror: Crafting eerie and unsettling images designed to evoke fear
+Models: ReV Animated, DreamShaper
+Prompts:
+A dark, abandoned asylum with flickering lights and shadowy figures lurking in the corners.
+A grotesque creature emerging from the shadows, with elongated limbs and haunting eyes.
+A haunted mansion on a hill, with twisted trees and a full moon casting eerie shadows.
+A decaying hand reaching out from the ground in a fog-covered graveyard.
+A ghostly figure standing at the end of a long, dark hallway, barely visible in the dim light.
+A close-up of a face with hollow eyes and a twisted grin, unnaturally pale and ghastly.
+A blood-stained mirror reflecting something that isn’t in the room, with cracks spreading across the surface.
+A cursed artifact glowing with an ominous red light, surrounded by dark mist.
+A child’s room in disarray, with broken toys and eerie drawings on the walls.
+A scene of a demonic ritual in progress, with hooded figures and ancient symbols drawn in blood.
+13. Pop Art: Creating vibrant and bold images inspired by popular culture
+Models: DreamShaper, Anything V5
+Prompts:
+A vibrant portrait of a famous celebrity, rendered in bold, contrasting colors.
+A comic book-style explosion, with exaggerated lines and bright primary colors.
+A series of everyday objects, such as soup cans or soda bottles, repeated in various bright hues.
+A retro-inspired poster featuring a catchy slogan in large, bold letters.
+A colorful depiction of a modern cityscape, with stylized buildings and vehicles.
+A pop art collage combining iconic symbols from different eras of popular culture.
+A stylized, colorful portrait of a famous fictional character, with bold outlines and flat colors.
+A playful depiction of a classic car, rendered in a mix of neon colors and sharp lines.
+A comic strip scene frozen in time, with exaggerated expressions and dialogue bubbles.
+A reimagined version of a classic painting, given a pop art twist with vibrant colors and modern elements.
+14. Minimalism: Producing simple and clean designs with a focus on essential elements
+Models: Anything V5, DreamShaper
+Prompts:
+A single, isolated tree in a vast, empty landscape, with a clear blue sky.
+A minimalist silhouette of a city skyline, reduced to basic shapes and lines.
+A simple black circle on a white background, evoking a sense of infinite space.
+A pair of hands holding a single flower, with all other details stripped away.
+A single red dot in the center of a white canvas, representing purity and focus.
+A basic outline of a face, reduced to a few essential lines.
+A clean, empty room with a single chair, highlighting the importance of space.
+A minimalist design of a mountain range, using only shades of gray.
+A lone bird in flight against a vast, empty sky, with no other distractions.
+A simple geometric pattern, repeating across a plain background, emphasizing form and repetition.
+15. Retro/Vintage: Designing artwork with a nostalgic feel, inspired by past decades
+Models: DreamShaper, Anything V5
+Prompts:
+A retro diner scene from the 1950s, with classic cars parked outside and neon signs glowing.
+A vintage-style poster for a 1970s rock concert, with psychedelic colors and bold typography.
+A sepia-toned photograph of a bustling city street in the 1920s, with vintage cars and fashion.
+A 1980s-inspired video game cover, featuring pixel art and bold, vibrant colors.
+A nostalgic image of a classic rotary phone, rendered in soft pastels.
+A vintage travel poster promoting a seaside resort, with stylized waves and sunny skies.
+A black-and-white film noir scene, complete with shadows, trench coats, and fedoras.
+A retro TV set from the 1960s, with static on the screen and rabbit ear antennas.
+A nostalgic childhood scene from the 1980s, with classic toys and bright colors.
+A vintage car driving down a desert highway, with a sunset sky and old-fashioned billboards.
+These prompts are designed to match each category's style and theme, with the suggested models helping to achieve the desired effects.
+
+
+
+
+
+
+
+
+Photorealism
+Anime and Manga
+Fantasy
+Sci-Fi
+Surrealism
+Portraiture
+Landscape
+Concept Art
+Abstract
+Cyberpunk
+Steampunk
+Horror
+Pop Art
+Minimalism
+Retro/Vintage
+
+
+Photorealism:
+
+Realistic Vision
+ChilloutMix
+Anime and Manga:
+
+Anything V5
+Counterfeit V3
+Fantasy:
+
+DreamShaper
+Deliberate
+Sci-Fi:
+
+CyberRealistic
+Stable Diffusion XL
+Surrealism:
+
+Dreamlike Diffusion
+epic Diffusion
+Portraiture:
+
+LOFI
+PortraitPlus
+Landscape:
+
+epiCRealism
+OpenJourney
+Concept Art:
+
+Dreamlike Photoreal
+Stable Diffusion 2.1
+Abstract:
+
+Kandinsky 2.2
+Abstract Art
+Cyberpunk:
+
+Cyberpunk Anime Diffusion
+Nightly Diffusion
+Steampunk:
+
+Steampunk Diffusion
+Vintedois Diffusion
+Horror:
+
+Horror Diffusion
+Darkest Diffusion
+Pop Art:
+
+Pop Art Diffusion
+Warhol Style
+Minimalism:
+
+Minimalist Diffusion
+Clean Diffusion
+Retro/Vintage:
+
+Vintage Diffusion
+Retrowave Diffusion
+
+import os
+import torch
+from diffusers import StableDiffusionPipeline
+
+# Убедитесь, что у вас есть локальные пути к моделям
+local_model_paths = {
+    "stabilityai/sdxl-turbo": "path/to/local/sdxl-turbo",
+    "SG161222/Realistic_Vision_V6.0_B1_noVAE": "path/to/local/realistic_vision",
+    "Lykon/DreamShaper": "path/to/local/dreamshaper",
+    "ckpt/anything-v5.0": "path/to/local/anything-v5",
+    "swl-models/chilloutmix": "path/to/local/chilloutmix",
+    "Counterfeit-V3": "path/to/local/counterfeit_v3",
+    "Deliberate": "path/to/local/deliberate",
+    "CyberRealistic": "path/to/local/cyberrealistic",
+    "Stable-Diffusion-XL": "path/to/local/stable_diffusion_xl",
+    "Dreamlike-Diffusion": "path/to/local/dreamlike_diffusion",
+    "epic-Diffusion": "path/to/local/epic_diffusion",
+    "LOFI": "path/to/local/lofi",
+    "PortraitPlus": "path/to/local/portraitplus",
+    "epiCRealism": "path/to/local/epicrealism",
+    "OpenJourney": "path/to/local/openjourney",
+    "Dreamlike-Photoreal": "path/to/local/dreamlike_photoreal",
+    "Stable-Diffusion-2.1": "path/to/local/stable_diffusion_2.1",
+    "Kandinsky-2.2": "path/to/local/kandinsky_2.2",
+    "Abstract-Art": "path/to/local/abstract_art",
+    "Cyberpunk-Anime-Diffusion": "path/to/local/cyberpunk_anime_diffusion",
+    "Nightly-Diffusion": "path/to/local/nightly_diffusion",
+    "Steampunk-Diffusion": "path/to/local/steampunk_diffusion",
+    "Vintedois-Diffusion": "path/to/local/vintedois_diffusion",
+    "Horror-Diffusion": "path/to/local/horror_diffusion",
+    "Darkest-Diffusion": "path/to/local/darkest_diffusion",
+    "Pop-Art-Diffusion": "path/to/local/pop_art_diffusion",
+    "Warhol-Style": "path/to/local/warhol_style",
+    "Minimalist-Diffusion": "path/to/local/minimalist_diffusion",
+    "Clean-Diffusion": "path/to/local/clean_diffusion",
+    "Vintage-Diffusion": "path/to/local/vintage_diffusion",
+    "Retrowave-Diffusion": "path/to/local/retrowave_diffusion",
+}
+
+prompts = {
+    "photorealism": [
+        "A crystal-clear drop of water splashing into a calm lake, captured in slow motion.",
+        "A close-up shot of freshly baked bread, every crumb and crack in perfect detail.",
+        "A bustling city street at midday, with every passerby and vehicle rendered in high definition.",
+        "A lush green forest in the early morning, with mist rising and sunlight filtering through the trees.",
+        "A meticulously set dinner table, complete with polished silverware and a centerpiece of fresh flowers."
+    ],
+    "anime": [
+        "A heroic character wielding a giant sword, standing in a dramatic pose with the wind blowing through their hair.",
+        "A bustling marketplace in a fantasy world, filled with colorful characters and exotic goods.",
+        "A magical girl mid-transformation, surrounded by sparkling lights and flowing ribbons.",
+        "A peaceful school classroom at sunset, with students chatting and desks arranged neatly.",
+        "A futuristic cityscape at night, with towering skyscrapers and neon signs."
+    ],
+    "fantasy": [
+        "A towering dragon perched on a mountain peak, breathing fire into the sky.",
+        "A mystical forest filled with glowing plants and ethereal creatures.",
+        "A grand castle floating in the sky, surrounded by clouds and rainbows.",
+        "A band of adventurers exploring an ancient, forgotten temple.",
+        "A sorcerer casting a powerful spell, surrounded by swirling magical energy."
+    ],
+    "sci-fi": [
+        "A spaceship navigating through an asteroid field, with planets visible in the background.",
+        "A futuristic cityscape, with flying cars and towering holographic advertisements.",
+        "A lone astronaut exploring an alien planet, with strange landscapes and alien life forms.",
+        "A high-tech laboratory with scientists working on advanced robotics.",
+        "A space battle between massive starships, lasers and explosions lighting up the void."
+    ],
+    "surrealism": [
+        "A giant clock melting over the edge of a skyscraper, with a surreal sunset in the background.",
+        "A floating island with a house upside down, surrounded by flying fish in a clear blue sky.",
+        "A forest where the trees have human faces, whispering secrets to each other.",
+        "A river flowing through the sky, with boats sailing on clouds instead of water.",
+        "A staircase leading up to a door in the middle of an empty desert."
+    ],
+    "portraiture": [
+        "A close-up portrait of a young woman with freckles, her red hair flowing in the wind.",
+        "A dramatic black-and-white portrait of an elderly man, his face lined with age and wisdom.",
+        "A vibrant portrait of a dancer mid-spin, capturing the energy and grace of the movement.",
+        "A portrait of a warrior with scars and a determined expression, holding a sword.",
+        "A serene portrait of a child with a soft smile, surrounded by a field of wildflowers."
+    ],
+    "landscape": [
+        "A breathtaking view of a mountain range at dawn, with fog rolling through the valleys.",
+        "A tropical beach at sunset, with palm trees silhouetted against the vibrant sky.",
+        "A peaceful countryside scene with rolling hills, a small village in the distance.",
+        "A dense forest in autumn, the ground covered in fallen leaves, with a clear blue sky above.",
+        "A bustling cityscape at night, with skyscrapers illuminated by thousands of lights."
+    ],
+    "concept-art": [
+        "A futuristic soldier in advanced armor, holding a high-tech weapon, ready for battle.",
+        "A fantasy city built into the side of a mountain, with waterfalls cascading down the cliffs.",
+        "A mysterious artifact glowing with an eerie light, ancient runes carved into its surface.",
+        "A post-apocalyptic vehicle designed for rugged terrain, heavily armored and weaponized.",
+        "A detailed character design for a cybernetic assassin, with sleek, cutting-edge technology."
+    ],
+    "abstract": [
+        "A swirling vortex of vibrant colors, with no discernible form or shape.",
+        "A series of geometric shapes overlapping, with sharp angles and contrasting colors.",
+        "A flowing pattern of lines and curves, resembling liquid motion, in a monochromatic palette.",
+        "A chaotic explosion of textures and colors, creating a sense of dynamic energy.",
+        "A minimalist design with a single bold shape on a stark background, playing with negative space."
+    ],
+    "cyberpunk": [
+        "A neon-lit cityscape at night, with towering skyscrapers and holographic advertisements.",
+        "A lone hacker sitting in a dimly lit room, surrounded by multiple screens displaying code.",
+        "A cybernetically enhanced character walking through a crowded, rain-soaked street.",
+        "A futuristic marketplace filled with street vendors selling high-tech gadgets and illegal mods.",
+        "A heavily armored police force patrolling the streets in a dystopian megacity."
+    ],
+    "steampunk": [
+        "A grand airship floating above a Victorian city, with brass gears and steam engines visible.",
+        "A character in elaborate steampunk attire, complete with goggles, top hat, and mechanical limbs.",
+        "A sprawling industrial factory filled with steam-powered machinery and workers in period clothing.",
+        "A futuristic locomotive traveling through a foggy landscape, powered by steam and gears.",
+        "A steampunk-inspired weapon, with intricate gears and brass fittings, emitting steam."
+    ],
+    "horror": [
+        "A dark, abandoned asylum with flickering lights and shadowy figures lurking in the corners.",
+        "A grotesque creature emerging from the shadows, with elongated limbs and haunting eyes.",
+        "A haunted mansion on a hill, with twisted trees and a full moon casting eerie shadows.",
+        "A decaying hand reaching out from the ground in a fog-covered graveyard.",
+        "A ghostly figure standing at the end of a long, dark hallway, barely visible in the dim light."
+    ],
+    "pop-art": [
+        "A vibrant portrait of a famous celebrity, rendered in bold, contrasting colors.",
+        "A comic book-style explosion, with exaggerated lines and bright primary colors.",
+        "A series of everyday objects, such as soup cans or soda bottles, repeated in various bright hues.",
+        "A retro-inspired poster featuring a catchy slogan in large, bold letters.",
+        "A colorful depiction of a modern cityscape, with stylized buildings and vehicles."
+    ],
+    "minimalism": [
+        "A single, isolated tree in a vast, empty landscape, with a clear blue sky.",
+        "A minimalist silhouette of a city skyline, reduced to basic shapes and lines.",
+        "A simple black circle on a white background, evoking a sense of infinite space.",
+        "A pair of hands holding a single flower, with all other details stripped away.",
+        "A single red dot in the center of a white canvas, representing purity and focus."
+    ],
+    "retro-vintage": [
+        "A retro diner scene from the 1950s, with classic cars parked outside and neon signs glowing.",
+        "A vintage-style poster for a 1970s rock concert, with psychedelic colors and bold typography.",
+        "A sepia-toned photograph of a bustling city street in the 1920s, with vintage cars and fashion.",
+        "A 1980s-inspired video game cover, featuring pixel art and bold, vibrant colors.",
+        "A nostalgic image of a classic rotary phone, rendered in soft pastels."
+    ],
+}
+
+def generate_images(model_name, prompts):
+    output_dir = os.path.join("output", models[model_name])
+    os.makedirs(output_dir, exist_ok=True)
+    
+    try:
+        # Загрузка модели из локального пути
+        pipe = StableDiffusionPipeline.from_pretrained(local_model_paths[model_name], safety_checker=None, torch_dtype=torch.float16)
+        pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
+    except Exception as e:
+        print(f"Error loading model {model_name}: {str(e)}")
+        return
+    
+    for idx, prompt in enumerate(prompts):
+        try:
+            print(f"Generating image {idx+1} for {models[model_name]} with prompt: {prompt}")
+            
+            with torch.no_grad():
+                image = pipe(prompt=prompt, num_inference_steps=30, guidance_scale=7.5, height=512, width=512).images[0]
+            
+            image_path = os.path.join(output_dir, f"{models[model_name]}_{idx+1}.png")
+            image.save(image_path)
+            print(f"Successfully generated image {idx+1} for {models[model_name]} at {image_path}")
+        except Exception as e:
+            print(f"Error generating image {idx+1} for {models[model_name]}: {str(e)}")
+            print(f"Prompt was: {prompt}")
+            print(f"Model: {model_name}")
+            print(f"Pipeline components: {pipe.components}")
+            print(f"Device: {pipe.device}")
+
+for model_name in local_model_paths.keys():
+    print(f"Processing model: {model_name}")
+    generate_images(model_name, prompts[models[model_name]])
+    print(f"Finished processing model: {model_name}\n")
+
+print("Script execution completed.")
+
+
+

@@ -1,0 +1,61 @@
+Обычный акк и права
+
+export SERVICE_ACCOUNT=$(yc iam service-account create \
+  --name service-account-for-cf \
+  --description "service account for cloud functions" \
+  --format json | jq -r .) 
+
+yc iam access-key create --service-account-name service-account-for-cf 
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+    --role storage.editor \
+    --subject serviceAccount:$SERVICE_ACCOUNT_ID
+
+
+
+
+
+
+
+
+
+yc iam service-account create --name <имя_сервисного_аккаунта> 
+
+yc iam service-account create --name security-labs \
+--description "Service account for Security course labs" 
+
+yc iam role list 
+
+yc iam user-account get <ваш_логин> 
+
+yc iam service-account list 
+
+yc iam service-account get <имя_сервисного_аккаунта> 
+
+
+yc iam service-account add-access-binding <id_сервисного_аккаунта> \
+--role editor \
+--subject userAccount:<id_пользовательского_аккаунта> 
+
+yc iam key create \
+--service-account-name <имя_сервисного_аккаунта> \
+--output key.json 
+
+yc config profile create <имя_профиля_сервисного_аккаунта> 
+
+yc config set service-account-key key.json
+yc config set folder-id <идентификатор_рабочего_каталога> 
+
+yc config list 
+
+yc config profile list
+yc config profile activate <имя_основного_профиля> 
+
+yc kms symmetric-key add-access-binding \
+--id <id_ключа_шифрования> \
+--role kms.admin \
+--subject serviceAccount:<id_сервисного_аккаунта> 
+
+yc config profile activate <имя_профиля_сервисного_аккаунта> 
+
+yc kms symmetric-key rotate --id <id_ключа_шифрования> 

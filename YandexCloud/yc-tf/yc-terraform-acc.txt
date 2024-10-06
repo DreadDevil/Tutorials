@@ -1,0 +1,11 @@
+export SERVICE_ACCOUNT=$(yc iam service-account create \
+  --name service-account-for-cf \
+  --description "service account for cloud functions" \
+  --format json | jq -r .) 
+
+yc iam access-key create --service-account-name service-account-for-cf 
+
+yc resource-manager folder add-access-binding $FOLDER_ID \
+    --role storage.editor \
+    --subject serviceAccount:$SERVICE_ACCOUNT_ID
+
