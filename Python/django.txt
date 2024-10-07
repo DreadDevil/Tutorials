@@ -1,0 +1,239 @@
+#!/bin/bash
+
+# Создание основной структуры проекта
+mkdir -p myproject/myapp/templates/registration static
+
+# Создание файлов проекта
+cat << EOF > myproject/settings.py
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = 'your-secret-key-here'
+DEBUG = True
+ALLOWED_HOSTS = []
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'myapp',
+    'rest_framework',
+    'rest_framework.authtoken',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'myproject.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'myproject.wsgi.application'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'your_database_name',
+        'USER': 'your_database_user',
+        'PASSWORD': 'your_database_password',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+EOF
+
+cat << EOF > myproject/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('myapp.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+]
+EOF
+
+cat << EOF > myproject/myapp/models.py
+from django.db import models
+from django.contrib.auth.models import User
+
+class Role(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    
+    def __str__(self):
+        return self.name
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return self.user.username
+
+class Table(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    
+    def __str__(self):
+        return self.name
+
+class TablePermission(models.Model):
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    can_view = models.BooleanField(default=False)
+    can_edit = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ('table', 'role')
+EOF
+
+cat << EOF > myproject/myapp/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from .models import Table, TablePermission
+
+@login_required
+def home(request):
+    return render(request, 'home.html')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+@login_required
+@permission_required('myapp.view_table', raise_exception=True)
+def view_table(request, table_id):
+    table = Table.objects.get(id=table_id)
+    return render(request, 'view_table.html', {'table': table})
+
+@login_required
+@permission_required('myapp.change_table', raise_exception=True)
+def edit_table(request, table_id):
+    table = Table.objects.get(id=table_id)
+    # Add logic for editing the table
+    return render(request, 'edit_table.html', {'table': table})
+EOF
+
+cat << EOF > myproject/myapp/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('register/', views.register, name='register'),
+    path('table/<int:table_id>/', views.view_table, name='view_table'),
+    path('table/<int:table_id>/edit/', views.edit_table, name='edit_table'),
+]
+EOF
+
+cat << EOF > static/sw.js
+const CACHE_NAME = 'my-site-cache-v1';
+const urlsToCache = [
+  '/',
+  '/static/css/style.css',
+  '/static/js/main.js',
+];
+
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
+});
+EOF
+
+cat << EOF > static/manifest.json
+{
+  "short_name": "MyApp",
+  "name": "My Django PWA",
+  "icons": [
+    {
+      "src": "/static/icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}
+EOF
+
+cat << EOF > requirements.txt
+Django==3.2.4
+mysqlclient==2.0.3
+djangorestframework==3.12.4
+gunicorn==20.1.0
+EOF
+
+echo "Структура проекта и файлы созданы успешно."
