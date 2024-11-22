@@ -1,67 +1,70 @@
+
 1. Основные команды управления устройством
 --------------------------------------
 Просмотр текущей конфигурации:
-show running-config
+display current-configuration
 
 Просмотр сохранённой конфигурации:
-show startup-config
+display startup
 
 Сохранение конфигурации:
-copy running-config startup-config
+save
 
 Сброс устройства (перезагрузка):
-reload
+reboot
 
 Очистка текущей конфигурации:
-write erase
+reset saved-configuration
+reboot
 
 
 2. Команды работы с интерфейсами
 --------------------------------
 Переход в режим настройки интерфейса:
-configure terminal
-interface GigabitEthernet0/0
+system-view
+interface GigabitEthernet 0/0
 
 Назначение IP-адреса на интерфейс:
 ip address 192.168.1.1 255.255.255.0
 
 Включение интерфейса:
-no shutdown
+undo shutdown
 
 Отключение интерфейса:
 shutdown
 
 Назначение интерфейсу VLAN (режим access):
-switchport mode access
-switchport access vlan 10
+port link-type access
+port default vlan 10
 
 Настройка транкового порта (режим trunk):
-switchport mode trunk
-switchport trunk allowed vlan 10,20
+port link-type trunk
+port trunk permit vlan 10 20
 
 
 3. DHCP
 -------
 Создание пула DHCP:
-ip dhcp pool OFFICE
- network 192.168.1.0 255.255.255.0       # Указать сеть
- default-router 192.168.1.1              # Указать шлюз по умолчанию
- dns-server 8.8.8.8                      # Указать DNS-сервер
- lease 7                                 # Указать срок аренды IP-адреса (7 дней)
+ip pool OFFICE
+ network 192.168.1.0 255.255.255.0
+ gateway-list 192.168.1.1
+ dns-list 8.8.8.8
+ lease 7
 
 Исключение из раздачи статических IP-адресов:
-ip dhcp excluded-address 192.168.1.1 192.168.1.10
+ip dhcp excluded-ip-address 192.168.1.1 192.168.1.10
 
 
 4. DNS
 ------
 Включение DNS-сервера:
-ip dns server
+dns server enable
 
 Добавление статических записей для локальных ресурсов:
-ip host server1 192.168.1.100
-ip host printer1 192.168.1.101
-ip host switch1 192.168.1.102
+domain name example.com
+dns static-record add server1 192.168.1.100
+dns static-record add printer1 192.168.1.101
+dns static-record add switch1 192.168.1.102
 
 
 5. Настройка VLAN
@@ -71,30 +74,30 @@ vlan 10
 name SALES
 
 Привязка интерфейса к VLAN:
-interface GigabitEthernet0/1
-switchport mode access
-switchport access vlan 10
+interface GigabitEthernet 0/1
+port link-type access
+port default vlan 10
 
 
 6. Диагностика и проверка состояния
 -----------------------------------
 Просмотр состояния интерфейсов:
-show ip interface brief
+display ip interface brief
 
 Просмотр таблицы MAC-адресов:
-show mac-address-table
+display mac-address
 
 Просмотр таблицы маршрутов:
-show ip route
+display ip routing-table
 
 Просмотр активных VLAN:
-show vlan brief
+display vlan
 
 Проверка соединения (ping):
 ping 192.168.1.1
 
 Трассировка маршрута:
-traceroute 192.168.1.1
+tracert 192.168.1.1
 
 
 7. Настройка маршрутизации
@@ -103,15 +106,15 @@ traceroute 192.168.1.1
 ip routing
 
 Добавление статического маршрута:
-ip route 192.168.2.0 255.255.255.0 192.168.1.254
+ip route-static 192.168.2.0 255.255.255.0 192.168.1.254
 
 Настройка OSPF:
-router ospf 1
-network 192.168.1.0 0.0.0.255 area 0
+ospf 1
+area 0.0.0.0
+network 192.168.1.0 0.0.0.255
 
 Настройка RIP:
-router rip
-version 2
+rip 1
 network 192.168.1.0
 
 
@@ -122,46 +125,47 @@ vtp mode server
 vtp domain DOMAIN_NAME
 
 Проверка состояния VTP:
-show vtp status
+display vtp status
 
 
 9. Работа с NAT (Network Address Translation)
 ---------------------------------------------
 Настройка PAT (перегрузка NAT):
-ip nat inside source list 1 interface GigabitEthernet0/1 overload
+nat address-group 1
+nat inside source list 1 interface GigabitEthernet 0/1 overload
 
 Указание внутреннего и внешнего интерфейсов для NAT:
-interface GigabitEthernet0/0
-ip nat inside
+interface GigabitEthernet 0/0
+nat inside
 exit
-interface GigabitEthernet0/1
-ip nat outside
+interface GigabitEthernet 0/1
+nat outside
 
 Создание списка доступа для NAT:
-access-list 1 permit 192.168.1.0 0.0.0.255
+acl number 1
+ rule permit ip source 192.168.1.0 0.0.0.255
 
 
 10. Управление пользователями и паролями
 ----------------------------------------
 Создание пользователя:
-username admin privilege 15 secret PASSWORD
+local-user admin password irreversible-cipher PASSWORD privilege 15
 
 Настройка пароля на консоль:
-line console 0
-password PASSWORD
-login
+user-interface console 0
+authentication-mode password
+set password PASSWORD
 
 Настройка пароля на VTY (доступ через SSH/Telnet):
-line vty 0 4
-password PASSWORD
-login
+user-interface vty 0 4
+authentication-mode password
+set password PASSWORD
 
 Включение SSH:
-ip domain-name example.com
-crypto key generate rsa
-ip ssh version 2
-line vty 0 4
-transport input ssh
+stelnet server enable
+ssh user admin authentication-type password
+ssh user admin privilege level 15
+stelnet server enable
 
 
 11. Безопасность
@@ -169,32 +173,35 @@ transport input ssh
 Создание ACL (список управления доступом):
 
 Стандартная ACL:
-access-list 1 permit 192.168.1.0 0.0.0.255
+acl number 3000
+ rule permit ip source 192.168.1.0 0.0.0.255
 
 Расширенная ACL:
-access-list 101 permit tcp 192.168.1.0 0.0.0.255 any eq 80
+acl number 3001
+ rule permit tcp source 192.168.1.0 0.0.0.255 destination any eq 80
 
 Применение ACL к интерфейсу:
-interface GigabitEthernet0/0
-ip access-group 1 in
+interface GigabitEthernet 0/0
+traffic-filter inbound acl 3000
 
 
 12. Управление файлами и образом ОС
 -----------------------------------
 Обновление прошивки через TFTP:
-copy tftp: flash:
+tftp-server enable
+copy tftp flash:
 
 Проверка содержимого флэш-памяти:
 dir flash:
 
 Удаление файла из флэш-памяти:
-delete flash:FILENAME
+delete flash:/FILENAME
 
 
 13. Логирование и мониторинг
 ----------------------------
 Включение логирования:
-logging buffered 4096
+info-center enable
 
 Просмотр лога:
-show logging
+display logbuffer

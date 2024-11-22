@@ -13,17 +13,18 @@ copy running-config startup-config
 reload
 
 Очистка текущей конфигурации:
-write erase
+erase startup-config
+reload
 
 
 2. Команды работы с интерфейсами
 --------------------------------
 Переход в режим настройки интерфейса:
 configure terminal
-interface GigabitEthernet0/0
+interface GigabitEthernet 0/0
 
 Назначение IP-адреса на интерфейс:
-ip address 192.168.1.1 255.255.255.0
+ip address 192.168.1.1/24
 
 Включение интерфейса:
 no shutdown
@@ -37,17 +38,17 @@ switchport access vlan 10
 
 Настройка транкового порта (режим trunk):
 switchport mode trunk
-switchport trunk allowed vlan 10,20
+switchport trunk allowed vlan add 10,20
 
 
 3. DHCP
 -------
 Создание пула DHCP:
 ip dhcp pool OFFICE
- network 192.168.1.0 255.255.255.0       # Указать сеть
- default-router 192.168.1.1              # Указать шлюз по умолчанию
- dns-server 8.8.8.8                      # Указать DNS-сервер
- lease 7                                 # Указать срок аренды IP-адреса (7 дней)
+ network 192.168.1.0/24
+ default-router 192.168.1.1
+ dns-server 8.8.8.8
+ lease 7
 
 Исключение из раздачи статических IP-адресов:
 ip dhcp excluded-address 192.168.1.1 192.168.1.10
@@ -56,7 +57,7 @@ ip dhcp excluded-address 192.168.1.1 192.168.1.10
 4. DNS
 ------
 Включение DNS-сервера:
-ip dns server
+ip dns server enable
 
 Добавление статических записей для локальных ресурсов:
 ip host server1 192.168.1.100
@@ -71,7 +72,7 @@ vlan 10
 name SALES
 
 Привязка интерфейса к VLAN:
-interface GigabitEthernet0/1
+interface GigabitEthernet 0/1
 switchport mode access
 switchport access vlan 10
 
@@ -82,7 +83,7 @@ switchport access vlan 10
 show ip interface brief
 
 Просмотр таблицы MAC-адресов:
-show mac-address-table
+show mac address-table
 
 Просмотр таблицы маршрутов:
 show ip route
@@ -103,16 +104,16 @@ traceroute 192.168.1.1
 ip routing
 
 Добавление статического маршрута:
-ip route 192.168.2.0 255.255.255.0 192.168.1.254
+ip route 192.168.2.0/24 192.168.1.254
 
 Настройка OSPF:
 router ospf 1
-network 192.168.1.0 0.0.0.255 area 0
+network 192.168.1.0/24 area 0
 
 Настройка RIP:
 router rip
 version 2
-network 192.168.1.0
+network 192.168.1.0/24
 
 
 8. Управление VLAN через VTP
@@ -128,17 +129,18 @@ show vtp status
 9. Работа с NAT (Network Address Translation)
 ---------------------------------------------
 Настройка PAT (перегрузка NAT):
-ip nat inside source list 1 interface GigabitEthernet0/1 overload
+ip nat inside source list 1 interface GigabitEthernet 0/1 overload
 
 Указание внутреннего и внешнего интерфейсов для NAT:
-interface GigabitEthernet0/0
+interface GigabitEthernet 0/0
 ip nat inside
 exit
-interface GigabitEthernet0/1
+interface GigabitEthernet 0/1
 ip nat outside
 
 Создание списка доступа для NAT:
-access-list 1 permit 192.168.1.0 0.0.0.255
+ip access-list standard NAT-ACL
+ permit 192.168.1.0/24
 
 
 10. Управление пользователями и паролями
@@ -169,14 +171,16 @@ transport input ssh
 Создание ACL (список управления доступом):
 
 Стандартная ACL:
-access-list 1 permit 192.168.1.0 0.0.0.255
+ip access-list standard ACL-1
+ permit 192.168.1.0/24
 
 Расширенная ACL:
-access-list 101 permit tcp 192.168.1.0 0.0.0.255 any eq 80
+ip access-list extended ACL-101
+ permit tcp 192.168.1.0/24 any eq 80
 
 Применение ACL к интерфейсу:
-interface GigabitEthernet0/0
-ip access-group 1 in
+interface GigabitEthernet 0/0
+ip access-group ACL-1 in
 
 
 12. Управление файлами и образом ОС
