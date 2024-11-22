@@ -1,0 +1,65 @@
+configure
+set service ssh disable-password-authentication
+commit
+save
+exit
+
+scp ~/.ssh/id_rsa.pub ubnt@192.168.1.1:/tmp/key.pub
+, где 192.168.1.1 — IP адрес устройства.
+
+Далее выполнем действия напрямую на устройстве.
+
+Входим в режим конфигурации:
+
+configure
+Далее загружаемм ключ для пользователя ubnt:
+
+loadkey ubnt /tmp/key.pub
+
+configure
+set service gui listen-address 192.168.1.1
+set service ssh listen-address 192.168.1.1
+commit
+save
+exit
+
+
+delete
+set firewall name WAN_LOCAL rule 10 action accept
+set firewall name WAN_LOCAL rule 10 description 'Add Ip'
+set firewall name WAN_LOCAL rule 10 protocol all
+set firewall name WAN_LOCAL rule 10 source address 10.10.10.10
+set firewall name WAN_LOCAL rule 10 destination port
+
+
+description "WAN to router"
+     rule 10 {
+         action accept
+         log disable
+         protocol all
+         source {
+             address 213.251.255.34
+         }
+     }
+     rule 20 {
+         action accept
+         log disable
+         protocol all
+         source {
+             address 89.179.243.154
+         }
+     }
+
+<pre> rule 30 {
+         action accept
+         log disable
+         protocol all
+         source {
+             address 109.252.251.34
+</pre>
+
+ubnt@ubnt:~$ configure
+ubnt@ubnt# set service dhcp-server hostfile-update enable
+ubnt@ubnt# commit
+ubnt@ubnt# save
+ubnt@ubnt# exit

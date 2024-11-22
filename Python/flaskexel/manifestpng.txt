@@ -1,0 +1,22 @@
+{
+  "name": "My PWA App",
+  "short_name": "PWA App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/static/access/192.png", // Замените на ваш файл иконки 192x192
+      "sizes": "192x192",
+      "type": "image/png", // Убедитесь, что тип указан как png
+      "purpose": "any" // Укажите цель, если это необходимо
+    },
+    {
+      "src": "/static/access/512.png", // Замените на ваш файл иконки 512x512
+      "sizes": "512x512",
+      "type": "image/png", // Убедитесь, что тип указан как png
+      "purpose": "any" // Укажите цель, если это необходимо
+    }
+  ]
+}
