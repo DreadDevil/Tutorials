@@ -1,0 +1,253 @@
+1. Основные команды управления устройством
+Просмотр текущей конфигурации:
+
+
+show running-config
+Просмотр сохранённой конфигурации:
+
+
+show startup-config
+Сохранение конфигурации:
+
+
+copy running-config startup-config
+Сброс устройства (перезагрузка):
+
+
+reload
+Очистка текущей конфигурации:
+
+
+write erase
+
+
+
+
+
+2. Команды работы с интерфейсами
+Переход в режим настройки интерфейса:
+
+
+configure terminal
+interface GigabitEthernet0/0
+Назначение IP-адреса на интерфейс:
+
+
+ip address 192.168.1.1 255.255.255.0
+Включение интерфейса:
+
+
+no shutdown
+Отключение интерфейса:
+
+
+shutdown
+Назначение интерфейсу VLAN (режим access):
+
+
+switchport mode access
+switchport access vlan 10
+Настройка транкового порта (режим trunk):
+
+
+switchport mode trunk
+switchport trunk allowed vlan 10,20
+
+ip dhcp pool OFFICE
+ network 192.168.1.0 255.255.255.0       # Указать сеть
+ default-router 192.168.1.1              # Указать шлюз по умолчанию
+ dns-server 8.8.8.8                      # Указать DNS-сервер
+ lease 7                                 # Указать срок аренды IP-адреса (7 дней)
+
+# Исключить из раздачи статические IP-адреса
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+
+
+
+
+3. Настройка VLAN
+Создание VLAN:
+
+
+vlan 10
+name SALES
+Привязка интерфейса к VLAN:
+
+
+interface GigabitEthernet0/1
+switchport mode access
+switchport access vlan 10
+
+
+
+
+
+4. Диагностика и проверка состояния
+Просмотр состояния интерфейсов:
+
+
+show ip interface brief
+Просмотр таблицы MAC-адресов:
+
+
+show mac-address-table
+Просмотр таблицы маршрутов:
+
+
+show ip route
+Просмотр активных VLAN:
+
+
+show vlan brief
+Проверка соединения (ping):
+
+
+ping 192.168.1.1
+Трассировка маршрута:
+
+
+traceroute 192.168.1.1
+
+
+
+
+
+5. Настройка маршрутизации
+Включение маршрутизации:
+
+
+ip routing
+Добавление статического маршрута:
+
+
+ip route 192.168.2.0 255.255.255.0 192.168.1.254
+Настройка OSPF:
+
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+Настройка RIP:
+
+
+router rip
+version 2
+network 192.168.1.0
+
+
+
+
+
+6. Управление VLAN через VTP
+Включение режима сервера VTP:
+
+
+vtp mode server
+vtp domain DOMAIN_NAME
+Проверка состояния VTP:
+
+
+show vtp status
+
+
+
+
+
+7. Работа с NAT (Network Address Translation)
+Настройка PAT (перегрузка NAT):
+
+
+ip nat inside source list 1 interface GigabitEthernet0/1 overload
+Указание внутреннего и внешнего интерфейсов для NAT:
+
+
+interface GigabitEthernet0/0
+ip nat inside
+exit
+interface GigabitEthernet0/1
+ip nat outside
+Создание списка доступа для NAT:
+
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+
+
+
+
+8. Управление пользователями и паролями
+Создание пользователя:
+
+
+username admin privilege 15 secret PASSWORD
+Настройка пароля на консоль:
+
+
+line console 0
+password PASSWORD
+login
+Настройка пароля на VTY (доступ через SSH/Telnet):
+
+
+line vty 0 4
+password PASSWORD
+login
+Включение SSH:
+
+
+ip domain-name example.com
+crypto key generate rsa
+ip ssh version 2
+line vty 0 4
+transport input ssh
+
+
+
+
+
+9. Безопасность
+Создание ACL (список управления доступом):
+Стандартная ACL:
+
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+Расширенная ACL:
+
+
+access-list 101 permit tcp 192.168.1.0 0.0.0.255 any eq 80
+Применение ACL к интерфейсу:
+
+
+interface GigabitEthernet0/0
+ip access-group 1 in
+
+
+
+
+
+10. Управление файлами и образом ОС
+Обновление прошивки через TFTP:
+
+
+copy tftp: flash:
+Проверка содержимого флэш-памяти:
+
+
+dir flash:
+Удаление файла из флэш-памяти:
+
+
+delete flash:FILENAME
+
+
+
+
+
+11. Логирование и мониторинг
+Включение логирования:
+
+
+logging buffered 4096
+Просмотр лога:
+
+
+show logging
