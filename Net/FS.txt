@@ -1,19 +1,19 @@
 1. Основные команды управления устройством
 --------------------------------------
 Просмотр текущей конфигурации:
-display current-configuration
+show running-config
 
 Просмотр сохранённой конфигурации:
-display startup
+show startup-config
 
 Сохранение конфигурации:
-save
+write memory
 
 Сброс устройства (перезагрузка):
 reboot
 
 Очистка текущей конфигурации:
-reset saved-configuration
+erase startup-config
 reboot
 
 
