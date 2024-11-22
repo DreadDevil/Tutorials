@@ -1,0 +1,172 @@
+### 1. Настройка Site-to-Site IPSec VPN
+
+# Шаг 1: Определение и создание криптопрофилей
+
+# Создание IKE политики (Phase 1)
+crypto ikev1 policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+# Создание IPSec криптопрофиля (Phase 2)
+crypto ipsec transform-set MY_TRANSFORM esp-aes esp-sha-hmac
+
+# Создание криптогруппы (IKEv1) для SA
+crypto ikev1 enable outside
+
+# Шаг 2: Настройка предшаренного ключа (Pre-shared Key)
+crypto ikev1 key MY_SECRET_KEY address 192.168.1.1
+
+# Шаг 3: Определение политики маршрутизации для VPN
+ip route 10.0.0.0 255.255.255.0 192.168.1.1
+
+# Шаг 4: Создание туннеля IPSec
+
+# Настройка ACL для туннеля
+access-list 100 permit ip 192.168.10.0 0.0.0.255 10.0.0.0 0.0.0.255
+
+# Настройка криптопрофиля IPSec
+crypto map MY_CRYPTO_MAP 10 ipsec-isakmp
+ set peer 192.168.1.1
+ set transform-set MY_TRANSFORM
+ match address 100
+
+# Применение криптокарты к интерфейсу
+interface Ethernet0
+ crypto map MY_CRYPTO_MAP
+
+
+### 2. Настройка Remote Access SSL VPN
+
+# Включение SSL VPN на интерфейсе
+interface Ethernet0
+ ssl enable
+
+# Настройка пула адресов для VPN
+ip local pool VPN_POOL 192.168.100.1 192.168.100.50
+
+# Настройка группы политики SSL VPN
+webvpn
+  gateway SSL-VPN
+   ip address 192.168.1.1
+   ssl enable
+   inservice
+
+  tunnel-group SSL-VPN type remote-access
+  tunnel-group SSL-VPN general-attributes
+   address-pool VPN_POOL
+   default-group-policy SSL-VPN-Policy
+
+# Настройка группы пользователей и паролей
+username vpnuser password vpnpassword
+
+# Настройка политики доступа
+group-policy SSL-VPN-Policy internal
+ group-policy SSL-VPN-Policy attributes
+  dns-server value 8.8.8.8
+  vpn-tunnel-protocol ssl-client
+
+
+### 3. Настройка DMVPN (Dynamic Multipoint VPN)
+
+# Настройка основного роутера (Hub)
+interface Tunnel0
+ ip address 10.0.0.1 255.255.255.0
+ tunnel source Ethernet0
+ tunnel mode gre multipoint
+ tunnel key 12345
+
+# Настройка удалённого роутера (Spoke)
+interface Tunnel0
+ ip address 10.0.0.2 255.255.255.0
+ tunnel source Ethernet0
+ tunnel destination 10.0.0.1
+ tunnel mode gre multipoint
+ tunnel key 12345
+
+# Настройка EIGRP для динамической маршрутизации по VPN
+router eigrp 1
+ network 10.0.0.0
+
+
+### 4. Проверка VPN-соединения
+
+# Проверка IPSec VPN
+show crypto isakmp sa
+show crypto ipsec sa
+
+# Проверка SSL VPN
+show webvpn
+
+# Тестирование туннеля (ping)
+ping 10.0.0.1
+
+
+
+### 3. Настройка DMVPN (Dynamic Multipoint VPN)
+
+
+! --------------------------------------------------------
+! Главный роутер (Hub Router)
+! --------------------------------------------------------
+
+! Включаем маршрутизацию
+ip routing
+
+! Настройка интерфейса Tunnel на главном роутере
+interface Tunnel0
+ ip address 10.0.0.1 255.255.255.0  ! IP-адрес туннеля
+ tunnel source Ethernet0  ! Исходящий интерфейс (например, внешний интерфейс роутера)
+ tunnel mode gre multipoint  ! Режим GRE мультипоинт
+ tunnel key 12345  ! Ключ туннеля для безопасности
+ ip nhrp network-id 1  ! Идентификатор сети NHRP
+ ip nhrp holdtime 300  ! Время жизни записи в таблице NHRP (секунды)
+
+! Настройка динамического картирования мультикастов
+ip nhrp map multicast dynamic  ! Динамическое картирование мультикастов
+ip nhrp map 10.0.0.2 192.168.1.2  ! Сопоставление IP-адресов для удалённого роутера
+ip nhrp network-id 1  ! Идентификатор сети
+ip nhrp nhs 10.0.0.1  ! Главный роутер как NHS
+
+! Маршруты на Hub роутере
+ip route 10.0.0.0 255.255.255.0 Tunnel0  ! Маршрут на удалённый роутер
+
+! --------------------------------------------------------
+! Удалённый роутер (Spoke Router)
+! --------------------------------------------------------
+
+! Включаем маршрутизацию
+ip routing
+
+! Настройка интерфейса Tunnel на удалённом роутере
+interface Tunnel0
+ ip address 10.0.0.2 255.255.255.0  ! IP-адрес туннеля для удалённого роутера
+ tunnel source Ethernet0  ! Исходящий интерфейс (например, внешний интерфейс роутера)
+ tunnel destination 203.0.113.1  ! IP-адрес главного роутера (HUB)
+ tunnel mode gre multipoint  ! Режим GRE мультипоинт
+ tunnel key 12345  ! Ключ туннеля для безопасности
+ ip nhrp network-id 1  ! Идентификатор сети NHRP
+ ip nhrp nhs 10.0.0.1  ! Главный роутер как NHS
+
+! Маршруты на Spoke роутере
+ip route 10.0.0.0 255.255.255.0 Tunnel0  ! Маршрут на Hub роутер
+
+! --------------------------------------------------------
+! Дополнительные настройки (для обоих роутеров)
+! --------------------------------------------------------
+
+! Настройка NAT (если необходимо)
+ip nat inside source list 1 interface Tunnel0 overload
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+! Настройка безопасности и доступа
+username admin privilege 15 secret password
+enable secret enablepassword
+
+! Проверка состояния DMVPN туннелей
+show dmvpn
+show crypto isakmp sa
+show crypto ipsec sa
+
