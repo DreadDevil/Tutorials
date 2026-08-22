@@ -1,0 +1,29 @@
+
+apt install -y nginx-full
+
+mkdir -p /etc/nginx/stream.conf.d
+
+nano /etc/nginx/stream.conf.d/web-front.conf
+
+server {
+        listen 127.0.0.1:9443;
+        proxy_pass www.fishki.net:443;
+        proxy_connect_timeout 3s;
+} 
+
+
+stream {
+       include /etc/nginx/stream.conf.d/*.conf;
+}
+
+
+bash nginx -t
+systemctl restart nginx
+
+
+bash curl -v --resolve www.fishki.net:9443:127.0.0.1 https://www.fishki.net:443/ -k
+
+openssl s_client -connect 127.0.0.1:443 -servername www.fishki.net
+
+
+journalctl -u x-ui -f --no-pager

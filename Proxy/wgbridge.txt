@@ -1,0 +1,461 @@
+1. Что понадобится
+
+Назовём:
+
+Текущий VPS
+PUBLIC_IP_1 = 201.51.6.250
+WG_IP_1     = 10.99.0.1
+Зарубежный VPS
+
+Допустим:
+
+PUBLIC_IP_2 = 203.0.113.50
+WG_IP_2     = 10.99.0.2
+
+203.0.113.50 здесь пример. Подставишь настоящий IP зарубежного VPS.
+
+Оба сервера — Ubuntu 24.04.
+
+2. Установка WireGuard
+
+На обоих VPS:
+
+apt update
+apt install -y wireguard
+
+Проверяем:
+
+wg --version
+3. Генерируем ключи
+
+На текущем VPS:
+
+umask 077
+wg genkey | tee /etc/wireguard/private.key | wg pubkey > /etc/wireguard/public.key
+
+Посмотреть:
+
+cat /etc/wireguard/private.key
+cat /etc/wireguard/public.key
+
+Сохрани их.
+
+На зарубежном VPS:
+
+umask 077
+wg genkey | tee /etc/wireguard/private.key | wg pubkey > /etc/wireguard/public.key
+
+Получишь вторую пару.
+
+4. Настраиваем зарубежный VPS
+
+Создаём:
+
+nano /etc/wireguard/wg0.conf
+
+Вставляем:
+
+[Interface]
+Address = 10.99.0.2/24
+PrivateKey = PRIVATE_KEY_FOREIGN
+
+PostUp = sysctl -w net.ipv4.ip_forward=1
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
+PostUp = iptables -A FORWARD -o wg0 -j ACCEPT
+PostUp = iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
+PostDown = iptables -D FORWARD -o wg0 -j ACCEPT
+PostDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+ListenPort = 51820
+
+[Peer]
+PublicKey = PUBLIC_KEY_CURRENT
+AllowedIPs = 10.99.0.1/32, 149.154.0.0/16
+
+Замени:
+
+PRIVATE_KEY_FOREIGN
+
+на private key зарубежного VPS.
+
+А:
+
+PUBLIC_KEY_CURRENT
+
+на public key текущего VPS.
+
+5. Включаем IP forwarding
+
+На зарубежном VPS:
+
+cat > /etc/sysctl.d/99-wireguard-forward.conf <<'EOF'
+net.ipv4.ip_forward=1
+EOF
+
+Применяем:
+
+sysctl --system
+
+Проверяем:
+
+sysctl net.ipv4.ip_forward
+
+Должно быть:
+
+net.ipv4.ip_forward = 1
+6. Открываем UDP 51820
+
+На зарубежном VPS:
+
+ufw allow 51820/udp
+
+Если UFW вообще не используется — достаточно разрешить UDP/51820 в firewall самого VPS/облачного провайдера.
+
+7. Настраиваем текущий VPS
+
+Создаём:
+
+nano /etc/wireguard/wg0.conf
+
+Конфигурация:
+
+[Interface]
+Address = 10.99.0.1/24
+PrivateKey = PRIVATE_KEY_CURRENT
+
+[Peer]
+PublicKey = PUBLIC_KEY_FOREIGN
+Endpoint = PUBLIC_IP_2:51820
+AllowedIPs = 10.99.0.2/32
+PersistentKeepalive = 25
+
+Обрати внимание:
+
+здесь специально НЕ пишем:
+
+AllowedIPs = 0.0.0.0/0
+
+Потому что нам не нужен full-tunnel.
+
+Обычный трафик текущего VPS должен продолжать идти своим обычным маршрутом.
+
+8. Запускаем WireGuard
+
+На зарубежном VPS:
+
+systemctl enable --now wg-quick@wg0
+
+На текущем:
+
+systemctl enable --now wg-quick@wg0
+
+Проверяем на обоих:
+
+wg
+
+На текущем VPS должно появиться примерно:
+
+interface: wg0
+  public key: ...
+  listening port: ...
+
+peer: ...
+  endpoint: PUBLIC_IP_2:51820
+  allowed ips: 10.99.0.2/32
+  latest handshake: ...
+9. Проверяем сам туннель
+
+С текущего VPS:
+
+ping -c 4 10.99.0.2
+
+Должно отвечать.
+
+Если нет — не переходим дальше, сначала исправляем WireGuard.
+
+10. Проверяем выход через зарубежный VPS
+
+С текущего VPS:
+
+curl --interface 10.99.0.1 https://ifconfig.me
+
+Но это ещё не заставляет интернет идти через зарубежный VPS — мы пока только проверяем интерфейс.
+
+Для полноценной проверки можно временно добавить маршрут:
+
+ip route add 1.1.1.1/32 via 10.99.0.2 dev wg0
+
+Но лучше сразу перейти к policy routing.
+
+11. Создаём отдельную таблицу маршрутизации
+
+На текущем VPS:
+
+echo "100 telegram" >> /etc/iproute2/rt_tables
+
+Проверяем:
+
+grep telegram /etc/iproute2/rt_tables
+
+Получим:
+
+100 telegram
+12. Маршрутизируем Telegram через WireGuard
+
+Вот здесь самое главное.
+
+Telegram использует сети:
+
+149.154.0.0/16
+
+Добавляем маршрут в таблицу telegram:
+
+ip route add 149.154.0.0/16 dev wg0 table telegram
+
+И маршрут к самому WireGuard endpoint оставляем через обычный основной маршрут.
+
+Теперь правило:
+
+ip rule add to 149.154.0.0/16 table telegram priority 100
+
+Проверяем:
+
+ip rule
+
+Должно появиться:
+
+100:    to 149.154.0.0/16 lookup telegram
+13. Проверяем, куда теперь пойдёт Telegram
+
+Очень важная команда:
+
+ip route get 149.154.167.51
+
+Ожидаем:
+
+149.154.167.51 dev wg0 ...
+
+А не:
+
+149.154.167.51 via 201.51.6.1 dev eth0
+
+Это принципиальная проверка.
+
+14. Но есть важная проблема с обратным маршрутом
+
+Когда текущий VPS отправляет:
+
+201.51.6.250 → Telegram
+
+через WireGuard, зарубежный VPS должен делать NAT.
+
+Мы это уже сделали:
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+Поэтому Telegram увидит примерно:
+
+PUBLIC_IP_2 → Telegram
+
+а не:
+
+201.51.6.250 → Telegram
+
+Это именно то, что нам нужно.
+
+15. Проверяем TCP
+
+Теперь на текущем VPS:
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+Если всё работает, должно быть:
+
+Connection to 149.154.167.51 443 port [tcp/https] succeeded!
+
+Проверяем ещё:
+
+curl -4 -I --connect-timeout 10 https://telegram.org
+
+Но здесь есть нюанс: telegram.org может резолвиться в другой Telegram/CDN IP, поэтому для диагностики конкретного маршрута лучше использовать ip route get + tcpdump.
+
+16. Очень полезная проверка tcpdump
+
+На текущем VPS:
+
+tcpdump -ni wg0 host 149.154.167.51
+
+В другом терминале:
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+Должен появиться трафик через wg0.
+
+Например:
+
+10.99.0.1.xxxxx > 149.154.167.51.443: Flags [S]
+
+При этом на eth0 текущего VPS не должно быть прямого SYN к Telegram.
+
+17. Проверяем зарубежный VPS
+
+На зарубежном VPS:
+
+tcpdump -ni eth0 host 149.154.167.51 and tcp port 443
+
+И снова на текущем:
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+На зарубежном VPS должно быть видно:
+
+PUBLIC_IP_2.xxxxx > 149.154.167.51.443: Flags [S]
+
+Это будет окончательным доказательством схемы:
+
+Текущий VPS
+    ↓
+ WireGuard
+    ↓
+Зарубежный VPS
+    ↓
+Telegram
+18. Сделаем маршрутизацию постоянной
+
+После перезагрузки ручные:
+
+ip route add ...
+ip rule add ...
+
+пропадут.
+
+Лучше добавить их в WireGuard через PostUp.
+
+На текущем VPS:
+
+[Interface]
+Address = 10.99.0.1/24
+PrivateKey = PRIVATE_KEY_CURRENT
+
+PostUp = ip route add 149.154.0.0/16 dev wg0 table telegram
+PostUp = ip rule add to 149.154.0.0/16 table telegram priority 100
+
+PostDown = ip rule del to 149.154.0.0/16 table telegram priority 100
+PostDown = ip route del 149.154.0.0/16 dev wg0 table telegram
+
+[Peer]
+PublicKey = PUBLIC_KEY_FOREIGN
+Endpoint = PUBLIC_IP_2:51820
+AllowedIPs = 10.99.0.2/32
+PersistentKeepalive = 25
+
+Но есть ещё один момент: таблица telegram должна иметь маршрут к самому WireGuard peer? При нашей схеме AllowedIPs = 10.99.0.2/32 остаётся в main table, а маршрут к 149.154.0.0/16 — только в таблице 100. Это нормально.
+
+19. Для твоего MTProto лучше сделать ещё точнее
+
+Ты используешь MTProto на x-ui.
+
+Если задача именно:
+
+MTProto
+   ↓
+Telegram
+
+то не обязательно маршрутизировать весь серверный трафик к 149.154.0.0/16.
+
+Можно сделать отдельного системного пользователя для Xray/MTProto и маршрутизировать трафик только этого процесса.
+
+Но для начала я бы не усложнял.
+
+Твоя ситуация:
+
+VPS
+ ├── x-ui
+ ├── MTProto
+ ├── другие сервисы
+ │
+ └── Telegram → WireGuard
+
+с маршрутом:
+
+149.154.0.0/16 → wg0
+
+уже решает задачу и не затрагивает обычный интернет.
+
+20. Важная проверка именно для твоего случая
+
+У тебя раньше было:
+
+ping 149.154.167.51
+→ работает
+
+TCP 443
+→ timeout
+
+tcpdump:
+SYN
+SYN
+SYN
+SYN
+...
+
+Это очень характерная картина:
+
+ICMP ───────────────→ Telegram ✓
+
+TCP SYN ────────────→ Telegram ✗
+                       ↑
+                 фильтрация/маршрут
+
+После WireGuard должно стать:
+
+Текущий VPS
+201.51.6.250
+     │
+     │ encrypted UDP
+     ▼
+10.99.0.2
+Зарубежный VPS
+203.x.x.x
+     │
+     │ TCP/443
+     ▼
+149.154.167.51
+
+И Telegram уже не видит исходный IP российского/проблемного VPS.
+
+21. Если после этого всё равно timeout
+
+Тогда выполняем ровно эти 6 команд и присылаешь вывод:
+
+Текущий VPS
+wg
+ip rule
+ip route show table telegram
+ip route get 149.154.167.51
+nc -4 -vz -w 5 149.154.167.51 443
+
+И параллельно:
+
+tcpdump -ni wg0 host 149.154.167.51
+Зарубежный VPS
+
+Во время nc:
+
+tcpdump -ni eth0 'host 149.154.167.51 and tcp port 443'
+
+По этим двум tcpdump можно однозначно определить, на каком участке ломается цепочка:
+
+текущий VPS
+   ↓
+WireGuard
+   ↓
+зарубежный VPS
+   ↓
+NAT
+   ↓
+Telegram
+
+И отдельно: не ставь AllowedIPs = 0.0.0.0/0 на текущем VPS — это превратит схему в full-tunnel и начнёт гонять через зарубежный VPS весь трафик сервера, чего тебе как раз не нужно.
