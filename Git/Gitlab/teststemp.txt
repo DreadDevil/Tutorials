@@ -1,0 +1,53 @@
+include:
+  - local: '.tests.yml'
+
+default:
+  image: node
+
+stages:
+  - init # загрузка библиотек, иначе используется кеш
+  - test # прогон тестов, escheck требует сборки
+  - build # сборка  
+
+# отдельный блок для описания кеша
+.node_modules_cache:
+  cache: 
+    key:
+      files:
+       - package-lock.json # пересборка кеша при изменении файла
+      prefix: node-cache-app # название кеша
+    paths:
+     - package-lock.json # отправка в кеш 
+     - node_modules
+    policy: pull-push # указание правил доступа
+    unprotect: true # даже для защищённых веток
+    when: on_success # только при успешном выполнении
+
+# загрузка кеша
+download-modules: 
+  extends:
+    - .node_modules_cache
+  stage: init
+  script:
+    - npm install
+
+
+# сборка проекта только для основной ветки 
+build-project-prod:
+  extends:
+    - .node_modules_cache
+  stage: build
+  script:
+    - npm run build:production
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main"
+
+# сборка проекта только для dev-ветки
+build-project-dev:
+  extends:
+    - .node_modules_cache
+  stage: build
+  script:
+    - npm run build:development
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "develop"

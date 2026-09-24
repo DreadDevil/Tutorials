@@ -1,0 +1,35 @@
+# запуск разных тестов
+build-check: 
+  extends:
+    - .node_modules_cache
+  stage: test
+  script:
+    - npm run build:check
+# запуск разных тестов
+escheck: 
+  extends:
+    - .node_modules_cache
+  stage: test
+  script:
+    - npm run escheck
+# запуск разных тестов
+lint: 
+  extends:
+    - .node_modules_cache
+  stage: test
+  script:
+    - npm run lint
+# запуск разных тестов
+vitest: 
+  extends:
+    - .node_modules_cache
+  stage: test
+  script:
+    - npm run test
+# запуск разных тестов
+stylelint: 
+  extends:
+    - .node_modules_cache
+  stage: test
+  script:
+    - npm run stylelint

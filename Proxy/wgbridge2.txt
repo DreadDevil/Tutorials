@@ -1,0 +1,378 @@
+Да. Берём:
+
+Текущий VPS: 178.154.219.115 — здесь работает Xray/MTProto.
+Зарубежный VPS: 104.28.230.245 — через него отправляем трафик Telegram.
+Задача: только Telegram → WireGuard → зарубежный VPS → Telegram.
+Остальной трафик текущего VPS должен идти как раньше через 178.154.219.115.
+
+Но важный момент: 104.28.230.245 выглядит как адрес из диапазона Cloudflare (104.28.x.x). Если это действительно IP вашего VPS, сначала убедимся, что это реальный публичный IP сервера, а не адрес Cloudflare перед доменом.
+
+Ниже схема с этими адресами.
+
+1. Схема
+                    INTERNET
+                       │
+                       │
+              ┌────────▼────────┐
+              │ ТЕКУЩИЙ VPS     │
+              │ 178.154.219.115 │
+              │                 │
+              │ Xray / MTProto  │
+              │                 │
+              │ wg0             │
+              └────────┬────────┘
+                       │
+                 WireGuard
+                       │
+                       │
+              ┌────────▼────────┐
+              │ ЗАРУБЕЖНЫЙ VPS  │
+              │ 104.28.230.245  │
+              │                 │
+              │ wg0             │
+              │ IP forwarding   │
+              │ NAT             │
+              └────────┬────────┘
+                       │
+                       ▼
+                  Telegram
+              149.154.167.0/24
+
+То есть Xray на текущем VPS будет обращаться к Telegram через wg0.
+
+2. Сначала проверяем зарубежный VPS
+
+Зайди на:
+
+ssh root@104.28.230.245
+
+Проверь:
+
+ip addr
+
+и:
+
+ip route
+
+Особенно важно увидеть, что 104.28.230.245 действительно назначен интерфейсу VPS.
+
+Выполни:
+
+curl -4 https://api.ipify.org
+echo
+
+Должно вернуть:
+
+104.28.230.245
+
+Если вернуло другой IP — не используй 104.28.230.245 как endpoint WireGuard, сначала покажи мне результат.
+
+3. Устанавливаем WireGuard на обоих VPS
+Текущий VPS 178.154.219.115
+apt update
+apt install wireguard -y
+Зарубежный VPS 104.28.230.245
+apt update
+apt install wireguard -y
+4. Генерируем ключи
+На текущем VPS
+umask 077
+wg genkey | tee /etc/wireguard/private.key | wg pubkey > /etc/wireguard/public.key
+
+Посмотреть:
+
+cat /etc/wireguard/private.key
+cat /etc/wireguard/public.key
+
+Запиши оба значения.
+
+На зарубежном VPS
+umask 077
+wg genkey | tee /etc/wireguard/private.key | wg pubkey > /etc/wireguard/public.key
+
+Посмотреть:
+
+cat /etc/wireguard/private.key
+cat /etc/wireguard/public.key
+
+В итоге у нас:
+
+ТЕКУЩИЙ VPS
+Private_A
+Public_A
+
+ЗАРУБЕЖНЫЙ VPS
+Private_B
+Public_B
+5. Настраиваем зарубежный VPS
+
+На 104.28.230.245:
+
+nano /etc/wireguard/wg0.conf
+
+Вставь:
+
+[Interface]
+Address = 10.66.66.2/30
+ListenPort = 51820
+PrivateKey = PRIVATE_B
+
+[Peer]
+PublicKey = PUBLIC_A
+AllowedIPs = AllowedIPs = 10.66.66.2/32
+
+Вместо:
+
+PRIVATE_B
+
+ставишь приватный ключ зарубежного VPS.
+
+Вместо:
+
+PUBLIC_A
+
+публичный ключ текущего VPS.
+
+6. Включаем IP forwarding
+
+На зарубежном VPS:
+
+nano /etc/sysctl.d/99-wireguard-forward.conf
+
+Добавь:
+
+net.ipv4.ip_forward=1
+
+Применить:
+
+sysctl --system
+
+Проверить:
+
+sysctl net.ipv4.ip_forward
+
+Должно быть:
+
+net.ipv4.ip_forward = 1
+7. NAT на зарубежном VPS
+
+Сначала узнаём внешний интерфейс:
+
+ip route get 8.8.8.8
+
+Например, если получишь:
+
+8.8.8.8 via ... dev eth0
+
+значит внешний интерфейс:
+
+eth0
+
+Тогда:
+
+iptables -t nat -A POSTROUTING -s 10.66.66.0/30 -o eth0 -j MASQUERADE
+
+И разрешаем forwarding:
+
+iptables -A FORWARD -i wg0 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth0 -o wg0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+8. Настраиваем текущий VPS
+
+На 178.154.219.115:
+
+nano /etc/wireguard/wg0.conf
+
+Вставляем:
+
+[Interface]
+Address = 10.66.66.1/30
+PrivateKey = PRIVATE_A
+
+[Peer]
+PublicKey = PUBLIC_B
+Endpoint = 104.28.230.245:51820
+AllowedIPs = AllowedIPs = 10.66.66.2/32, 149.154.167.0/24
+PersistentKeepalive = 25
+
+Здесь:
+
+PRIVATE_A
+
+— приватный ключ текущего VPS.
+
+PUBLIC_B
+
+— публичный ключ зарубежного VPS.
+
+9. Важный момент с AllowedIPs
+
+Вот эта строка:
+
+AllowedIPs = 149.154.167.0/24
+
+как раз делает то, что тебе нужно.
+
+Она означает:
+
+149.154.167.x
+        ↓
+      wg0
+        ↓
+104.28.230.245
+        ↓
+    Telegram
+
+Но, например:
+
+8.8.8.8
+1.1.1.1
+github.com
+apt
+Google
+
+не пойдут через WireGuard.
+
+Они продолжат использовать обычный маршрут текущего VPS.
+
+10. Запускаем WireGuard
+
+На зарубежном VPS:
+
+systemctl enable --now wg-quick@wg0
+
+На текущем VPS:
+
+systemctl enable --now wg-quick@wg0
+
+Проверяем на обоих:
+
+wg show
+
+На текущем VPS должен появиться:
+
+peer: PUBLIC_B
+latest handshake: ...
+
+Если есть:
+
+latest handshake
+
+— WireGuard установил связь.
+
+11. Проверяем туннель
+
+С текущего VPS:
+
+ping -c 5 10.66.66.2
+
+Должен отвечать:
+
+64 bytes from 10.66.66.2
+
+Потом:
+
+ip route get 149.154.167.51
+
+Должно быть что-то вроде:
+
+149.154.167.51 dev wg0 src 10.66.66.1
+
+Это ключевая проверка.
+
+12. Проверяем Telegram через туннель
+
+На текущем VPS:
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+Теперь соединение должно идти:
+
+178.154.219.115
+        ↓
+      wg0
+        ↓
+104.28.230.245
+        ↓
+149.154.167.51:443
+
+Если:
+
+Connection to 149.154.167.51 443 port [tcp/https] succeeded!
+
+— маршрутизация работает.
+
+13. Проверяем tcpdump
+
+На текущем VPS:
+
+tcpdump -ni wg0 host 149.154.167.51
+
+В другом терминале:
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+На wg0 должны появиться пакеты.
+
+А на eth0 текущего VPS при этом Telegram должен быть виден только как зашифрованный WireGuard-трафик к зарубежному VPS.
+
+14. Но есть ещё один важный момент с Xray/MTProto
+
+Если Xray использует доменное имя Telegram/Cloudflare для fronting, например:
+
+www.cloudflare.com
+
+то одного маршрута:
+
+149.154.167.0/24 → wg0
+
+может быть недостаточно.
+
+Ты раньше получал:
+
+dial tcp: lookup www.cloudflare.com: operation was canceled
+cannot dial to the fronting domain
+
+В таком случае надо отдельно определить, куда именно Xray устанавливает исходящее соединение.
+
+Например:
+
+getent ahostsv4 www.cloudflare.com
+
+Если получишь:
+
+104.x.x.x
+
+то это уже другой трафик, и его нельзя просто отправить по маршруту 149.154.167.0/24.
+
+15. Для твоего случая я бы сначала сделал именно так
+
+Не перенастраивай пока Xray.
+
+Сначала добиваемся:
+
+178.154.219.115
+        │
+        │ WireGuard
+        ▼
+104.28.230.245
+        │
+        ▼
+149.154.167.51:443
+
+Проверки должны дать:
+
+ping -c 3 10.66.66.2
+
+→ работает
+
+ip route get 149.154.167.51
+
+→ dev wg0
+
+nc -4 -vz -w 5 149.154.167.51 443
+
+→ succeeded
+
+И только после этого подключаем MTProto/Xray.
+
+И ещё раз: сначала обязательно проверь 104.28.230.245 через curl -4 https://api.ipify.org. Если это действительно IP зарубежного VPS — можем продолжать по этой схеме. Если api.ipify.org покажет другой адрес, я перепишу конфигурацию под реальный IP, потому что 104.28.230.245 очень похоже на адрес Cloudflare, а не обычного VPS.

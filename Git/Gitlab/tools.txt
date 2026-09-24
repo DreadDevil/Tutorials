@@ -1,0 +1,13 @@
+artifacts
+dependencies
+needs
+cache
+services
+environment
+rules
+schedules pipeline
+
+extends
+include
+trigger
+components

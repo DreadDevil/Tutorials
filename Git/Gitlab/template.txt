@@ -1,0 +1,4 @@
+include:
+  - project: 'GROUP/project-name'
+    ref: main
+    file: 'tests.yml'
